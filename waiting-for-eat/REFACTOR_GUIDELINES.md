@@ -349,9 +349,9 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第一階段：規範與 Baseline
 
-- [ ] 1. `docs: define project refactor strategy`
+- [x] 1. `docs: define project refactor strategy`
    - 更新全專案重構規範、執行階段與 commit 原則。
-- [ ] 2. `docs: document current application architecture`
+- [x] 2. `docs: document current application architecture`
    - 記錄路由、頁面、Stores、Firebase collections、外部服務與主要資料流。
 - [ ] 3. `docs: record refactor verification baseline`
    - 記錄重構前的 lint、test、build 結果及主要功能手動驗證清單。
