@@ -1,18 +1,8 @@
 import { Button, Card } from "@nextui-org/react";
 import { Rate } from "antd";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  query,
-  serverTimestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { default as React, useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { createReview } from "../../services/repositories/reviewRepository.js";
 import useStarStore from "../../stores/starStore.js";
 
 function AddStar() {
@@ -20,52 +10,11 @@ function AddStar() {
   const navigate = useNavigate();
   const [star, setStar] = useState(0);
   const [content, setContent] = useState("");
-  const [starList, setStarList] = useState([]);
   const companyId = useStarStore((state) => state.companyId);
   const orderId = useStarStore((state) => state.orderId);
   const companyName = useStarStore((state) => state.companyName);
-  const starq = query(
-    collection(db, "star"),
-    where("companyId", "==", companyId),
-  );
-
-  useEffect(() => {
-    let starList = [];
-    getDocs(starq).then((result) => {
-      result.forEach((doc) => {
-        const result = doc.data();
-        const resultStar = result.star;
-        const resultId = doc.id;
-        const combine = { ...result, starId: resultId };
-        starList.push(resultStar);
-      });
-      setStarList(starList);
-    });
-  }, []);
-
-  async function UpdateTotalStar() {
-    const newStarList = [...starList, star];
-    const sumStar = newStarList.reduce((a, c) => a + c, 0);
-    const avg = sumStar / (starList.length + 1);
-
-    const companyRef = doc(db, "company", companyId);
-    await updateDoc(companyRef, {
-      totalStar: avg,
-    });
-  }
-
-  async function handleSend() {
-    const starRef = await addDoc(collection(db, "star"), {
-      orderId: orderId,
-      companyId: companyId,
-      userId: userId,
-      star: star,
-      content: content,
-      createTime: serverTimestamp(),
-    });
-
-    UpdateTotalStar();
-  }
+  const handleSend = () =>
+    createReview({ companyId, content, orderId, star, userId });
 
   return (
     <div className="mt-12 flex h-full w-full justify-center">

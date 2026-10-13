@@ -1,24 +1,19 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
 import { Rate } from "antd";
 import dateFormat from "dateformat";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPenToSquare } from "react-icons/fa6";
 import { IoRestaurant, IoTimeSharp } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import { db } from "../../services/firebase/firebaseClient.js";
+import { getCompanyById } from "../../services/repositories/companyRepository.js";
+import {
+  deleteReview,
+  subscribeReviewsByUserId,
+} from "../../services/repositories/reviewRepository.js";
 import useStarStore from "../../stores/starStore.js";
 import noData from "./noData.png";
 
@@ -26,20 +21,10 @@ function Commented() {
   const navigate = useNavigate();
   const { userId } = useParams();
   const [combineData, setCombineData] = useState([]);
-  const [starArray, setStarArray] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const starq = query(collection(db, "star"), where("userId", "==", userId));
   const setStarId = useStarStore((state) => state.setStarId);
   const setCompanyName = useStarStore((state) => state.setCompanyName);
   const setCompanyId = useStarStore((state) => state.setCompanyId);
-
-  async function getCompanyInfo(companyId) {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
 
   async function getOrderInfo(orderId) {
     const docRef = doc(db, "order", orderId);
@@ -50,75 +35,21 @@ function Commented() {
   }
 
   useEffect(() => {
-    const starSnap = onSnapshot(starq, (result) => {
-      let starList = [];
-      result.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, starId: dataId };
-        starList.push(combine);
+    return subscribeReviewsByUserId(userId, (reviews) => {
+      Promise.all(
+        reviews.map(async (review) => ({
+          ...review,
+          ...(await getCompanyById(review.companyId)),
+          ...(await getOrderInfo(review.orderId)),
+        })),
+      ).then((items) => {
+        setCombineData(items);
+        setIsLoading(false);
       });
-
-      let orderList = [];
-      starList.length === 0
-        ? setIsLoading(false)
-        : starList.forEach((item) => {
-            getCompanyInfo(item.companyId).then((data) => {
-              const newItem = Object.assign(item, data);
-              getOrderInfo(newItem.orderId).then((data) => {
-                const newnewItem = Object.assign(newItem, data);
-                orderList.push(newnewItem);
-                setCombineData([...orderList]);
-                setIsLoading(false);
-              });
-            });
-          });
     });
+  }, [userId]);
 
-    return starSnap;
-  }, []);
-
-  async function getStarArray(companyId) {
-    const starq = query(
-      collection(db, "star"),
-      where("companyId", "==", companyId),
-    );
-
-    let starList = [];
-    await getDocs(starq).then((result) => {
-      result.forEach((doc) => {
-        const result = doc.data();
-        const resultStar = result.star;
-        const resultId = doc.id;
-        const combine = { ...result, starId: resultId };
-        starList.push(resultStar);
-      });
-      setStarArray(starList);
-    });
-  }
-
-  async function UpdateTotalStar(companyId) {
-    await getStarArray(companyId);
-
-    const sumStar = starArray.reduce((a, c) => a + c, 0);
-    let avg;
-    if (sumStar === 0) {
-      avg = 0;
-    } else {
-      avg = sumStar / starArray.length;
-    }
-
-    const companyRef = doc(db, "company", companyId);
-    await updateDoc(companyRef, {
-      totalStar: avg,
-    });
-  }
-
-  async function handleDelete(starId, companyId) {
-    await deleteDoc(doc(db, "star", starId));
-
-    UpdateTotalStar(companyId);
-  }
+  const handleDelete = (starId, companyId) => deleteReview(starId, companyId);
 
   const printDatas =
     combineData.length > 0 ? (

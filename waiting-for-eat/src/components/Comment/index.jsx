@@ -1,69 +1,48 @@
 import { Card, ScrollShadow, User } from "@nextui-org/react";
 import { Rate } from "antd";
 import dateFormat from "dateformat";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { getReviewsByCompanyId } from "../../services/repositories/reviewRepository.js";
+import { getUserById } from "../../services/repositories/userRepository.js";
 import noComment from "./noComment.png";
 
 function Comment() {
   const { companyId } = useParams();
   const [comment, setComment] = useState([]);
   const [show, setShow] = useState(false);
-  const q = query(collection(db, "star"), where("companyId", "==", companyId));
-
-  async function setUserId(userId) {
-    const docRef = doc(db, "user", userId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
   useEffect(() => {
-    getDocs(q)
-      .then((quarySnaps) => {
-        let comments = [];
-        quarySnaps.forEach((doc) => {
-          const result = doc.data();
-          comments.push(result);
-        });
-        return comments;
-      })
-      .then((comments) => {
-        let combineComment = [];
-        comments.forEach((comment) => {
-          setUserId(comment.userId)
-            .then((data) => {
-              const newData = {
-                ...comment,
-                userName: data.userName,
-                picture: data.picture,
-              };
-              combineComment.push(newData);
-            })
-            .then(() => {
-              setComment([...combineComment]);
-            });
-        });
-      });
-  }, []);
+    let isActive = true;
+
+    getReviewsByCompanyId(companyId).then(async (reviews) => {
+      const comments = await Promise.all(
+        reviews.map(async (review) => {
+          const user = await getUserById(review.userId);
+          return {
+            ...review,
+            picture: user?.picture ?? "",
+            userName: user?.userName ?? "",
+          };
+        }),
+      );
+
+      if (isActive) {
+        setComment(comments);
+      }
+    });
+
+    return () => {
+      isActive = false;
+    };
+  }, [companyId]);
 
   const comments = comment
     .sort((a, b) => (a.createTime > b.createTime ? -1 : 1))
-    .map((item, index) => {
+    .map((item) => {
       return (
         <motion.div
-          key={index}
+          key={item.starId}
           whileHover={{
             scale: 1.05,
             transition: { duration: 0.15 },

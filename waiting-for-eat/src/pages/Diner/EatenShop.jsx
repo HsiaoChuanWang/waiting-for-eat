@@ -1,5 +1,4 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
-import { collection, getDocs, query, where } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import {
@@ -13,7 +12,6 @@ import { IoRestaurant } from "react-icons/io5";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
 import { getCompanyById } from "../../services/repositories/companyRepository.js";
 import {
   FAVORITE_STATUS,
@@ -21,6 +19,7 @@ import {
   updateFavoriteStatus,
 } from "../../services/repositories/favoriteRepository.js";
 import { hasPostForOrder } from "../../services/repositories/postRepository.js";
+import { hasReviewForOrder } from "../../services/repositories/reviewRepository.js";
 import useStarStore from "../../stores/starStore.js";
 import noData from "./noData.png";
 
@@ -32,32 +31,6 @@ function EatenShop() {
   const setCompanyName = useStarStore((state) => state.setCompanyName);
   const setCompanyId = useStarStore((state) => state.setCompanyId);
   const setOrderId = useStarStore((state) => state.setOrderId);
-  async function getCommentInfo(orderId) {
-    const commentq = query(
-      collection(db, "star"),
-      where("orderId", "==", orderId),
-    );
-
-    const querySnapshot = await getDocs(commentq);
-    let resultList = [];
-
-    querySnapshot.forEach((doc) => {
-      if (doc.exists()) {
-        const result = false;
-        resultList.push(result);
-      } else {
-        const result = true;
-        resultList.push(result);
-      }
-    });
-
-    if (resultList[0] == undefined) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   useEffect(() => {
     return subscribeEatenFavorites(userId, (items) => {
       Promise.all(
@@ -65,7 +38,7 @@ function EatenShop() {
           return Promise.all([
             getCompanyById(item.companyId),
             hasPostForOrder(item.orderId).then((hasPost) => !hasPost),
-            getCommentInfo(item.orderId),
+            hasReviewForOrder(item.orderId).then((hasReview) => !hasReview),
           ]).then(([companyInfo, postInfo, commentInfo]) => {
             const newItem = {
               ...item,

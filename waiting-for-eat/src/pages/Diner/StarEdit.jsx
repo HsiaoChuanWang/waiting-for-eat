@@ -1,82 +1,31 @@
 import { Button, Card } from "@nextui-org/react";
 import { Rate } from "antd";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { default as React, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { db } from "../../services/firebase/firebaseClient.js";
+import {
+  getReviewById,
+  updateReview,
+} from "../../services/repositories/reviewRepository.js";
 import useStarStore from "../../stores/starStore.js";
 
 function StarEdit() {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const [oldStar, setOldStar] = useState(0);
   const [star, setStar] = useState(0);
   const [content, setContent] = useState("");
-  const [starList, setStarList] = useState([]);
   const starId = useStarStore((state) => state.starId);
   const companyName = useStarStore((state) => state.companyName);
   const companyId = useStarStore((state) => state.companyId);
-  const starq = query(
-    collection(db, "star"),
-    where("companyId", "==", companyId),
-  );
-
-  useEffect(() => {
-    if (companyId) {
-      let starList = [];
-      getDocs(starq).then((result) => {
-        result.forEach((doc) => {
-          const result = doc.data();
-          const resultStar = result.star;
-          const resultId = doc.id;
-          const combine = { ...result, starId: resultId };
-          starList.push(resultStar);
-        });
-        setStarList(starList);
-      });
-    }
-  }, [companyId]);
-
   useEffect(() => {
     if (starId) {
-      const starRef = doc(db, "star", starId);
-      getDoc(starRef).then((result) => {
-        const data = result.data();
-        setOldStar(data.star);
+      getReviewById(starId).then((data) => {
         setStar(data.star);
         setContent(data.content);
       });
     }
   }, [starId]);
 
-  async function UpdateTotalStar() {
-    const newStarList = [...starList, star];
-    const sumStar = newStarList.reduce((a, c) => a + c, 0);
-    const avg = (sumStar - oldStar) / starList.length;
-
-    const companyRef = doc(db, "company", companyId);
-    await updateDoc(companyRef, {
-      totalStar: avg,
-    });
-  }
-
-  async function handleUpdate() {
-    const starRef = doc(db, "star", starId);
-    await updateDoc(starRef, {
-      star: star,
-      content: content,
-    });
-
-    UpdateTotalStar();
-  }
+  const handleUpdate = () => updateReview(starId, companyId, { content, star });
 
   return (
     <div className="mt-12 flex h-full w-full justify-center">

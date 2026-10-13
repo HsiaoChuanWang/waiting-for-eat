@@ -424,7 +424,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
     - 集中食記查詢、新增、修改、刪除與資料轉換。
 - [x] 27. `refactor(editor): share post editor image handling`
     - 整合新增食記、修改食記與活動編輯器的圖片處理邏輯。
-- [ ] 28. `refactor(review): centralize rating and comment operations`
+- [x] 28. `refactor(review): centralize rating and comment operations`
     - 整理新增評分、修改評分、刪除評論與餐廳總評分更新。
 
 ### 第九階段：食客後台
