@@ -1,6 +1,5 @@
 import { Button } from "@nextui-org/react";
 import { Form, Select } from "antd";
-import { collection, getDocs, query, where } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
@@ -10,10 +9,15 @@ import { RESTAURANT_CATEGORIES } from "../../constants/restaurant.js";
 import { SEARCH_FIELDS } from "../../features/search/searchConstants.js";
 import {
   createSearchOptions,
-  createSearchResult,
   withFavoriteStatus,
 } from "../../features/search/searchModel.js";
-import { db } from "../../services/firebase/firebaseClient.js";
+import {
+  findCompaniesByCategory,
+  findCompaniesByCity,
+  findCompaniesByName,
+  getCompanies,
+  getFavoriteStatus,
+} from "../../services/repositories/searchRepository.js";
 import useSearchStore from "../../stores/searchStore.js";
 import useUserStore from "../../stores/userStore.js";
 import Carousel from "./Carousel";
@@ -34,61 +38,23 @@ function HomePage() {
   const [restaurants, setRestaurants] = useState([]);
   const [city, setCity] = useState([]);
   const userId = useUserStore((state) => state.userId);
-  const companyRef = collection(db, "company");
   const navigate = useNavigate();
   const scrollRef = useRef();
 
   useEffect(() => {
-    let companyList = [];
-    getDocs(collection(db, "company")).then((result) => {
-      result.forEach((doc) => {
-        companyList.push(createSearchResult(doc.data(), doc.id));
-      });
+    getCompanies().then((companyList) => {
       setRestaurants(createSearchOptions(companyList, SEARCH_FIELDS.NAME));
       setCity(createSearchOptions(companyList, SEARCH_FIELDS.CITY));
       setIsLoading(false);
     });
   }, []);
 
-  async function getfavorite(companyId) {
-    const favoriteq = query(
-      collection(db, "favorite"),
-      where("companyId", "==", companyId),
-      where("userId", "==", userId),
-    );
-
-    let resultList = [];
-    const querySnapshot = await getDocs(favoriteq);
-    querySnapshot.forEach((doc) => {
-      const result = doc.data();
-      resultList.push(result);
-    });
-
-    if (resultList.length > 0) {
-      const finalResult = resultList[0];
-      const status = finalResult.status;
-      return status;
-    } else {
-      const status = "";
-      return status;
-    }
-  }
-
   async function getRestaurant(searchitem) {
-    const q = query(companyRef, where(SEARCH_FIELDS.NAME, "==", searchitem));
-    const querySnapshot = await getDocs(q);
-
-    let dataList = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const dataId = doc.id;
-      const newData = createSearchResult(data, dataId);
-      dataList.push(newData);
-    });
+    const dataList = await findCompaniesByName(searchitem);
 
     let resultArray = [];
     dataList.forEach((item) => {
-      getfavorite(item.companyId)
+      getFavoriteStatus(item.companyId, userId)
         .then((result) => {
           const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
@@ -110,20 +76,11 @@ function HomePage() {
   }
 
   async function getPlace(searchitem) {
-    const q = query(companyRef, where(SEARCH_FIELDS.CITY, "==", searchitem));
-    const querySnapshot = await getDocs(q);
-
-    let dataList = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const dataId = doc.id;
-      const newData = createSearchResult(data, dataId);
-      dataList.push(newData);
-    });
+    const dataList = await findCompaniesByCity(searchitem);
 
     let resultArray = [];
     dataList.forEach((item) => {
-      getfavorite(item.companyId)
+      getFavoriteStatus(item.companyId, userId)
         .then((result) => {
           const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
@@ -150,20 +107,11 @@ function HomePage() {
   }
 
   async function getCategory(item) {
-    const qq = query(companyRef, where(SEARCH_FIELDS.CATEGORY, "==", item));
-    const querySnapshotC = await getDocs(qq);
-
-    let dataList = [];
-    querySnapshotC.forEach((doc) => {
-      const data = doc.data();
-      const dataId = doc.id;
-      const newData = createSearchResult(data, dataId);
-      dataList.push(newData);
-    });
+    const dataList = await findCompaniesByCategory(item);
 
     let resultArray = [];
     dataList.forEach((item) => {
-      getfavorite(item.companyId)
+      getFavoriteStatus(item.companyId, userId)
         .then((result) => {
           const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
