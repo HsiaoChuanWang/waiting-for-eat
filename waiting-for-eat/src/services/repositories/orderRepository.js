@@ -1,7 +1,9 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   query,
   updateDoc,
@@ -11,6 +13,21 @@ import { db } from "../firebase/firebaseClient.js";
 import { mapQuerySnapshot } from "../firebase/firestoreMappers.js";
 
 const ORDER_COLLECTION = "order";
+
+function createOrder(order) {
+  return addDoc(collection(db, ORDER_COLLECTION), order);
+}
+
+async function getOrdersByCompanyAndDate(companyId, date) {
+  const orderQuery = query(
+    collection(db, ORDER_COLLECTION),
+    where("companyId", "==", companyId),
+    where("date", "==", date),
+  );
+  const snapshot = await getDocs(orderQuery);
+
+  return mapQuerySnapshot(snapshot, "orderId");
+}
 
 function subscribeOrdersByCompanyId(companyId, onChange) {
   const orderQuery = query(
@@ -40,7 +57,9 @@ function deleteOrder(orderId) {
 }
 
 export {
+  createOrder,
   deleteOrder,
+  getOrdersByCompanyAndDate,
   markOrderAttended,
   subscribeOrdersByCompanyId,
   updateOrderSchedule,

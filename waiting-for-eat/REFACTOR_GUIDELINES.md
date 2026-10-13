@@ -445,7 +445,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第十一階段：訂位
 
-- [ ] 34. `refactor(reservation): separate reservation data and UI flow`
+- [x] 34. `refactor(reservation): separate reservation data and UI flow`
     - 拆分餐廳資料、營業時間、桌位、訂單檢查與送出流程。
 
 ### 第十二階段：全專案整理與驗證
