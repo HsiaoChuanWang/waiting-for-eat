@@ -362,7 +362,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
    - 整理 Firebase Auth、Firestore 與 Storage 的初始化及 exports。
 - [x] 5. `refactor(data): add Firestore document mappers`
    - 統一 Firestore document ID 與資料轉換方式。
-- [ ] 6. `refactor(data): extract user and company repositories`
+- [x] 6. `refactor(data): extract user and company repositories`
    - 抽離 user 與 company collections 的讀寫操作。
 - [ ] 7. `refactor(storage): centralize image upload operations`
    - 建立共用圖片上傳介面；此 commit 只集中現有行為，不自行更換儲存供應商。

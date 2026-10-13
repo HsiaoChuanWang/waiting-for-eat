@@ -1,11 +1,13 @@
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { db } from "../services/firebase/firebaseClient.js";
 import {
-  getCompanyInfoFromFirestore,
-  getUserInfoFromFirestore,
-} from "../utils/fireStore";
+  createCompany,
+  getCompanyById,
+} from "../services/repositories/companyRepository.js";
+import {
+  getUserById,
+  saveUser,
+} from "../services/repositories/userRepository.js";
 
 const useUserStore = create(
   immer((set, get) => ({
@@ -82,14 +84,12 @@ const useUserStore = create(
     sendUserInfoToFirestore: () => {
       const detailInfo = get().detailInfo;
       const userId = get().userId;
-      async function sendfirestore(data) {
-        await setDoc(doc(db, "user", userId), data);
-      }
-      sendfirestore(detailInfo);
+
+      saveUser(userId, detailInfo);
     },
 
     getUserInfoFromFirestoreAndSave: (userId) => {
-      return getUserInfoFromFirestore(userId).then((userInfo) => {
+      return getUserById(userId).then((userInfo) => {
         set((state) => {
           state.detailInfo = userInfo;
         });
@@ -107,19 +107,18 @@ const useUserStore = create(
       const companyInfo = get().companyInfo;
       const sendUserInfoToFirestore = get().sendUserInfoToFirestore;
 
-      async function sendfirestore(data) {
-        const docRef = await addDoc(collection(db, "company"), data);
-        const companyId = docRef.id;
+      async function sendToFirestore(data) {
+        const companyId = await createCompany(data);
         set((state) => {
           state.detailInfo.companyId = companyId;
         });
         sendUserInfoToFirestore();
       }
-      sendfirestore(companyInfo);
+      sendToFirestore(companyInfo);
     },
 
     getCompanyInfoFromFirestoreAndSave: (companyId) => {
-      getCompanyInfoFromFirestore(companyId).then((companyInfo) => {
+      getCompanyById(companyId).then((companyInfo) => {
         set((state) => {
           state.companyInfo = companyInfo;
         });
