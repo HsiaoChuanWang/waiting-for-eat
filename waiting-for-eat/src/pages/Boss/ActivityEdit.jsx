@@ -1,73 +1,30 @@
 import { Button } from "@nextui-org/react";
 import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import htmlToDraft from "html-to-draftjs";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
+import { renderEditorMediaBlock } from "../../features/editor/editorImageRenderer.js";
+import useEditorImageUpload from "../../features/editor/useEditorImageUpload.js";
 import { db } from "../../services/firebase/firebaseClient.js";
-import { uploadImage } from "../../services/storage/imageStorage.js";
-
-function myBlockRenderer(contentBlock) {
-  const type = contentBlock.getType();
-
-  if (type === "atomic") {
-    return {
-      component: Media,
-      editable: false,
-      props: {
-        foo: "bar",
-      },
-    };
-  }
-}
-
-function Media(props) {
-  const { block, contentState } = props;
-  const data = contentState.getEntity(block.getEntityAt(0)).getData();
-  const emptyHtml = " ";
-  return (
-    <div>
-      {emptyHtml}
-      <img
-        src={data.src}
-        alt={data.alt || ""}
-        style={{
-          height: data.height || "auto",
-          width: data.width || "auto",
-        }}
-      />
-    </div>
-  );
-}
 
 function ActivityEdit() {
   const navigate = useNavigate();
   const { companyId } = useParams();
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [isPhoneSize, setIsPhoneSize] = useState(false);
-  const [companyData, setCompanyData] = useState([]);
-  const uuid = uuidv4();
+  const { toolbar } = useEditorImageUpload();
 
   function onEditorStateChange(e) {
     setEditorState(e);
   }
 
-  async function getCompanyInfo(companyId) {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
   useEffect(() => {
     const companySnap = onSnapshot(doc(db, "company", companyId), (doc) => {
       const data = doc.data();
-      setCompanyData(data);
       const blocksFromHtml = htmlToDraft(data.description);
       const { contentBlocks, entityMap } = blocksFromHtml;
       const contentState = ContentState.createFromBlockArray(
@@ -79,7 +36,7 @@ function ActivityEdit() {
     });
 
     return companySnap;
-  }, []);
+  }, [companyId]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -97,17 +54,7 @@ function ActivityEdit() {
     };
   }, []);
 
-  async function uploadPicture(picture) {
-    const downloadURL = await uploadImage(uuid, picture);
-    return { data: { link: downloadURL } };
-  }
-
-  function _uploadImageCallBack(file) {
-    const pictureURL = uploadPicture(file);
-    return pictureURL;
-  }
-
-  async function handleSend(postId) {
+  async function handleSend() {
     const uploadHtml = draftToHtml(
       convertToRaw(editorState.getCurrentContent()),
     );
@@ -143,49 +90,8 @@ function ActivityEdit() {
           wrapperClassName="wrapperClassName"
           editorClassName="editorClassName"
           onEditorStateChange={onEditorStateChange}
-          customBlockRenderFunc={myBlockRenderer}
-          toolbar={{
-            options: [
-              "inline",
-              "blockType",
-              "fontSize",
-              "textAlign",
-              "history",
-              "colorPicker",
-              "emoji",
-              "image",
-              "remove",
-            ],
-            inline: {
-              options: ["bold", "italic", "underline", "strikethrough"],
-              bold: { className: "demo-option-custom" },
-              italic: { className: "demo-option-custom" },
-              underline: { className: "demo-option-custom" },
-              strikethrough: { className: "demo-option-custom" },
-              monospace: { className: "demo-option-custom" },
-              superscript: { className: "demo-option-custom" },
-              subscript: { className: "demo-option-custom" },
-            },
-            blockType: {
-              options: ["Normal", "H1", "H2", "H3", "H4", "H5", "H6"],
-              className: "demo-option-custom-wide",
-              dropdownClassName: "demo-dropdown-custom",
-            },
-            fontSize: { className: "demo-option-custom-medium" },
-            image: {
-              urlEnabled: true,
-              uploadEnabled: true,
-              alignmentEnabled: false,
-              uploadCallback: _uploadImageCallBack,
-              previewImage: true,
-              inputAccept: "image/gif,image/jpeg,image/jpg,image/png,image/svg",
-              alt: { present: false, mandatory: false, previewImage: true },
-              defaultSize: {
-                height: "auto",
-                width: "200px",
-              },
-            },
-          }}
+          customBlockRenderFunc={renderEditorMediaBlock}
+          toolbar={toolbar}
         />
       </div>
 
