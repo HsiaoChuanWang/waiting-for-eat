@@ -2,13 +2,7 @@ import { Button, ScrollShadow } from "@nextui-org/react";
 import { useLoadScript } from "@react-google-maps/api";
 import { Form, Rate, Select } from "antd";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IconContext } from "react-icons";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -25,13 +19,22 @@ import {
 import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading";
 import NoItem from "../../components/NoItem";
+import { RESTAURANT_CATEGORY_OPTIONS } from "../../constants/restaurant.js";
+import {
+  DEFAULT_MAP_CENTER,
+  GOOGLE_MAP_LIBRARIES,
+  SEARCH_FIELDS,
+} from "../../features/search/searchConstants.js";
+import {
+  createSearchOptions,
+  createSearchResult,
+  withFavoriteStatus,
+} from "../../features/search/searchModel.js";
 import { db } from "../../services/firebase/firebaseClient.js";
 import useSearchStore from "../../stores/searchStore.js";
 import useUserStore from "../../stores/userStore.js";
 import MyGoogleMaps from "./MyGoogleMaps";
 import tasty from "./tasty.jpg";
-
-const libraries = ["places"];
 
 function Search() {
   const userId = useUserStore((state) => state.userId);
@@ -65,7 +68,7 @@ function Search() {
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
-    libraries,
+    libraries: GOOGLE_MAP_LIBRARIES,
   });
 
   const mapRef = useRef();
@@ -73,19 +76,11 @@ function Search() {
     mapRef.current = map;
   }, []);
 
-  const defaultCenter = useMemo(
-    () => ({
-      lat: 25.0492576,
-      lng: 121.5171959,
-    }),
-    [],
-  );
-
   const [searchName, setSearchName] = useState("");
   const [searchPlace, setSearchPlace] = useState("");
   const [searchCategory, setSearchCategory] = useState("");
   const [map, setMap] = useState(null);
-  const [currentPosition, setCurrentPosition] = useState(defaultCenter);
+  const [currentPosition, setCurrentPosition] = useState(DEFAULT_MAP_CENTER);
   const [restaurants, setRestaurants] = useState([]);
   const [city, setCity] = useState([]);
   const [isShowSearchbar, setIsShowSearchbar] = useState(true);
@@ -96,34 +91,22 @@ function Search() {
     let companyList = [];
     getDocs(collection(db, "company")).then((result) => {
       result.forEach((doc) => {
-        const result = doc.data();
-        const resultId = doc.id;
-        const combine = { ...result, companyId: resultId };
-        companyList.push(combine);
+        companyList.push(createSearchResult(doc.data(), doc.id));
       });
-      const shopList = [];
-      const cityList = [];
-      companyList.forEach((shop) => {
-        shopList.push({ label: shop.name, value: shop.name });
-        cityList.push({ label: shop.city, value: shop.city });
-      });
-      setRestaurants(shopList);
-      const newCityList = Array.from(
-        new Set(cityList.map((item) => JSON.stringify(item))),
-      ).map((item) => JSON.parse(item));
-      setCity(newCityList);
+      setRestaurants(createSearchOptions(companyList, SEARCH_FIELDS.NAME));
+      setCity(createSearchOptions(companyList, SEARCH_FIELDS.CITY));
     });
   }, []);
 
   async function getRestaurant(searchitem) {
-    const q = query(companyRef, where("name", "==", searchitem));
+    const q = query(companyRef, where(SEARCH_FIELDS.NAME, "==", searchitem));
     const querySnapshot = await getDocs(q);
 
     let dataList = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       const dataId = doc.id;
-      const newData = { ...data, companyId: dataId };
+      const newData = createSearchResult(data, dataId);
 
       dataList.push(newData);
 
@@ -137,7 +120,7 @@ function Search() {
     dataList.forEach((item) => {
       getfavorite(item.companyId)
         .then((result) => {
-          const newData = { ...item, status: result };
+          const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
           return resultArray;
         })
@@ -156,15 +139,14 @@ function Search() {
   }
 
   async function getPlace(searchitem) {
-    const q = query(companyRef, where("city", "==", searchitem));
+    const q = query(companyRef, where(SEARCH_FIELDS.CITY, "==", searchitem));
     const querySnapshot = await getDocs(q);
 
     let dataList = [];
-    let isCenter = true;
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       const dataId = doc.id;
-      const newData = { ...data, companyId: dataId };
+      const newData = createSearchResult(data, dataId);
       dataList.push(newData);
     });
 
@@ -172,7 +154,7 @@ function Search() {
     dataList.forEach((item) => {
       getfavorite(item.companyId)
         .then((result) => {
-          const newData = { ...item, status: result };
+          const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
           return resultArray;
         })
@@ -201,14 +183,14 @@ function Search() {
   }
 
   async function getCategory(item) {
-    const qq = query(companyRef, where("category", "==", item));
+    const qq = query(companyRef, where(SEARCH_FIELDS.CATEGORY, "==", item));
     const querySnapshotC = await getDocs(qq);
 
     let dataList = [];
     querySnapshotC.forEach((doc) => {
       const data = doc.data();
       const dataId = doc.id;
-      const newData = { ...data, companyId: dataId, status: status };
+      const newData = createSearchResult(data, dataId);
       dataList.push(newData);
     });
 
@@ -216,7 +198,7 @@ function Search() {
     dataList.forEach((item) => {
       getfavorite(item.companyId)
         .then((result) => {
-          const newData = { ...item, status: result };
+          const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
           return resultArray;
         })
@@ -409,32 +391,7 @@ function Search() {
                 filterOption={(input, option) =>
                   (option?.label ?? "").includes(input)
                 }
-                options={[
-                  {
-                    value: "0",
-                    label: "火鍋",
-                  },
-                  {
-                    value: "1",
-                    label: "燒烤",
-                  },
-                  {
-                    value: "2",
-                    label: "牛排",
-                  },
-                  {
-                    value: "3",
-                    label: "甜點",
-                  },
-                  {
-                    value: "4",
-                    label: "小吃",
-                  },
-                  {
-                    value: "5",
-                    label: "早餐",
-                  },
-                ]}
+                options={RESTAURANT_CATEGORY_OPTIONS}
               />
             </Form.Item>
             <Button

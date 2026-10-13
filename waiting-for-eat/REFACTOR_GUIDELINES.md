@@ -391,7 +391,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第五階段：搜尋
 
-- [ ] 16. `refactor(search): define search constants and data model`
+- [x] 16. `refactor(search): define search constants and data model`
     - 集中分類選項、預設地圖位置與搜尋資料格式。
 - [ ] 17. `refactor(search): extract Firestore search repository`
     - 抽離依名稱、地區與類別執行的 Firestore 查詢。

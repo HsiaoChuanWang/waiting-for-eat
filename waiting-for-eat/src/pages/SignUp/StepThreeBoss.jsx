@@ -2,7 +2,7 @@ import { ScrollShadow } from "@nextui-org/react";
 import { Form, Input, Radio, Select } from "antd";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
-import { COMPANY_CATEGORY_OPTIONS } from "./signupConstants.js";
+import { RESTAURANT_CATEGORY_OPTIONS } from "../../constants/restaurant.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
 import useBossRegistration from "./useBossRegistration.js";
 
@@ -185,7 +185,7 @@ function StepThreeBoss() {
                   filterOption={(input, option) =>
                     (option?.label ?? "").includes(input)
                   }
-                  options={COMPANY_CATEGORY_OPTIONS}
+                  options={RESTAURANT_CATEGORY_OPTIONS}
                 />
               </div>
             </Form>

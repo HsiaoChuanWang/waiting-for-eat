@@ -6,6 +6,13 @@ import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
+import { RESTAURANT_CATEGORIES } from "../../constants/restaurant.js";
+import { SEARCH_FIELDS } from "../../features/search/searchConstants.js";
+import {
+  createSearchOptions,
+  createSearchResult,
+  withFavoriteStatus,
+} from "../../features/search/searchModel.js";
 import { db } from "../../services/firebase/firebaseClient.js";
 import useSearchStore from "../../stores/searchStore.js";
 import useUserStore from "../../stores/userStore.js";
@@ -35,22 +42,10 @@ function HomePage() {
     let companyList = [];
     getDocs(collection(db, "company")).then((result) => {
       result.forEach((doc) => {
-        const result = doc.data();
-        const resultId = doc.id;
-        const combine = { ...result, companyId: resultId };
-        companyList.push(combine);
+        companyList.push(createSearchResult(doc.data(), doc.id));
       });
-      const shopList = [];
-      const cityList = [];
-      companyList.forEach((shop) => {
-        shopList.push({ label: shop.name, value: shop.name });
-        cityList.push({ label: shop.city, value: shop.city });
-      });
-      setRestaurants(shopList);
-      const newCityList = Array.from(
-        new Set(cityList.map((item) => JSON.stringify(item))),
-      ).map((item) => JSON.parse(item));
-      setCity(newCityList);
+      setRestaurants(createSearchOptions(companyList, SEARCH_FIELDS.NAME));
+      setCity(createSearchOptions(companyList, SEARCH_FIELDS.CITY));
       setIsLoading(false);
     });
   }, []);
@@ -80,14 +75,14 @@ function HomePage() {
   }
 
   async function getRestaurant(searchitem) {
-    const q = query(companyRef, where("name", "==", searchitem));
+    const q = query(companyRef, where(SEARCH_FIELDS.NAME, "==", searchitem));
     const querySnapshot = await getDocs(q);
 
     let dataList = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       const dataId = doc.id;
-      const newData = { ...data, companyId: dataId };
+      const newData = createSearchResult(data, dataId);
       dataList.push(newData);
     });
 
@@ -95,7 +90,7 @@ function HomePage() {
     dataList.forEach((item) => {
       getfavorite(item.companyId)
         .then((result) => {
-          const newData = { ...item, status: result };
+          const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
           return resultArray;
         })
@@ -115,14 +110,14 @@ function HomePage() {
   }
 
   async function getPlace(searchitem) {
-    const q = query(companyRef, where("city", "==", searchitem));
+    const q = query(companyRef, where(SEARCH_FIELDS.CITY, "==", searchitem));
     const querySnapshot = await getDocs(q);
 
     let dataList = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       const dataId = doc.id;
-      const newData = { ...data, companyId: dataId };
+      const newData = createSearchResult(data, dataId);
       dataList.push(newData);
     });
 
@@ -130,7 +125,7 @@ function HomePage() {
     dataList.forEach((item) => {
       getfavorite(item.companyId)
         .then((result) => {
-          const newData = { ...item, status: result };
+          const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
           return resultArray;
         })
@@ -155,14 +150,14 @@ function HomePage() {
   }
 
   async function getCategory(item) {
-    const qq = query(companyRef, where("category", "==", item));
+    const qq = query(companyRef, where(SEARCH_FIELDS.CATEGORY, "==", item));
     const querySnapshotC = await getDocs(qq);
 
     let dataList = [];
     querySnapshotC.forEach((doc) => {
       const data = doc.data();
       const dataId = doc.id;
-      const newData = { ...data, companyId: dataId };
+      const newData = createSearchResult(data, dataId);
       dataList.push(newData);
     });
 
@@ -170,7 +165,7 @@ function HomePage() {
     dataList.forEach((item) => {
       getfavorite(item.companyId)
         .then((result) => {
-          const newData = { ...item, status: result };
+          const newData = withFavoriteStatus(item, result);
           resultArray.push(newData);
           return resultArray;
         })
@@ -368,7 +363,7 @@ function HomePage() {
       <div className="flex justify-center">
         <div className="mb-8 flex w-[1440px] max-w-[1440px] flex-wrap justify-center tablet:w-[768px] laptop:w-[1024px]">
           <div
-            onClick={() => handleCategory("0")}
+            onClick={() => handleCategory(RESTAURANT_CATEGORIES.HOT_POT)}
             className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
           >
             <img
@@ -383,7 +378,7 @@ function HomePage() {
           </div>
 
           <div
-            onClick={() => handleCategory("1")}
+            onClick={() => handleCategory(RESTAURANT_CATEGORIES.BARBECUE)}
             className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
           >
             <img
@@ -398,7 +393,7 @@ function HomePage() {
           </div>
 
           <div
-            onClick={() => handleCategory("2")}
+            onClick={() => handleCategory(RESTAURANT_CATEGORIES.STEAK)}
             className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
           >
             <img
@@ -413,7 +408,7 @@ function HomePage() {
           </div>
 
           <div
-            onClick={() => handleCategory("3")}
+            onClick={() => handleCategory(RESTAURANT_CATEGORIES.DESSERT)}
             className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
           >
             <img
@@ -428,7 +423,7 @@ function HomePage() {
           </div>
 
           <div
-            onClick={() => handleCategory("4")}
+            onClick={() => handleCategory(RESTAURANT_CATEGORIES.STREET_FOOD)}
             className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
           >
             <img
@@ -443,7 +438,7 @@ function HomePage() {
           </div>
 
           <div
-            onClick={() => handleCategory("5")}
+            onClick={() => handleCategory(RESTAURANT_CATEGORIES.BREAKFAST)}
             className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
           >
             <img

@@ -12,15 +12,6 @@ const USER_ROLES = {
   BOSS: "boss",
 };
 
-const COMPANY_CATEGORY_OPTIONS = [
-  { value: "0", label: "火鍋" },
-  { value: "1", label: "燒烤" },
-  { value: "2", label: "牛排" },
-  { value: "3", label: "甜點" },
-  { value: "4", label: "小吃" },
-  { value: "5", label: "早餐" },
-];
-
 const INITIAL_USER_FORM = {
   userName: "",
   address: "",
@@ -41,10 +32,4 @@ const INITIAL_COMPANY_FORM = {
   totalStar: 0,
 };
 
-export {
-  COMPANY_CATEGORY_OPTIONS,
-  INITIAL_COMPANY_FORM,
-  INITIAL_USER_FORM,
-  SIGNUP_STEPS,
-  USER_ROLES,
-};
+export { INITIAL_COMPANY_FORM, INITIAL_USER_FORM, SIGNUP_STEPS, USER_ROLES };
