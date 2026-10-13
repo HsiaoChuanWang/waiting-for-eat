@@ -20,6 +20,7 @@ import {
   subscribeEatenFavorites,
   updateFavoriteStatus,
 } from "../../services/repositories/favoriteRepository.js";
+import { hasPostForOrder } from "../../services/repositories/postRepository.js";
 import useStarStore from "../../stores/starStore.js";
 import noData from "./noData.png";
 
@@ -31,32 +32,6 @@ function EatenShop() {
   const setCompanyName = useStarStore((state) => state.setCompanyName);
   const setCompanyId = useStarStore((state) => state.setCompanyId);
   const setOrderId = useStarStore((state) => state.setOrderId);
-  async function getPostInfo(orderId) {
-    const postq = query(
-      collection(db, "post"),
-      where("orderId", "==", orderId),
-    );
-
-    const querySnapshot = await getDocs(postq);
-    let resultList = [];
-
-    querySnapshot.forEach((doc) => {
-      if (doc.exists()) {
-        const result = false;
-        resultList.push(result);
-      } else {
-        const result = true;
-        resultList.push(result);
-      }
-    });
-
-    if (resultList[0] == undefined) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   async function getCommentInfo(orderId) {
     const commentq = query(
       collection(db, "star"),
@@ -89,7 +64,7 @@ function EatenShop() {
         items.map((item) => {
           return Promise.all([
             getCompanyById(item.companyId),
-            getPostInfo(item.orderId),
+            hasPostForOrder(item.orderId).then((hasPost) => !hasPost),
             getCommentInfo(item.orderId),
           ]).then(([companyInfo, postInfo, commentInfo]) => {
             const newItem = {

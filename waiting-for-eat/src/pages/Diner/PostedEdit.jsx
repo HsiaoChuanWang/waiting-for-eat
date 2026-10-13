@@ -1,21 +1,19 @@
+/* eslint-disable react/prop-types */
 import { Button } from "@nextui-org/react";
 import { Form, Input } from "antd";
 import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import {
-  doc,
-  getDoc,
-  onSnapshot,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
 import htmlToDraft from "html-to-draftjs";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { getCompanyById } from "../../services/repositories/companyRepository.js";
+import {
+  subscribePostById,
+  updatePost,
+} from "../../services/repositories/postRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
 
 function myBlockRenderer(contentBlock) {
@@ -64,20 +62,12 @@ function PostedEdit() {
     setEditorState(e);
   }
 
-  async function getCompanyInfo(companyId) {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
   useEffect(() => {
-    let postData;
-    const postSnap = onSnapshot(doc(db, "post", postId), (doc) => {
-      postData = doc.data();
-      getCompanyInfo(postData.companyId).then((result) => {
-        const data = Object.assign(postData, result);
+    return subscribePostById(postId, (postData) => {
+      if (!postData) return;
+
+      getCompanyById(postData.companyId).then((result) => {
+        const data = { ...postData, ...result };
         setPost(data);
         const blocksFromHtml = htmlToDraft(data.content);
         const { contentBlocks, entityMap } = blocksFromHtml;
@@ -90,9 +80,7 @@ function PostedEdit() {
         setTitle(data.title);
       });
     });
-
-    return postSnap;
-  }, []);
+  }, [postId]);
 
   async function uploadPicture(picture) {
     const downloadURL = await uploadImage(uuid, picture);
@@ -114,18 +102,11 @@ function PostedEdit() {
       convertToRaw(editorState.getCurrentContent()),
     );
 
-    const postRef = doc(db, "post", postId);
-    await updateDoc(postRef, {
-      title: title,
+    await updatePost(postId, {
       content: uploadHtml,
-      createTime: serverTimestamp(),
+      ...(mainPicture !== "" && { mainPicture }),
+      title,
     });
-
-    if (mainPicture !== "") {
-      await updateDoc(postRef, {
-        mainPicture: mainPicture,
-      });
-    }
   }
 
   const editorStyle = {

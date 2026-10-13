@@ -1,20 +1,11 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebase/firebaseClient.js";
-import { mapQuerySnapshot } from "../firebase/firestoreMappers.js";
 import { getCompanyById } from "./companyRepository.js";
+import { getPostsByCompanyId } from "./postRepository.js";
 import { getUserById } from "./userRepository.js";
-
-const POST_COLLECTION = "post";
 
 const getRestaurantById = (companyId) => getCompanyById(companyId);
 
 async function getRestaurantPosts(companyId) {
-  const postQuery = query(
-    collection(db, POST_COLLECTION),
-    where("companyId", "==", companyId),
-  );
-  const snapshot = await getDocs(postQuery);
-  const posts = mapQuerySnapshot(snapshot, "postId");
+  const posts = await getPostsByCompanyId(companyId);
 
   return Promise.all(
     posts.map(async (post) => {

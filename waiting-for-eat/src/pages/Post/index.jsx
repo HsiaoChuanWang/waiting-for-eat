@@ -1,21 +1,18 @@
 import { Button, Card, Image, ScrollShadow, User } from "@nextui-org/react";
 import dateFormat from "dateformat";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
 import { motion } from "framer-motion";
-import { default as React, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MdFastfood } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
 import NoItem from "../../components/NoItem/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { getCompanyById } from "../../services/repositories/companyRepository.js";
+import {
+  getPostById,
+  getPostsByCompanyId,
+} from "../../services/repositories/postRepository.js";
+import { getUserById } from "../../services/repositories/userRepository.js";
 import useUserStore from "../../stores/userStore.js";
 
 function Post() {
@@ -29,92 +26,45 @@ function Post() {
   const [isShowPosts, setIsShowPosts] = useState(true);
   const userId = useUserStore((state) => state.userId);
 
-  async function getHtml() {
-    const postRef = doc(db, "post", postId);
-    const docSnap = await getDoc(postRef);
-
-    const resultPost = docSnap.data();
-    setPost(resultPost);
-    return resultPost;
-  }
-
-  async function getCompanyData(companyId) {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
-
-    const data = docSnap.data();
-    const resultData = { ...data, companyId: companyId };
-    setCompanyData(resultData);
-  }
-
-  async function getPosterInfo(userId) {
-    const docRef = doc(db, "user", userId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
   useEffect(() => {
-    getHtml().then((postData) => {
-      getCompanyData(postData.companyId);
+    let isActive = true;
 
-      const postq = query(
-        collection(db, "post"),
-        where("companyId", "==", postData.companyId),
+    getPostById(postId).then(async (postData) => {
+      if (!postData) return;
+
+      const [company, companyPosts, author] = await Promise.all([
+        getCompanyById(postData.companyId),
+        getPostsByCompanyId(postData.companyId),
+        getUserById(postData.userId),
+      ]);
+      const relatedPosts = await Promise.all(
+        companyPosts
+          .filter((item) => item.postId !== postId)
+          .map(async (item) => {
+            const itemAuthor = await getUserById(item.userId);
+            return {
+              ...item,
+              picture: itemAuthor?.picture ?? "",
+              userName: itemAuthor?.userName ?? "",
+            };
+          }),
       );
 
-      getDocs(postq)
-        .then((quarySnaps) => {
-          let posts = [];
-          quarySnaps.forEach((doc) => {
-            const result = doc.data();
-            const resultId = doc.id;
-            const combineResult = { ...result, postId: resultId };
-            posts.push(combineResult);
-          });
-          return posts;
-        })
-        .then((posts) => {
-          let combinePosts = [];
-          let mainPost = [];
-          posts.forEach((post) => {
-            if (post.postId != postId) {
-              getPosterInfo(post.userId)
-                .then((data) => {
-                  const newData = {
-                    ...post,
-                    userName: data.userName,
-                    picture: data.picture,
-                  };
-                  combinePosts.push(newData);
-                })
-                .then(() => {
-                  setPostList([...combinePosts]);
-                });
-            } else {
-              getPosterInfo(post.userId)
-                .then((data) => {
-                  const newData = {
-                    ...post,
-                    userName: data.userName,
-                    picture: data.picture,
-                  };
-                  mainPost.push(newData);
-                })
-                .then(() => {
-                  const result = mainPost[0];
-                  const time = dateFormat(
-                    result.createTime.toDate(),
-                    "yyyy/mm/dd HH:MM",
-                  );
-                  setMainTime(time);
-                  setMainPoster(result);
-                });
-            }
-          });
-        });
+      if (!isActive) return;
+      setPost(postData);
+      setCompanyData({ ...company, companyId: postData.companyId });
+      setPostList(relatedPosts);
+      setMainPoster({
+        ...postData,
+        picture: author?.picture ?? "",
+        userName: author?.userName ?? "",
+      });
+      setMainTime(dateFormat(postData.createTime.toDate(), "yyyy/mm/dd HH:MM"));
     });
+
+    return () => {
+      isActive = false;
+    };
   }, [postId]);
 
   const posts = postList

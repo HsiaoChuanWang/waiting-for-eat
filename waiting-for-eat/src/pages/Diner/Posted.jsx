@@ -1,21 +1,18 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
 import dateFormat from "dateformat";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPenToSquare } from "react-icons/fa6";
 import { IoRestaurant, IoTimeSharp } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import { db } from "../../services/firebase/firebaseClient.js";
+import { getCompanyById } from "../../services/repositories/companyRepository.js";
+import {
+  deletePost,
+  subscribePostsByUserId,
+} from "../../services/repositories/postRepository.js";
 import noData from "./noData.png";
 
 function Posted() {
@@ -23,16 +20,6 @@ function Posted() {
   const { userId } = useParams();
   const [combineData, setCombineData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const postq = query(collection(db, "post"), where("userId", "==", userId));
-
-  async function getCompanyInfo(companyId) {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
   async function getOrderInfo(orderId) {
     const docRef = doc(db, "order", orderId);
     const docSnap = await getDoc(docRef);
@@ -42,36 +29,21 @@ function Posted() {
   }
 
   useEffect(() => {
-    const postSnap = onSnapshot(postq, (result) => {
-      let postList = [];
-      result.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, postId: dataId };
-        postList.push(combine);
+    return subscribePostsByUserId(userId, (posts) => {
+      Promise.all(
+        posts.map(async (post) => ({
+          ...post,
+          ...(await getCompanyById(post.companyId)),
+          ...(await getOrderInfo(post.orderId)),
+        })),
+      ).then((items) => {
+        setCombineData(items);
+        setIsLoading(false);
       });
-
-      let orderList = [];
-      postList.length === 0
-        ? setIsLoading(false)
-        : postList.forEach((item) => {
-            getCompanyInfo(item.companyId).then((data) => {
-              const newItem = Object.assign(item, data);
-              getOrderInfo(newItem.orderId).then((data) => {
-                const newnewItem = Object.assign(newItem, data);
-                orderList.push(newnewItem);
-                setCombineData([...orderList]);
-                setIsLoading(false);
-              });
-            });
-          });
     });
-    return postSnap;
-  }, []);
+  }, [userId]);
 
-  async function handleDelete(postId) {
-    await deleteDoc(doc(db, "post", postId));
-  }
+  const handleDelete = (postId) => deletePost(postId);
 
   const printDatas =
     combineData.length > 0 ? (

@@ -1,20 +1,16 @@
+/* eslint-disable react/prop-types */
 import { Button } from "@nextui-org/react";
 import { Form, Input } from "antd";
 import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-} from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../../services/firebase/firebaseClient.js";
+import { createPost } from "../../services/repositories/postRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
 
 function myBlockRenderer(contentBlock) {
@@ -65,7 +61,7 @@ function TextEditor() {
       const data = result.data();
       setOrderData(data);
     });
-  }, []);
+  }, [orderId]);
 
   function onEditorStateChange(e) {
     setEditorState(e);
@@ -91,14 +87,13 @@ function TextEditor() {
       convertToRaw(editorState.getCurrentContent()),
     );
 
-    await addDoc(collection(db, "post"), {
-      title: title,
-      mainPicture: mainPicture,
-      content: uploadHtml,
-      createTime: serverTimestamp(),
-      orderId: orderId,
-      userId: orderData.userId,
+    await createPost({
       companyId: orderData.companyId,
+      content: uploadHtml,
+      mainPicture,
+      orderId: orderId,
+      title,
+      userId: orderData.userId,
     });
   }
 
