@@ -2,11 +2,11 @@ import { UploadOutlined } from "@ant-design/icons";
 import { Card, ScrollShadow } from "@nextui-org/react";
 import { Button, Upload } from "antd";
 import { doc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { default as React, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { db, storage } from "../../services/firebase/firebaseClient.js";
+import { db } from "../../services/firebase/firebaseClient.js";
+import { uploadImage } from "../../services/storage/imageStorage.js";
 import useUserStore from "../../stores/userStore.js";
 
 function PhotoUpload() {
@@ -33,10 +33,7 @@ function PhotoUpload() {
 
   async function getUrl(picture) {
     const uuid = uuidv4();
-    const storageRef = ref(storage, uuid);
-    await uploadBytes(storageRef, picture);
-    const downloadURL = await getDownloadURL(storageRef);
-    return downloadURL;
+    return uploadImage(uuid, picture);
   }
 
   async function uploadMain(url) {

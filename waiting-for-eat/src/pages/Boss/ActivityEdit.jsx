@@ -2,14 +2,14 @@ import { Button } from "@nextui-org/react";
 import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import htmlToDraft from "html-to-draftjs";
 import React, { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { db, storage } from "../../services/firebase/firebaseClient.js";
+import { db } from "../../services/firebase/firebaseClient.js";
+import { uploadImage } from "../../services/storage/imageStorage.js";
 
 function myBlockRenderer(contentBlock) {
   const type = contentBlock.getType();
@@ -98,9 +98,7 @@ function ActivityEdit() {
   }, []);
 
   async function uploadPicture(picture) {
-    const storageRef = ref(storage, uuid);
-    await uploadBytes(storageRef, picture);
-    const downloadURL = await getDownloadURL(storageRef);
+    const downloadURL = await uploadImage(uuid, picture);
     return { data: { link: downloadURL } };
   }
 

@@ -1,10 +1,9 @@
 import { Form, Input, Radio } from "antd";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
-import { storage } from "../../services/firebase/firebaseClient.js";
+import { uploadImage } from "../../services/storage/imageStorage.js";
 import useUserStore from "../../stores/userStore.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
 
@@ -28,9 +27,7 @@ function StepThreeDiner({ setActive }) {
   });
 
   async function handlePicture(picture) {
-    const storageRef = ref(storage, userId);
-    await uploadBytes(storageRef, picture);
-    const downloadURL = await getDownloadURL(storageRef);
+    const downloadURL = await uploadImage(userId, picture);
     setDetail({ ...detail, picture: downloadURL });
   }
 

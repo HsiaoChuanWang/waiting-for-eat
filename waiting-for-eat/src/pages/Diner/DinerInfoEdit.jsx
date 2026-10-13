@@ -1,10 +1,10 @@
 import { Card } from "@nextui-org/react";
 import { Button, Form, Input, Radio } from "antd";
 import { doc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { db, storage } from "../../services/firebase/firebaseClient.js";
+import { db } from "../../services/firebase/firebaseClient.js";
+import { uploadImage } from "../../services/storage/imageStorage.js";
 import useUserStore from "../../stores/userStore.js";
 
 function DinerInfoEdit() {
@@ -18,9 +18,7 @@ function DinerInfoEdit() {
   });
 
   async function handlePicture(picture) {
-    const storageRef = ref(storage, userId);
-    await uploadBytes(storageRef, picture);
-    const downloadURL = await getDownloadURL(storageRef);
+    const downloadURL = await uploadImage(userId, picture);
     setUpdateData({ ...updateData, picture: downloadURL });
   }
 

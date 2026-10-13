@@ -364,7 +364,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
    - 統一 Firestore document ID 與資料轉換方式。
 - [x] 6. `refactor(data): extract user and company repositories`
    - 抽離 user 與 company collections 的讀寫操作。
-- [ ] 7. `refactor(storage): centralize image upload operations`
+- [x] 7. `refactor(storage): centralize image upload operations`
    - 建立共用圖片上傳介面；此 commit 只集中現有行為，不自行更換儲存供應商。
 - [ ] 8. `refactor(store): remove Firebase operations from user store`
    - 讓 Zustand Store 專注於狀態管理，不直接存取 Firebase。

@@ -2,12 +2,12 @@ import { Card, ScrollShadow } from "@nextui-org/react";
 import { useLoadScript } from "@react-google-maps/api";
 import { Button, Form, Input, Radio, Select } from "antd";
 import { doc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
-import { db, storage } from "../../services/firebase/firebaseClient.js";
+import { db } from "../../services/firebase/firebaseClient.js";
+import { uploadImage } from "../../services/storage/imageStorage.js";
 import useUserStore from "../../stores/userStore.js";
 
 function BossInfoEdit() {
@@ -35,9 +35,7 @@ function BossInfoEdit() {
   });
 
   async function handlePicture(picture) {
-    const storageRef = ref(storage, userId);
-    await uploadBytes(storageRef, picture);
-    const downloadURL = await getDownloadURL(storageRef);
+    const downloadURL = await uploadImage(userId, picture);
     setUpdateUser({ ...updateUser, picture: downloadURL });
   }
 
