@@ -411,7 +411,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第七階段：餐廳與 Favorite
 
-- [ ] 23. `refactor(restaurant): extract restaurant data repository`
+- [x] 23. `refactor(restaurant): extract restaurant data repository`
     - 集中餐廳、菜單、活動與食記資料取得。
 - [ ] 24. `refactor(restaurant): split restaurant page sections`
     - 拆分餐廳資訊、菜單、活動與評論區塊。

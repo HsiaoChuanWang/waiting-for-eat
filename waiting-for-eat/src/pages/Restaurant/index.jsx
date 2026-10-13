@@ -1,22 +1,14 @@
 import { Button, Card, Image, ScrollShadow, User } from "@nextui-org/react";
 import dateFormat from "dateformat";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
 import Comment from "../../components/Comment";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import NoItem from "../../components/NoItem/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { getRestaurantPageData } from "../../services/repositories/restaurantRepository.js";
 import useUserStore from "../../stores/userStore.js";
 import tasty from "../Search/tasty.jpg";
 import Like from "./Like";
@@ -34,61 +26,24 @@ function Restaurant() {
   const [position, setPosition] = useState(0);
   const [display, setDisplay] = useState(false);
   const userId = useUserStore((state) => state.userId);
-  const postq = query(
-    collection(db, "post"),
-    where("companyId", "==", companyId),
-  );
-
-  async function getCompanyData() {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
-
-    const resultData = docSnap.data();
-    const menuList = resultData.menu;
-    setData(resultData);
-    setMenu(menuList);
-  }
-
-  async function getPosterInfo(userId) {
-    const docRef = doc(db, "user", userId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
   useEffect(() => {
-    getCompanyData();
-    getDocs(postq)
-      .then((quarySnaps) => {
-        let posts = [];
-        quarySnaps.forEach((doc) => {
-          const result = doc.data();
-          const resultId = doc.id;
-          const combineResult = { ...result, postId: resultId };
-          posts.push(combineResult);
-        });
-        return posts;
+    let isActive = true;
+
+    getRestaurantPageData(companyId)
+      .then(({ restaurant, menu, posts }) => {
+        if (!isActive) return;
+        setData(restaurant ?? {});
+        setMenu(menu);
+        setPost(posts);
       })
-      .then((posts) => {
-        let combinePosts = [];
-        posts.forEach((post) => {
-          getPosterInfo(post.userId)
-            .then((data) => {
-              const newData = {
-                ...post,
-                userName: data.userName,
-                picture: data.picture,
-              };
-              combinePosts.push(newData);
-            })
-            .then(() => {
-              setPost([...combinePosts]);
-            });
-        });
-        setIsLoading(false);
+      .finally(() => {
+        if (isActive) setIsLoading(false);
       });
-  }, []);
+
+    return () => {
+      isActive = false;
+    };
+  }, [companyId]);
 
   const posts =
     post.length > 0 ? (
