@@ -401,7 +401,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
     - 拆出搜尋條件與操作表單元件。
 - [x] 20. `refactor(search): extract result list components`
     - 拆出結果清單、餐廳卡片與 favorite 狀態元件。
-- [ ] 21. `refactor(search): simplify map integration`
+- [x] 21. `refactor(search): simplify map integration`
     - 統一地圖 props、marker 清理與搜尋資料來源。
 
 ### 第六階段：首頁與搜尋整合

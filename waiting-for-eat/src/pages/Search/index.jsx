@@ -1,5 +1,5 @@
 import { useLoadScript } from "@react-google-maps/api";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
   IoIosArrowDropdownCircle,
@@ -15,6 +15,7 @@ import {
 import { createSearchOptions } from "../../features/search/searchModel.js";
 import { prepareSearchResults } from "../../features/search/searchResultService.js";
 import SearchControls from "../../features/search/components/SearchControls.jsx";
+import SearchMap from "../../features/search/components/SearchMap.jsx";
 import SearchResultList from "../../features/search/components/SearchResultList.jsx";
 import {
   findCompaniesByCategory,
@@ -24,7 +25,6 @@ import {
 } from "../../services/repositories/searchRepository.js";
 import useSearchStore from "../../stores/searchStore.js";
 import useUserStore from "../../stores/userStore.js";
-import MyGoogleMaps from "./MyGoogleMaps";
 
 function Search() {
   const userId = useUserStore((state) => state.userId);
@@ -36,15 +36,9 @@ function Search() {
     libraries: GOOGLE_MAP_LIBRARIES,
   });
 
-  const mapRef = useRef();
-  const onLoad = useCallback((map) => {
-    mapRef.current = map;
-  }, []);
-
   const [searchName, setSearchName] = useState("");
   const [searchPlace, setSearchPlace] = useState("");
   const [searchCategory, setSearchCategory] = useState("");
-  const [map, setMap] = useState(null);
   const [currentPosition, setCurrentPosition] = useState(DEFAULT_MAP_CENTER);
   const [restaurants, setRestaurants] = useState([]);
   const [city, setCity] = useState([]);
@@ -171,13 +165,7 @@ function Search() {
         <SearchResultList isVisible={isShowResultbar} results={searchArray} />
 
         <div className="w-[72%] map:h-full map:w-full">
-          <MyGoogleMaps
-            currentPosition={currentPosition}
-            mapRef={mapRef}
-            onLoad={onLoad}
-            map={map}
-            setMap={setMap}
-          />
+          <SearchMap center={currentPosition} results={searchArray} />
         </div>
 
         <div
