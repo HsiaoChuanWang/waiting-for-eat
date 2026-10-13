@@ -1,125 +1,21 @@
 import { ScrollShadow } from "@nextui-org/react";
-import { useLoadScript } from "@react-google-maps/api";
 import { Form, Input, Radio, Select } from "antd";
-import { useRef } from "react";
-import toast from "react-hot-toast";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
-import { createCompany } from "../../services/repositories/companyRepository.js";
-import { saveUser } from "../../services/repositories/userRepository.js";
-import { uploadImage } from "../../services/storage/imageStorage.js";
-import useSignupStore from "../../stores/signupStore.js";
-import useUserStore from "../../stores/userStore.js";
-import { COMPANY_CATEGORY_OPTIONS, SIGNUP_STEPS } from "./signupConstants.js";
+import { COMPANY_CATEGORY_OPTIONS } from "./signupConstants.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
+import useBossRegistration from "./useBossRegistration.js";
 
 function StepThreeBoss() {
-  useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
-  });
-  const userId = useUserStore((state) => state.userId);
-  const setDetailInfo = useUserStore((state) => state.setDetailInfo);
-  const setCompanyInfo = useUserStore((state) => state.setCompanyInfo);
-  const detail = useSignupStore((state) => state.userForm);
-  const company = useSignupStore((state) => state.companyForm);
-  const updateUserForm = useSignupStore((state) => state.updateUserForm);
-  const updateCompanyForm = useSignupStore((state) => state.updateCompanyForm);
-  const setActiveStep = useSignupStore((state) => state.setActiveStep);
-
-  const checkRef = useRef(false);
-
-  async function handlePicture(picture) {
-    const downloadURL = await uploadImage(userId, picture);
-    updateUserForm("picture", downloadURL);
-  }
-
-  async function getLocation() {
-    const location = company.city + company.district + company.address;
-    const Geocoder = new window.google.maps.Geocoder();
-    const GeocoderRequest = {
-      address: location,
-      region: "TW",
-    };
-    return new Promise((resolve) => {
-      Geocoder.geocode(GeocoderRequest, (results, status) => {
-        if (status === "OK" && results.length > 0) {
-          resolve({
-            ...company,
-            lat: results[0].geometry.location.lat(),
-            lng: results[0].geometry.location.lng(),
-          });
-        } else {
-          resolve(null);
-          toast.error("請確認地址已填寫且地址正確");
-        }
-      });
-    });
-  }
-
-  const handleData = (e) => {
-    let target = e.target.name;
-    let value = e.target.value;
-
-    switch (target) {
-      case "userName":
-        updateUserForm("userName", value);
-        break;
-      case "gender":
-        updateUserForm("gender", value);
-        break;
-      case "phone":
-        updateUserForm("phone", value);
-        break;
-      case "picture":
-        handlePicture(e.target.files[0]);
-        break;
-    }
-  };
-
-  const handleCompany = (e) => {
-    let target = e.target.name;
-    let value = e.target.value;
-    switch (target) {
-      case "name":
-        updateCompanyForm("name", value);
-        break;
-      case "city":
-        updateCompanyForm("city", value);
-        break;
-      case "district":
-        updateCompanyForm("district", value);
-        break;
-      case "address":
-        updateCompanyForm("address", value);
-        break;
-      case "telephone":
-        updateCompanyForm("phone", value);
-        break;
-    }
-  };
-
-  async function nextStep() {
-    if (
-      detail.userName != "" &&
-      detail.gender != "" &&
-      detail.phone != "" &&
-      !Object.values(company).includes("")
-    ) {
-      checkRef.current = false;
-      const companyInfo = await getLocation();
-      if (!companyInfo) return;
-
-      const companyId = await createCompany(companyInfo);
-      const userInfo = { ...detail, companyId };
-
-      setCompanyInfo(companyInfo);
-      setDetailInfo(userInfo);
-      await saveUser(userId, userInfo);
-      setActiveStep(SIGNUP_STEPS.BOSS_COMPLETE);
-    } else {
-      toast.error("請填寫完整資訊");
-    }
-  }
+  const {
+    companyForm,
+    submitBossRegistration,
+    updateCompanyField,
+    updateCompanyForm,
+    updateUserField,
+    uploadProfilePicture,
+    userForm,
+  } = useBossRegistration();
 
   return (
     <div className="relative flex h-[calc(100vh-96px)] w-screen items-center">
@@ -152,8 +48,8 @@ function StepThreeBoss() {
                 <Input
                   className="h-8 w-28"
                   name="userName"
-                  onChange={(e) => handleData(e)}
-                  value={detail.userName}
+                  onChange={updateUserField}
+                  value={userForm.userName}
                 />
               </div>
 
@@ -164,8 +60,8 @@ function StepThreeBoss() {
 
                 <Radio.Group
                   name="gender"
-                  onChange={(e) => handleData(e)}
-                  value={detail.gender}
+                  onChange={updateUserField}
+                  value={userForm.gender}
                 >
                   <Radio value="小姐">女</Radio>
                   <Radio value="先生">男</Radio>
@@ -179,8 +75,8 @@ function StepThreeBoss() {
                 <Input
                   className="h-8 w-64"
                   name="phone"
-                  onChange={(e) => handleData(e)}
-                  value={detail.phone}
+                  onChange={updateUserField}
+                  value={userForm.phone}
                 />
               </div>
 
@@ -193,7 +89,9 @@ function StepThreeBoss() {
                   type="file"
                   accept="image/*"
                   name="picture"
-                  onChange={(e) => handleData(e)}
+                  onChange={(event) =>
+                    uploadProfilePicture(event.target.files[0])
+                  }
                 />
               </div>
             </Form>
@@ -208,8 +106,8 @@ function StepThreeBoss() {
                 <Input
                   className="h-8 w-64"
                   name="name"
-                  onChange={(e) => handleCompany(e)}
-                  value={company.name}
+                  onChange={updateCompanyField}
+                  value={companyForm.name}
                 />
               </div>
 
@@ -224,8 +122,8 @@ function StepThreeBoss() {
                     <Input
                       className="w-20"
                       name="city"
-                      onChange={(e) => handleCompany(e)}
-                      value={company.city}
+                      onChange={updateCompanyField}
+                      value={companyForm.city}
                       placeholder="台北市"
                     />
                   </div>
@@ -235,8 +133,8 @@ function StepThreeBoss() {
                     <Input
                       className="w-20"
                       name="district"
-                      onChange={(e) => handleCompany(e)}
-                      value={company.district}
+                      onChange={updateCompanyField}
+                      value={companyForm.district}
                       placeholder="中山區"
                     />
                   </div>
@@ -247,8 +145,8 @@ function StepThreeBoss() {
                     <Input
                       className="w-44"
                       name="address"
-                      onChange={(e) => handleCompany(e)}
-                      value={company.address}
+                      onChange={updateCompanyField}
+                      value={companyForm.address}
                       placeholder="南京西路12巷13弄9號"
                     />
                   </div>
@@ -262,8 +160,8 @@ function StepThreeBoss() {
                 <Input
                   className="h-8 w-64"
                   name="telephone"
-                  onChange={(e) => handleCompany(e)}
-                  value={company.phone}
+                  onChange={updateCompanyField}
+                  value={companyForm.phone}
                   placeholder="02-2556-5354"
                 />
               </div>
@@ -277,7 +175,7 @@ function StepThreeBoss() {
                   onChange={(category) =>
                     updateCompanyForm("category", category)
                   }
-                  value={company.category}
+                  value={companyForm.category}
                   showSearch
                   style={{
                     width: 200,
@@ -294,7 +192,7 @@ function StepThreeBoss() {
 
             <button
               className="mr-8 h-10 w-20 self-end rounded-lg bg-[#ff850e] font-bold text-white hover:bg-[#ff850e]/80"
-              onClick={nextStep}
+              onClick={submitBossRegistration}
             >
               下一步
             </button>
