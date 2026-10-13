@@ -399,7 +399,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
     - 統一 favorite 補充、結果排序與非同步處理。
 - [x] 19. `refactor(search): extract search controls`
     - 拆出搜尋條件與操作表單元件。
-- [ ] 20. `refactor(search): extract result list components`
+- [x] 20. `refactor(search): extract result list components`
     - 拆出結果清單、餐廳卡片與 favorite 狀態元件。
 - [ ] 21. `refactor(search): simplify map integration`
     - 統一地圖 props、marker 清理與搜尋資料來源。
