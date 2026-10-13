@@ -25,6 +25,7 @@ function Search() {
     searchByCategory,
     searchByCity,
     searchByName,
+    updateFavoriteStatus,
   } = useRestaurantSearch();
 
   const { isLoaded } = useLoadScript({
@@ -125,7 +126,11 @@ function Search() {
       />
 
       <div className="flex h-[calc(100vh-200px)] justify-center shadow-[0px_0px_0px_1px_rgba(0,0,0,0.16)] map:h-[calc(100vh-104px)]">
-        <SearchResultList isVisible={isShowResultbar} results={results} />
+        <SearchResultList
+          isVisible={isShowResultbar}
+          onFavoriteChange={updateFavoriteStatus}
+          results={results}
+        />
 
         <div className="w-[72%] map:h-full map:w-full">
           <SearchMap center={currentPosition} results={results} />

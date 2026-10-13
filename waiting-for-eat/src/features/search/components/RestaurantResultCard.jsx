@@ -4,7 +4,12 @@ import { useNavigate } from "react-router-dom";
 import fallbackPicture from "../../../assets/placeholders/restaurant.jpg";
 import FavoriteStatus from "./FavoriteStatus.jsx";
 
-function RestaurantResultCard({ index, isVisible, restaurant }) {
+function RestaurantResultCard({
+  index,
+  isVisible,
+  onFavoriteChange,
+  restaurant,
+}) {
   const navigate = useNavigate();
   const openRestaurant = () => navigate(`/restaurant/${restaurant.companyId}`);
 
@@ -46,7 +51,11 @@ function RestaurantResultCard({ index, isVisible, restaurant }) {
           {restaurant.phone}
         </p>
         <div className="ml-6">
-          <FavoriteStatus status={restaurant.status} />
+          <FavoriteStatus
+            favoriteId={restaurant.favoriteId}
+            status={restaurant.status}
+            onChange={onFavoriteChange}
+          />
         </div>
       </div>
 

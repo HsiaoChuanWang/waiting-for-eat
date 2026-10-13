@@ -3,7 +3,7 @@ import { ScrollShadow } from "@nextui-org/react";
 import NoItem from "../../../components/NoItem";
 import RestaurantResultCard from "./RestaurantResultCard.jsx";
 
-function SearchResultList({ isVisible, results }) {
+function SearchResultList({ isVisible, onFavoriteChange, results }) {
   return (
     <div className="shadow-4xl w-[28%] map:absolute map:bottom-0 map:z-10 map:w-full">
       <ScrollShadow className="h-full w-full map:flex" size={0}>
@@ -21,6 +21,7 @@ function SearchResultList({ isVisible, results }) {
               key={restaurant.companyId}
               index={index}
               isVisible={isVisible}
+              onFavoriteChange={onFavoriteChange}
               restaurant={restaurant}
             />
           ))

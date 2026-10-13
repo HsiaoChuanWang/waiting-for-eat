@@ -10,11 +10,15 @@ import {
   findCompaniesByName,
   getCompanies,
 } from "../../services/repositories/searchRepository.js";
+import { updateFavoriteStatus as saveFavoriteStatus } from "../../services/repositories/favoriteRepository.js";
 
 function useRestaurantSearch() {
   const userId = useUserStore((state) => state.userId);
   const results = useSearchStore((state) => state.searchArray);
   const setResults = useSearchStore((state) => state.setSearchArray);
+  const updateResultFavoriteStatus = useSearchStore(
+    (state) => state.updateFavoriteStatus,
+  );
   const [nameOptions, setNameOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
   const [isOptionsLoading, setIsOptionsLoading] = useState(true);
@@ -53,6 +57,12 @@ function useRestaurantSearch() {
       tieBreakByCompanyId: true,
     });
 
+  async function updateFavoriteStatus(favoriteId, status) {
+    if (!favoriteId) return;
+    await saveFavoriteStatus(favoriteId, status);
+    updateResultFavoriteStatus(favoriteId, status);
+  }
+
   return {
     cityOptions,
     isOptionsLoading,
@@ -61,6 +71,7 @@ function useRestaurantSearch() {
     searchByCategory,
     searchByCity,
     searchByName,
+    updateFavoriteStatus,
   };
 }
 

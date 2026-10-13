@@ -34,10 +34,15 @@ function subscribeToQuery(favoriteQuery, onChange) {
 }
 
 async function getFavoriteStatus(companyId, userId) {
-  const snapshot = await getDocs(createUserCompanyQuery(userId, companyId));
-  const favorites = mapQuerySnapshot(snapshot);
+  const favorite = await getFavoriteByUserAndCompany(companyId, userId);
+  return favorite?.status ?? "";
+}
 
-  return favorites[0]?.status ?? "";
+async function getFavoriteByUserAndCompany(companyId, userId) {
+  const snapshot = await getDocs(createUserCompanyQuery(userId, companyId));
+  const favorites = mapQuerySnapshot(snapshot, "favoriteId");
+
+  return favorites[0];
 }
 
 function subscribeFavoriteByUserAndCompany(userId, companyId, onChange) {
@@ -82,6 +87,7 @@ function saveEatenFavorite({ companyId, orderId, userId }) {
 
 export {
   FAVORITE_STATUS,
+  getFavoriteByUserAndCompany,
   getFavoriteStatus,
   saveEatenFavorite,
   subscribeEatenFavorites,

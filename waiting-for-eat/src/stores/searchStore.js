@@ -10,6 +10,14 @@ const useSearchStore = create(
         state.searchArray = searchArray;
       });
     },
+    updateFavoriteStatus: (favoriteId, status) => {
+      set((state) => {
+        const result = state.searchArray.find(
+          (item) => item.favoriteId === favoriteId,
+        );
+        if (result) result.status = status;
+      });
+    },
   })),
 );
 export default useSearchStore;
