@@ -464,7 +464,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 - [x] 38. `refactor(architecture): enforce feature and service boundaries`
     - 修正 service 依賴 feature、store 依賴 page，以及 feature 引用 page asset 的反向依賴。
     - 將跨 Feature 使用的 constants、model 與 assets 移到穩定且語意一致的位置。
-- [ ] 39. `refactor(navigation): derive sidebar state from routes`
+- [x] 39. `refactor(navigation): derive sidebar state from routes`
     - 由目前 route 推導 Boss 與 Diner sidebar 的選取狀態。
     - 移除與 URL 重複、可能不同步的 `bossStore` 與 `dinerStore` 導覽狀態。
 - [ ] 40. `refactor(ui): split remaining large page components`

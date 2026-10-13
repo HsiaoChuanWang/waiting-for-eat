@@ -3,14 +3,13 @@ import { FaRegCalendarCheck } from "react-icons/fa6";
 import { GiMeal } from "react-icons/gi";
 import { IoTime } from "react-icons/io5";
 import { MdNotificationsActive, MdPhotoLibrary } from "react-icons/md";
-import { useNavigate, useParams } from "react-router-dom";
-import useBossStore from "../../stores/bossStore.js";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 function BossSidebar() {
   const { companyId } = useParams();
   const navigate = useNavigate();
-  const selectedBossBar = useBossStore((state) => state.selectedBossBar);
-  const setSelectedBossBar = useBossStore((state) => state.setSelectedBossBar);
+  const { pathname } = useLocation();
+  const selectedBossBar = pathname.split("/")[2];
 
   return (
     <>
@@ -25,7 +24,6 @@ function BossSidebar() {
             }`}
             onClick={() => {
               navigate(`/boss/bossInfo/${companyId}`);
-              setSelectedBossBar("bossInfo");
             }}
           >
             <div>
@@ -58,7 +56,6 @@ function BossSidebar() {
             }`}
             onClick={() => {
               navigate(`/boss/photo/${companyId}`);
-              setSelectedBossBar("photo");
             }}
           >
             <div>
@@ -92,7 +89,6 @@ function BossSidebar() {
             }`}
             onClick={() => {
               navigate(`/boss/activity/${companyId}`);
-              setSelectedBossBar("activity");
             }}
           >
             <div>
@@ -125,7 +121,6 @@ function BossSidebar() {
             }`}
             onClick={() => {
               navigate(`/boss/openTime/${companyId}`);
-              setSelectedBossBar("openTime");
             }}
           >
             <div>
@@ -156,7 +151,6 @@ function BossSidebar() {
             }`}
             onClick={() => {
               navigate(`/boss/table/${companyId}`);
-              setSelectedBossBar("table");
             }}
           >
             <div>
@@ -185,7 +179,6 @@ function BossSidebar() {
             }`}
             onClick={() => {
               navigate(`/boss/schedule/${companyId}`);
-              setSelectedBossBar("schedule");
             }}
           >
             <div>

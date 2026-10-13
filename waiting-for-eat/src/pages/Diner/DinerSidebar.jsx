@@ -4,16 +4,13 @@ import { CgNotes } from "react-icons/cg";
 import { FaCalendarCheck } from "react-icons/fa";
 import { HiThumbDown, HiThumbUp } from "react-icons/hi";
 import { PiForkKnifeFill } from "react-icons/pi";
-import { useNavigate, useParams } from "react-router-dom";
-import useDinerStore from "../../stores/dinerStore.js";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 function DinerSidebar() {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const selectedDinerBar = useDinerStore((state) => state.selectedDinerBar);
-  const setSelectedDinerBar = useDinerStore(
-    (state) => state.setSelectedDinerBar,
-  );
+  const { pathname } = useLocation();
+  const selectedDinerBar = pathname.split("/")[2];
 
   return (
     <>
@@ -28,7 +25,6 @@ function DinerSidebar() {
             }`}
             onClick={() => {
               navigate(`/diner/dinerInfo/${userId}`);
-              setSelectedDinerBar("dinerInfo");
             }}
           >
             <div>
@@ -61,7 +57,6 @@ function DinerSidebar() {
             }`}
             onClick={() => {
               navigate(`/diner/reservedShop/${userId}`);
-              setSelectedDinerBar("reservedShop");
             }}
           >
             <div>
@@ -92,7 +87,6 @@ function DinerSidebar() {
             }`}
             onClick={() => {
               navigate(`/diner/eatenShop/${userId}`);
-              setSelectedDinerBar("eatenShop");
             }}
           >
             <div>
@@ -125,7 +119,6 @@ function DinerSidebar() {
             }`}
             onClick={() => {
               navigate(`/diner/likeShop/${userId}`);
-              setSelectedDinerBar("likeShop");
             }}
           >
             <div>
@@ -156,7 +149,6 @@ function DinerSidebar() {
             }`}
             onClick={() => {
               navigate(`/diner/dislikeShop/${userId}`);
-              setSelectedDinerBar("dislikeShop");
             }}
           >
             <div>
@@ -187,7 +179,6 @@ function DinerSidebar() {
             }`}
             onClick={() => {
               navigate(`/diner/posted/${userId}`);
-              setSelectedDinerBar("posted");
             }}
           >
             <div>
@@ -219,7 +210,6 @@ function DinerSidebar() {
             }`}
             onClick={() => {
               navigate(`/diner/commented/${userId}`);
-              setSelectedDinerBar("commented");
             }}
           >
             <div>

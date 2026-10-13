@@ -18,14 +18,10 @@ import {
 } from "../../features/reservation/reservationModel.js";
 import { submitReservation } from "../../features/reservation/reservationService.js";
 import useReservationData from "../../features/reservation/useReservationData.js";
-import useDinerStore from "../../stores/dinerStore.js";
 import useUserStore from "../../stores/userStore.js";
 import success from "./success.png";
 
 function Reserve() {
-  const setSelectedDinerBar = useDinerStore(
-    (state) => state.setSelectedDinerBar,
-  );
   const navigate = useNavigate();
   const [isSelected, setIsSelected] = useState("");
   const userId = useUserStore((state) => state.userId);
@@ -258,7 +254,6 @@ function Reserve() {
                               color="primary"
                               onPress={onClose}
                               onClick={() => {
-                                setSelectedDinerBar("reserved");
                                 navigate(`/diner/reservedShop/${userId}`);
                               }}
                             >
