@@ -1,6 +1,5 @@
-import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { auth } from "../services/firebase/firebaseClient.js";
+import { subscribeAuthState } from "../services/auth/authenticationService.js";
 import { getCompanyById } from "../services/repositories/companyRepository.js";
 import { getUserById } from "../services/repositories/userRepository.js";
 import useUserStore from "../stores/userStore.js";
@@ -19,7 +18,7 @@ function useAuthSession({ loadProfile = true } = {}) {
   useEffect(() => {
     let isActive = true;
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = subscribeAuthState(async (user) => {
       if (!user) {
         setIsLogout();
         if (isActive) {

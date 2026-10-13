@@ -1,12 +1,4 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
 import { motion } from "framer-motion";
 import { BiSolidBookmarkAlt } from "react-icons/bi";
 import { IoMdPin } from "react-icons/io";
@@ -16,22 +8,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import ErrorState from "../../components/ErrorState/index.jsx";
 import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
-import { db } from "../../services/firebase/firebaseClient.js";
-import { mapQuerySnapshot } from "../../services/firebase/firestoreMappers.js";
 import { getCompanyById } from "../../services/repositories/companyRepository.js";
+import {
+  deleteOrder,
+  subscribeReservedOrdersByUserId,
+} from "../../services/repositories/orderRepository.js";
 import noData from "./noData.png";
-
-function subscribeReservedOrders(userId, onChange) {
-  const orderQuery = query(
-    collection(db, "order"),
-    where("userId", "==", userId),
-    where("attend", "==", "no"),
-  );
-
-  return onSnapshot(orderQuery, (snapshot) => {
-    onChange(mapQuerySnapshot(snapshot, "orderId"));
-  });
-}
 
 const enrichOrders = (orders) =>
   Promise.all(
@@ -48,10 +30,10 @@ function ReservedShop() {
     error,
     isLoading,
     records: combineData,
-  } = useDinerRecordList(userId, subscribeReservedOrders, enrichOrders);
+  } = useDinerRecordList(userId, subscribeReservedOrdersByUserId, enrichOrders);
 
   async function handleDelete(orderId) {
-    await deleteDoc(doc(db, "order", orderId));
+    await deleteOrder(orderId);
   }
 
   if (isLoading) {

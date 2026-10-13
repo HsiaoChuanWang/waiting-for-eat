@@ -2,14 +2,13 @@ import { Button } from "@nextui-org/react";
 import { Form, Input } from "antd";
 import { EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { renderEditorMediaBlock } from "../../features/editor/editorImageRenderer.js";
 import useEditorImageUpload from "../../features/editor/useEditorImageUpload.js";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { getOrderById } from "../../services/repositories/orderRepository.js";
 import { createPost } from "../../services/repositories/postRepository.js";
 
 function TextEditor() {
@@ -22,11 +21,7 @@ function TextEditor() {
   const { toolbar, uploadFile } = useEditorImageUpload();
 
   useEffect(() => {
-    const orderRef = doc(db, "order", orderId);
-    getDoc(orderRef).then((result) => {
-      const data = result.data();
-      setOrderData(data);
-    });
+    getOrderById(orderId).then(setOrderData);
   }, [orderId]);
 
   function onEditorStateChange(e) {

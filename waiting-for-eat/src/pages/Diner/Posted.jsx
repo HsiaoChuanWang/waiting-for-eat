@@ -1,6 +1,5 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
 import dateFormat from "dateformat";
-import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { FaPenToSquare } from "react-icons/fa6";
 import { IoRestaurant, IoTimeSharp } from "react-icons/io5";
@@ -8,25 +7,20 @@ import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import ErrorState from "../../components/ErrorState/index.jsx";
 import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
-import { db } from "../../services/firebase/firebaseClient.js";
 import { getCompanyById } from "../../services/repositories/companyRepository.js";
+import { getOrderById } from "../../services/repositories/orderRepository.js";
 import {
   deletePost,
   subscribePostsByUserId,
 } from "../../services/repositories/postRepository.js";
 import noData from "./noData.png";
 
-async function getOrderInfo(orderId) {
-  const snapshot = await getDoc(doc(db, "order", orderId));
-  return snapshot.data();
-}
-
 const enrichPosts = (posts) =>
   Promise.all(
     posts.map(async (post) => ({
       ...post,
       ...(await getCompanyById(post.companyId)),
-      ...(await getOrderInfo(post.orderId)),
+      ...(await getOrderById(post.orderId)),
     })),
   );
 

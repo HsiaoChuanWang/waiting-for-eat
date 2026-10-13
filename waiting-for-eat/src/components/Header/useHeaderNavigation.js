@@ -1,7 +1,6 @@
-import { signOut } from "firebase/auth";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../services/firebase/firebaseClient.js";
+import { signOutCurrentUser } from "../../services/auth/authenticationService.js";
 import useLoginStore from "../../stores/loginStore.js";
 import useUserStore from "../../stores/userStore.js";
 
@@ -16,7 +15,7 @@ function useHeaderNavigation() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     if (item.action === "logout") {
-      await signOut(auth);
+      await signOutCurrentUser();
       setIsLogout();
       setLoginIdentity("");
       setPresetEmail("");

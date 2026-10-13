@@ -458,7 +458,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第十三階段：架構收斂
 
-- [ ] 37. `refactor(data): remove direct Firebase access from UI`
+- [x] 37. `refactor(data): remove direct Firebase access from UI`
     - 移除註冊、食客紀錄、食記編輯與 Header 對 Firebase client 的直接操作。
     - 統一資料流為 UI → feature hook/service → repository/auth service → Firebase。
 - [ ] 38. `refactor(architecture): enforce feature and service boundaries`

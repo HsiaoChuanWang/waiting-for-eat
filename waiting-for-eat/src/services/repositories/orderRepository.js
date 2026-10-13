@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   onSnapshot,
   query,
@@ -10,12 +11,20 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseClient.js";
-import { mapQuerySnapshot } from "../firebase/firestoreMappers.js";
+import {
+  mapDocumentSnapshot,
+  mapQuerySnapshot,
+} from "../firebase/firestoreMappers.js";
 
 const ORDER_COLLECTION = "order";
 
 function createOrder(order) {
   return addDoc(collection(db, ORDER_COLLECTION), order);
+}
+
+async function getOrderById(orderId) {
+  const snapshot = await getDoc(doc(db, ORDER_COLLECTION, orderId));
+  return mapDocumentSnapshot(snapshot, "orderId");
 }
 
 async function getOrdersByCompanyAndDate(companyId, date) {
@@ -33,6 +42,18 @@ function subscribeOrdersByCompanyId(companyId, onChange) {
   const orderQuery = query(
     collection(db, ORDER_COLLECTION),
     where("companyId", "==", companyId),
+  );
+
+  return onSnapshot(orderQuery, (snapshot) => {
+    onChange(mapQuerySnapshot(snapshot, "orderId"));
+  });
+}
+
+function subscribeReservedOrdersByUserId(userId, onChange) {
+  const orderQuery = query(
+    collection(db, ORDER_COLLECTION),
+    where("userId", "==", userId),
+    where("attend", "==", "no"),
   );
 
   return onSnapshot(orderQuery, (snapshot) => {
@@ -59,8 +80,10 @@ function deleteOrder(orderId) {
 export {
   createOrder,
   deleteOrder,
+  getOrderById,
   getOrdersByCompanyAndDate,
   markOrderAttended,
   subscribeOrdersByCompanyId,
+  subscribeReservedOrdersByUserId,
   updateOrderSchedule,
 };
