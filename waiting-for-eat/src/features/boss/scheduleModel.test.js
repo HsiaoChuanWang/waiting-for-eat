@@ -6,7 +6,7 @@ import {
   recordScheduleMove,
 } from "./scheduleModel.js";
 
-describe("scheduleModel", () => {
+describe("店家排程模型", () => {
   it("converts and sorts tables as calendar resources", () => {
     expect(
       createScheduleResources([
@@ -44,7 +44,7 @@ describe("scheduleModel", () => {
     expect(events[0].end).toBeInstanceOf(Date);
   });
 
-  describe("recordScheduleMove", () => {
+  describe("記錄排程移動", () => {
     const orders = [{ orderId: "order-1", tableNumber: ["A1", "A2"] }];
     const event = {
       _def: { resourceIds: ["B1"] },

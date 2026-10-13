@@ -9,8 +9,8 @@ function createSnapshot({ data, exists = true, id = "document-1" }) {
   };
 }
 
-describe("firestoreMappers", () => {
-  describe("mapDocumentSnapshot", () => {
+describe("Firestore 資料轉換工具", () => {
+  describe("轉換單一文件快照", () => {
     it("returns undefined when the document does not exist", () => {
       const snapshot = createSnapshot({
         data: { name: "餐廳" },
@@ -40,7 +40,7 @@ describe("firestoreMappers", () => {
     });
   });
 
-  describe("mapQuerySnapshot", () => {
+  describe("轉換查詢快照", () => {
     it("maps every document and includes its id", () => {
       const querySnapshot = {
         docs: [

@@ -12,8 +12,8 @@ const tables = [
   { number: "A3", people: 6 },
 ];
 
-describe("reservationModel", () => {
-  describe("getAvailableOpeningTimes", () => {
+describe("訂位模型", () => {
+  describe("取得可預約的營業時段", () => {
     it("keeps matching weekdays with available tables and sorts by time", () => {
       const openingTimes = [
         { day: "星期一", start: "18:00" },
@@ -28,7 +28,7 @@ describe("reservationModel", () => {
     });
   });
 
-  describe("allocateTables", () => {
+  describe("分配餐桌", () => {
     it("excludes tables reserved for the selected time", () => {
       const orders = [{ start: "12:00", tableNumber: ["A2"] }];
 
@@ -59,7 +59,7 @@ describe("reservationModel", () => {
     });
   });
 
-  describe("reservation values", () => {
+  describe("訂位資料", () => {
     it("formats the selected date", () => {
       const date = {
         date: vi.fn(() => 9),

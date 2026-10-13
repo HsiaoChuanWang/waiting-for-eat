@@ -6,7 +6,7 @@ const dinerInfo = { companyId: "" };
 const boss = { uid: "boss-1" };
 const bossInfo = { companyId: "company-1" };
 
-describe("getRouteRedirect", () => {
+describe("判斷路由重新導向", () => {
   it("does not redirect while authentication is loading", () => {
     expect(
       getRouteRedirect({

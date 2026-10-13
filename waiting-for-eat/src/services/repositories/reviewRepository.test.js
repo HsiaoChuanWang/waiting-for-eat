@@ -40,7 +40,7 @@ vi.mock("../firebase/firestoreMappers.js", () => ({
   mapQuerySnapshot: vi.fn(),
 }));
 
-describe("reviewRepository", () => {
+describe("評論資料庫操作", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("reports whether an order already has a review", async () => {

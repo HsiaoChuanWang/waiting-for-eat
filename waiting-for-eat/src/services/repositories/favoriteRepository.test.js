@@ -29,7 +29,7 @@ vi.mock("../firebase/firestoreMappers.js", () => ({
   mapQuerySnapshot: vi.fn(),
 }));
 
-describe("favoriteRepository", () => {
+describe("收藏資料庫操作", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("returns the stored favorite status or an empty status", async () => {

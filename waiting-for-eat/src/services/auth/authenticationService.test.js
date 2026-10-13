@@ -28,7 +28,7 @@ vi.mock("../firebase/firebaseClient.js", () => ({
   googleAuthProvider: { name: "google-provider" },
 }));
 
-describe("authenticationService", () => {
+describe("身分驗證服務", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("creates an account with email and password", async () => {

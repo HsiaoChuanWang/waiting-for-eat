@@ -6,8 +6,8 @@ import {
   withFavoriteStatus,
 } from "./searchModel.js";
 
-describe("searchModel", () => {
-  describe("createSearchOptions", () => {
+describe("餐廳搜尋模型", () => {
+  describe("建立搜尋選項", () => {
     it("removes duplicate and empty values", () => {
       const companies = [
         { city: "台北市" },
@@ -24,7 +24,7 @@ describe("searchModel", () => {
     });
   });
 
-  describe("sortSearchResults", () => {
+  describe("排序搜尋結果", () => {
     const results = [
       { companyId: "company-a", totalStar: 3 },
       { companyId: "company-b", totalStar: 5 },
@@ -57,7 +57,7 @@ describe("searchModel", () => {
     });
   });
 
-  describe("favorite status", () => {
+  describe("收藏狀態", () => {
     it("adds a favorite status without mutating the search result", () => {
       const result = { companyId: "company-a", name: "測試餐廳" };
 
