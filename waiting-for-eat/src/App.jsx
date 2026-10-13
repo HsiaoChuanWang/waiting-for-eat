@@ -1,31 +1,29 @@
 import { ConfigProvider } from "antd";
 import { useEffect } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import useHeaderStore from "../src/stores/headerStore.js";
 import Header from "./components/Header";
 import useAuthSession from "./hooks/useAuthSession.js";
+import { useRouteAccessGuard } from "./router/useRouteAccessGuard.js";
 // import RwdWarning from "./components/RwdWarning";
 
 function App() {
   const setHeader = useHeaderStore((state) => state.setHeader);
-  const navigate = useNavigate();
   const location = useLocation();
   const pathParts = location.pathname.split("/");
   const firstParam = pathParts[1];
-  const thirdParam = pathParts[3];
-  const { isLoading, user, userInfo } = useAuthSession({
+  const session = useAuthSession({
     loadProfile: firstParam !== "signup",
   });
+  const { isLoading, user, userInfo } = session;
+
+  useRouteAccessGuard(session);
 
   useEffect(() => {
     if (isLoading) return;
 
     if (!user) {
       setHeader("LogOut");
-      const logOutCannotEnterPath = ["reserve", "diner", "boss"];
-      if (logOutCannotEnterPath.some((path) => firstParam?.includes(path))) {
-        navigate("/");
-      }
       return;
     }
 
@@ -38,18 +36,10 @@ function App() {
 
     if (userInfo.companyId === "") {
       setHeader("DinerLogIn");
-      firstParam?.includes("boss") && navigate("/");
-
-      if (thirdParam) {
-        !thirdParam.includes(user.uid) && navigate("/");
-      }
     } else {
       setHeader("BossLogIn");
-
-      !thirdParam?.includes(userInfo.companyId) &&
-        navigate(`/boss/bossInfo/${userInfo.companyId}`);
     }
-  }, [firstParam, isLoading, navigate, setHeader, thirdParam, user, userInfo]);
+  }, [firstParam, isLoading, setHeader, user, userInfo]);
 
   return (
     <ConfigProvider

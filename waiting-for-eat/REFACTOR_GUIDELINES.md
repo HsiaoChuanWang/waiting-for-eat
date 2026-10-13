@@ -373,7 +373,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 - [x] 9. `refactor(auth): extract authentication session hook`
    - 從 `App.jsx` 抽離登入狀態監聽與 session 初始化。
-- [ ] 10. `refactor(router): extract route access guards`
+- [x] 10. `refactor(router): extract route access guards`
     - 將食客、老闆與未登入使用者的路由限制移出 `App.jsx`。
 - [ ] 11. `refactor(header): separate header state and navigation`
     - 拆分 Header 的登入狀態、導航資料與畫面責任。
