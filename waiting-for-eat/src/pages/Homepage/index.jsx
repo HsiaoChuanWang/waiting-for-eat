@@ -7,16 +7,13 @@ import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import { RESTAURANT_CATEGORIES } from "../../constants/restaurant.js";
 import { SEARCH_FIELDS } from "../../features/search/searchConstants.js";
-import {
-  createSearchOptions,
-  withFavoriteStatus,
-} from "../../features/search/searchModel.js";
+import { createSearchOptions } from "../../features/search/searchModel.js";
+import { prepareSearchResults } from "../../features/search/searchResultService.js";
 import {
   findCompaniesByCategory,
   findCompaniesByCity,
   findCompaniesByName,
   getCompanies,
-  getFavoriteStatus,
 } from "../../services/repositories/searchRepository.js";
 import useSearchStore from "../../stores/searchStore.js";
 import useUserStore from "../../stores/userStore.js";
@@ -51,22 +48,8 @@ function HomePage() {
 
   async function getRestaurant(searchitem) {
     const dataList = await findCompaniesByName(searchitem);
-
-    let resultArray = [];
-    dataList.forEach((item) => {
-      getFavoriteStatus(item.companyId, userId)
-        .then((result) => {
-          const newData = withFavoriteStatus(item, result);
-          resultArray.push(newData);
-          return resultArray;
-        })
-        .then((resultArray) => {
-          const finalArray = resultArray.sort((a, b) =>
-            a.totalStar > b.totalStar ? -1 : 1,
-          );
-          setSearchArray([...finalArray]);
-        });
-    });
+    const results = await prepareSearchResults(dataList, userId);
+    setSearchArray(results);
     navigate(`/search`);
   }
 
@@ -77,22 +60,8 @@ function HomePage() {
 
   async function getPlace(searchitem) {
     const dataList = await findCompaniesByCity(searchitem);
-
-    let resultArray = [];
-    dataList.forEach((item) => {
-      getFavoriteStatus(item.companyId, userId)
-        .then((result) => {
-          const newData = withFavoriteStatus(item, result);
-          resultArray.push(newData);
-          return resultArray;
-        })
-        .then((resultArray) => {
-          const finalArray = resultArray.sort((a, b) =>
-            a.totalStar > b.totalStar ? -1 : 1,
-          );
-          setSearchArray([...finalArray]);
-        });
-    });
+    const results = await prepareSearchResults(dataList, userId);
+    setSearchArray(results);
     navigate(`/search`);
   }
 
@@ -108,26 +77,10 @@ function HomePage() {
 
   async function getCategory(item) {
     const dataList = await findCompaniesByCategory(item);
-
-    let resultArray = [];
-    dataList.forEach((item) => {
-      getFavoriteStatus(item.companyId, userId)
-        .then((result) => {
-          const newData = withFavoriteStatus(item, result);
-          resultArray.push(newData);
-          return resultArray;
-        })
-        .then((resultArray) => {
-          const finalArray = resultArray.sort((a, b) => {
-            if (a.totalStar === b.totalStar) {
-              return a.companyId > b.companyId ? -1 : 1;
-            } else {
-              return a.totalStar > b.totalStar ? -1 : 1;
-            }
-          });
-          setSearchArray([...finalArray]);
-        });
+    const results = await prepareSearchResults(dataList, userId, {
+      tieBreakByCompanyId: true,
     });
+    setSearchArray(results);
     navigate(`/search`);
   }
 

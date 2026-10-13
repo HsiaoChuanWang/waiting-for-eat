@@ -13,4 +13,33 @@ function createSearchOptions(companies, field) {
   return uniqueValues.map((value) => ({ label: value, value }));
 }
 
-export { createSearchOptions, createSearchResult, withFavoriteStatus };
+async function enrichSearchResults(searchResults, loadFavoriteStatus) {
+  return Promise.all(
+    searchResults.map(async (searchResult) => {
+      const status = await loadFavoriteStatus(searchResult.companyId);
+      return withFavoriteStatus(searchResult, status);
+    }),
+  );
+}
+
+function sortSearchResults(searchResults, tieBreakByCompanyId = false) {
+  return [...searchResults].sort((first, second) => {
+    if (first.totalStar !== second.totalStar) {
+      return second.totalStar - first.totalStar;
+    }
+
+    if (tieBreakByCompanyId) {
+      return String(second.companyId).localeCompare(String(first.companyId));
+    }
+
+    return 0;
+  });
+}
+
+export {
+  createSearchOptions,
+  createSearchResult,
+  enrichSearchResults,
+  sortSearchResults,
+  withFavoriteStatus,
+};

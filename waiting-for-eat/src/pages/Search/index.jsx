@@ -24,16 +24,13 @@ import {
   GOOGLE_MAP_LIBRARIES,
   SEARCH_FIELDS,
 } from "../../features/search/searchConstants.js";
-import {
-  createSearchOptions,
-  withFavoriteStatus,
-} from "../../features/search/searchModel.js";
+import { createSearchOptions } from "../../features/search/searchModel.js";
+import { prepareSearchResults } from "../../features/search/searchResultService.js";
 import {
   findCompaniesByCategory,
   findCompaniesByCity,
   findCompaniesByName,
   getCompanies,
-  getFavoriteStatus,
 } from "../../services/repositories/searchRepository.js";
 import useSearchStore from "../../stores/searchStore.js";
 import useUserStore from "../../stores/userStore.js";
@@ -74,28 +71,15 @@ function Search() {
 
   async function getRestaurant(searchitem) {
     const dataList = await findCompaniesByName(searchitem);
-    dataList.forEach((data) => {
+    const results = await prepareSearchResults(dataList, userId);
+
+    results.forEach((data) => {
       setCurrentPosition({
         lat: data.lat,
         lng: data.lng,
       });
     });
-
-    let resultArray = [];
-    dataList.forEach((item) => {
-      getFavoriteStatus(item.companyId, userId)
-        .then((result) => {
-          const newData = withFavoriteStatus(item, result);
-          resultArray.push(newData);
-          return resultArray;
-        })
-        .then((resultArray) => {
-          const finalArray = resultArray.sort((a, b) =>
-            a.totalStar > b.totalStar ? -1 : 1,
-          );
-          setSearchArray([...finalArray]);
-        });
-    });
+    setSearchArray(results);
   }
 
   function handleRestaurant() {
@@ -105,27 +89,13 @@ function Search() {
 
   async function getPlace(searchitem) {
     const dataList = await findCompaniesByCity(searchitem);
+    const results = await prepareSearchResults(dataList, userId);
+    const first = results[0];
 
-    let resultArray = [];
-    dataList.forEach((item) => {
-      getFavoriteStatus(item.companyId, userId)
-        .then((result) => {
-          const newData = withFavoriteStatus(item, result);
-          resultArray.push(newData);
-          return resultArray;
-        })
-        .then((resultArray) => {
-          const finalArray = resultArray.sort((a, b) =>
-            a.totalStar > b.totalStar ? -1 : 1,
-          );
-          const first = finalArray[0];
-          setCurrentPosition({
-            lat: first.lat,
-            lng: first.lng,
-          });
-          setSearchArray([...finalArray]);
-        });
-    });
+    if (first) {
+      setCurrentPosition({ lat: first.lat, lng: first.lng });
+    }
+    setSearchArray(results);
   }
 
   function handlePlace() {
@@ -140,31 +110,15 @@ function Search() {
 
   async function getCategory(item) {
     const dataList = await findCompaniesByCategory(item);
-
-    let resultArray = [];
-    dataList.forEach((item) => {
-      getFavoriteStatus(item.companyId, userId)
-        .then((result) => {
-          const newData = withFavoriteStatus(item, result);
-          resultArray.push(newData);
-          return resultArray;
-        })
-        .then((resultArray) => {
-          const finalArray = resultArray.sort((a, b) => {
-            if (a.totalStar === b.totalStar) {
-              return a.companyId > b.companyId ? -1 : 1;
-            } else {
-              return a.totalStar > b.totalStar ? -1 : 1;
-            }
-          });
-          const first = finalArray[0];
-          setCurrentPosition({
-            lat: first.lat,
-            lng: first.lng,
-          });
-          setSearchArray([...finalArray]);
-        });
+    const results = await prepareSearchResults(dataList, userId, {
+      tieBreakByCompanyId: true,
     });
+    const first = results[0];
+
+    if (first) {
+      setCurrentPosition({ lat: first.lat, lng: first.lng });
+    }
+    setSearchArray(results);
   }
 
   const favoriteState = (status) => {
