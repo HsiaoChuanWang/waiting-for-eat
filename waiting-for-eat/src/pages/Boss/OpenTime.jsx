@@ -1,14 +1,6 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
 import { Form, Select, TimePicker } from "antd";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-} from "firebase/firestore";
-import { default as React, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BsDashLg } from "react-icons/bs";
 import { FaMinusCircle, FaPlusCircle } from "react-icons/fa";
@@ -16,7 +8,11 @@ import { FaTrashCan } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import {
+  createOpeningTime,
+  deleteOpeningTime,
+  subscribeOpeningTimes,
+} from "../../services/repositories/openingTimeRepository.js";
 import "./openTime.css";
 
 function OpenTime() {
@@ -24,8 +20,6 @@ function OpenTime() {
   const [openTime, setOpenTime] = useState([]);
   const [addTime, setAddTime] = useState({ day: "", start: "", end: "" });
   const [isLoading, setIsLoading] = useState(true);
-  const companyRef = collection(db, "company");
-  const openTimeRef = query(collection(companyRef, companyId, "openTime"));
   const format = "HH:mm";
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -33,18 +27,11 @@ function OpenTime() {
   const [isShowPlus, setIsShowPlus] = useState(true);
 
   useEffect(() => {
-    onSnapshot(openTimeRef, (querySnapshot) => {
-      let openTimes = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, timeId: dataId };
-        openTimes.push(combine);
-      });
+    return subscribeOpeningTimes(companyId, (openTimes) => {
       setOpenTime(openTimes);
       setIsLoading(false);
     });
-  }, []);
+  }, [companyId]);
 
   function compareTime(a, b) {
     if (a.start < b.start) {
@@ -169,12 +156,12 @@ function OpenTime() {
   });
 
   async function handleDelete(timeId) {
-    await deleteDoc(doc(openTimeRef, timeId));
+    await deleteOpeningTime(companyId, timeId);
   }
 
   async function handleAddTime() {
     if (!Object.values(addTime).includes("")) {
-      await addDoc(openTimeRef, addTime);
+      await createOpeningTime(companyId, addTime);
       setAddTime({ day: "", start: "", end: "" });
       setStartTime("");
       setEndTime("");

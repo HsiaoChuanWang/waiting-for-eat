@@ -1,24 +1,18 @@
 import { PushpinOutlined } from "@ant-design/icons";
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
 import { Form, Input, Menu } from "antd";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-} from "firebase/firestore";
-import { default as React, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaTrashCan } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import {
+  createTable,
+  deleteTable,
+  subscribeTables,
+} from "../../services/repositories/tableRepository.js";
 import noTable from "./noTable.png";
-
-const rootSubmenuKeys = [];
 
 function Table() {
   const { companyId } = useParams();
@@ -26,22 +20,15 @@ function Table() {
   const [tables, setTables] = useState([]);
   const [addTable, setAddTable] = useState({ number: "", people: "" });
   const [isLoading, setIsLoading] = useState(true);
-  const companyRef = collection(db, "company");
-  const tableRef = query(collection(companyRef, companyId, "table"));
 
   useEffect(() => {
-    onSnapshot(tableRef, (querySnapshot) => {
-      let seats = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, tableId: dataId };
-        seats.push(combine);
-      });
+    return subscribeTables(companyId, (seats) => {
       setTables(seats);
       setIsLoading(false);
     });
-  }, []);
+  }, [companyId]);
+
+  const rootSubmenuKeys = [];
 
   const onOpenChange = (keys) => {
     const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
@@ -52,7 +39,7 @@ function Table() {
     }
   };
 
-  let tableList = tables.sort((firstItem, secondItem) =>
+  const tableList = [...tables].sort((firstItem, secondItem) =>
     firstItem.number > secondItem.number ? 1 : -1,
   );
 
@@ -106,12 +93,12 @@ function Table() {
   );
 
   async function handleDelete(tableId) {
-    await deleteDoc(doc(tableRef, tableId));
+    await deleteTable(companyId, tableId);
   }
 
   async function handleAddTable() {
     if (!Object.values(addTable).includes("")) {
-      await addDoc(tableRef, addTable);
+      await createTable(companyId, addTable);
       setAddTable({ number: "", people: "" });
     } else {
       toast.error("請填寫完整資訊");
