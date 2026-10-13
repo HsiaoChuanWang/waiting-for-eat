@@ -406,7 +406,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第六階段：首頁與搜尋整合
 
-- [ ] 22. `refactor(homepage): reuse shared restaurant search flow`
+- [x] 22. `refactor(homepage): reuse shared restaurant search flow`
     - 移除首頁與搜尋頁重複的 Firestore 搜尋及結果處理程式。
 
 ### 第七階段：餐廳與 Favorite

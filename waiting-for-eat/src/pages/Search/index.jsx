@@ -12,24 +12,20 @@ import {
   GOOGLE_MAP_LIBRARIES,
   SEARCH_FIELDS,
 } from "../../features/search/searchConstants.js";
-import { createSearchOptions } from "../../features/search/searchModel.js";
-import { prepareSearchResults } from "../../features/search/searchResultService.js";
 import SearchControls from "../../features/search/components/SearchControls.jsx";
 import SearchMap from "../../features/search/components/SearchMap.jsx";
 import SearchResultList from "../../features/search/components/SearchResultList.jsx";
-import {
-  findCompaniesByCategory,
-  findCompaniesByCity,
-  findCompaniesByName,
-  getCompanies,
-} from "../../services/repositories/searchRepository.js";
-import useSearchStore from "../../stores/searchStore.js";
-import useUserStore from "../../stores/userStore.js";
+import useRestaurantSearch from "../../features/search/useRestaurantSearch.js";
 
 function Search() {
-  const userId = useUserStore((state) => state.userId);
-  const searchArray = useSearchStore((state) => state.searchArray);
-  const setSearchArray = useSearchStore((state) => state.setSearchArray);
+  const {
+    cityOptions,
+    nameOptions,
+    results,
+    searchByCategory,
+    searchByCity,
+    searchByName,
+  } = useRestaurantSearch();
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
@@ -40,54 +36,25 @@ function Search() {
   const [searchPlace, setSearchPlace] = useState("");
   const [searchCategory, setSearchCategory] = useState("");
   const [currentPosition, setCurrentPosition] = useState(DEFAULT_MAP_CENTER);
-  const [restaurants, setRestaurants] = useState([]);
-  const [city, setCity] = useState([]);
   const [isShowSearchbar, setIsShowSearchbar] = useState(true);
   const [isShowResultbar, setIsShowResultbar] = useState(true);
-  useEffect(() => {
-    getCompanies().then((companyList) => {
-      setRestaurants(createSearchOptions(companyList, SEARCH_FIELDS.NAME));
-      setCity(createSearchOptions(companyList, SEARCH_FIELDS.CITY));
-    });
-  }, []);
-
-  async function getRestaurant(searchitem) {
-    const dataList = await findCompaniesByName(searchitem);
-    const results = await prepareSearchResults(dataList, userId);
-
+  async function handleRestaurant() {
+    const results = await searchByName(searchName);
     results.forEach((data) => {
       setCurrentPosition({
         lat: data.lat,
         lng: data.lng,
       });
     });
-    setSearchArray(results);
   }
 
-  function handleRestaurant() {
-    setSearchArray([]);
-    getRestaurant(searchName);
-  }
-
-  async function getPlace(searchitem) {
-    const dataList = await findCompaniesByCity(searchitem);
-    const results = await prepareSearchResults(dataList, userId);
+  async function handlePlace() {
+    const results = await searchByCity(searchPlace);
     const first = results[0];
 
     if (first) {
       setCurrentPosition({ lat: first.lat, lng: first.lng });
     }
-    setSearchArray(results);
-  }
-
-  function handlePlace() {
-    setSearchArray([]);
-    getPlace(searchPlace);
-  }
-
-  function handleCategory() {
-    setSearchArray([]);
-    getCategory(searchCategory);
   }
 
   function selectSearchCriterion(criterion, value) {
@@ -96,17 +63,13 @@ function Search() {
     setSearchCategory(criterion === SEARCH_FIELDS.CATEGORY ? value : "");
   }
 
-  async function getCategory(item) {
-    const dataList = await findCompaniesByCategory(item);
-    const results = await prepareSearchResults(dataList, userId, {
-      tieBreakByCompanyId: true,
-    });
+  async function handleCategory() {
+    const results = await searchByCategory(searchCategory);
     const first = results[0];
 
     if (first) {
       setCurrentPosition({ lat: first.lat, lng: first.lng });
     }
-    setSearchArray(results);
   }
 
   const handleShowSearchbar = () => {
@@ -139,9 +102,9 @@ function Search() {
   return (
     <div className="map:relative">
       <SearchControls
-        cityOptions={city}
+        cityOptions={cityOptions}
         isVisible={isShowSearchbar}
-        nameOptions={restaurants}
+        nameOptions={nameOptions}
         onCategoryChange={(value) =>
           selectSearchCriterion(SEARCH_FIELDS.CATEGORY, value)
         }
@@ -162,10 +125,10 @@ function Search() {
       />
 
       <div className="flex h-[calc(100vh-200px)] justify-center shadow-[0px_0px_0px_1px_rgba(0,0,0,0.16)] map:h-[calc(100vh-104px)]">
-        <SearchResultList isVisible={isShowResultbar} results={searchArray} />
+        <SearchResultList isVisible={isShowResultbar} results={results} />
 
         <div className="w-[72%] map:h-full map:w-full">
-          <SearchMap center={currentPosition} results={searchArray} />
+          <SearchMap center={currentPosition} results={results} />
         </div>
 
         <div

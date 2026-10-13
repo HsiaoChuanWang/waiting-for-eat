@@ -1,22 +1,12 @@
 import { Button } from "@nextui-org/react";
 import { Form, Select } from "antd";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import { RESTAURANT_CATEGORIES } from "../../constants/restaurant.js";
-import { SEARCH_FIELDS } from "../../features/search/searchConstants.js";
-import { createSearchOptions } from "../../features/search/searchModel.js";
-import { prepareSearchResults } from "../../features/search/searchResultService.js";
-import {
-  findCompaniesByCategory,
-  findCompaniesByCity,
-  findCompaniesByName,
-  getCompanies,
-} from "../../services/repositories/searchRepository.js";
-import useSearchStore from "../../stores/searchStore.js";
-import useUserStore from "../../stores/userStore.js";
+import useRestaurantSearch from "../../features/search/useRestaurantSearch.js";
 import Carousel from "./Carousel";
 import bbq from "./homepagePictures/bbq.jpg";
 import boss from "./homepagePictures/boss.png";
@@ -28,67 +18,39 @@ import streetFood from "./homepagePictures/streetFood.jpg";
 import sweet from "./homepagePictures/sweet.jpg";
 
 function HomePage() {
-  const setSearchArray = useSearchStore((state) => state.setSearchArray);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchName, setSearchName] = useState("");
   const [searchPlace, setSearchPlace] = useState("");
-  const [restaurants, setRestaurants] = useState([]);
-  const [city, setCity] = useState([]);
-  const userId = useUserStore((state) => state.userId);
+  const {
+    cityOptions,
+    isOptionsLoading,
+    nameOptions,
+    searchByCategory,
+    searchByCity,
+    searchByName,
+  } = useRestaurantSearch();
   const navigate = useNavigate();
   const scrollRef = useRef();
 
-  useEffect(() => {
-    getCompanies().then((companyList) => {
-      setRestaurants(createSearchOptions(companyList, SEARCH_FIELDS.NAME));
-      setCity(createSearchOptions(companyList, SEARCH_FIELDS.CITY));
-      setIsLoading(false);
-    });
-  }, []);
-
-  async function getRestaurant(searchitem) {
-    const dataList = await findCompaniesByName(searchitem);
-    const results = await prepareSearchResults(dataList, userId);
-    setSearchArray(results);
-    navigate(`/search`);
+  async function handleRestaurant() {
+    await searchByName(searchName);
+    navigate("/search");
   }
 
-  function handleRestaurant() {
-    setSearchArray([]);
-    getRestaurant(searchName);
+  async function handlePlace() {
+    await searchByCity(searchPlace);
+    navigate("/search");
   }
 
-  async function getPlace(searchitem) {
-    const dataList = await findCompaniesByCity(searchitem);
-    const results = await prepareSearchResults(dataList, userId);
-    setSearchArray(results);
-    navigate(`/search`);
-  }
-
-  function handlePlace() {
-    setSearchArray([]);
-    getPlace(searchPlace);
-  }
-
-  function handleCategory(name) {
-    setSearchArray([]);
-    getCategory(name);
-  }
-
-  async function getCategory(item) {
-    const dataList = await findCompaniesByCategory(item);
-    const results = await prepareSearchResults(dataList, userId, {
-      tieBreakByCompanyId: true,
-    });
-    setSearchArray(results);
-    navigate(`/search`);
+  async function handleCategory(category) {
+    await searchByCategory(category);
+    navigate("/search");
   }
 
   const handleClick = () => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (isLoading) {
+  if (isOptionsLoading) {
     return <IsLoading />;
   }
 
@@ -215,7 +177,7 @@ function HomePage() {
                   filterOption={(input, option) =>
                     (option?.label ?? "").includes(input)
                   }
-                  options={restaurants}
+                  options={nameOptions}
                 />
               </Form.Item>
               <Button
@@ -247,7 +209,7 @@ function HomePage() {
                   filterOption={(input, option) =>
                     (option?.label ?? "").includes(input)
                   }
-                  options={city}
+                  options={cityOptions}
                 />
               </Form.Item>
               <Button
