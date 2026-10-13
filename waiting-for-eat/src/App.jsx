@@ -1,14 +1,14 @@
 import { ConfigProvider } from "antd";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import useHeaderStore from "../src/stores/headerStore.js";
 import useUserStore from "../src/stores/userStore.js";
 import Header from "./components/Header";
+import { auth } from "./services/firebase/firebaseClient.js";
 // import RwdWarning from "./components/RwdWarning";
 
 function App() {
-  const auth = getAuth();
   const setUserId = useUserStore((state) => state.setUserId);
   const getUserInfoFromFirestoreAndSave = useUserStore(
     (state) => state.getUserInfoFromFirestoreAndSave,

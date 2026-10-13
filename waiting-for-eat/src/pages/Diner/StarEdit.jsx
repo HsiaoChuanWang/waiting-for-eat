@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { default as React, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import useStarStore from "../../stores/starStore.js";
 
 function StarEdit() {

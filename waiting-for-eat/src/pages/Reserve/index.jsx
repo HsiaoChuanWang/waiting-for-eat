@@ -20,7 +20,7 @@ import { default as React, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import useDinerStore from "../../stores/dinerStore.js";
 import useUserStore from "../../stores/userStore.js";
 import success from "./success.png";

@@ -15,7 +15,7 @@ import { FaTrashCan } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import noTable from "./noTable.png";
 
 const rootSubmenuKeys = [];

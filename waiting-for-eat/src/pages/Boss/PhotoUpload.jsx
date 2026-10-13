@@ -6,7 +6,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { default as React, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import db, { storage } from "../../firebase";
+import { db, storage } from "../../services/firebase/firebaseClient.js";
 import useUserStore from "../../stores/userStore.js";
 
 function PhotoUpload() {

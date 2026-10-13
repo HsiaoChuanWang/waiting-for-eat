@@ -6,7 +6,11 @@ import toast from "react-hot-toast";
 import { Bs2CircleFill } from "react-icons/bs";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Alert from "../../components/Alert/index.jsx";
-import db, { auth, provider } from "../../firebase";
+import {
+  auth,
+  db,
+  googleAuthProvider,
+} from "../../services/firebase/firebaseClient.js";
 import useUserStore from "../../stores/userStore.js";
 import googleLogo from "./signUpPictures/GoogleLogo.png";
 import stepTwo from "./signUpPictures/stepTwo.jpg";
@@ -56,7 +60,7 @@ function StepTwo({ setActive, identity }) {
   }
 
   const googleSignUp = async () => {
-    signInWithPopup(auth, provider)
+      signInWithPopup(auth, googleAuthProvider)
       .then((result) => {
         const user = result.user;
         setUserId(user.uid);

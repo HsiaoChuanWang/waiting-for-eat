@@ -16,7 +16,7 @@ import Alert from "../../components/Alert/index.jsx";
 import Comment from "../../components/Comment";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import NoItem from "../../components/NoItem/index.jsx";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import useUserStore from "../../stores/userStore.js";
 import tasty from "../Search/tasty.jpg";
 import Like from "./Like";

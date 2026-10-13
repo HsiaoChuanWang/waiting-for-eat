@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
-import { storage } from "../../firebase";
+import { storage } from "../../services/firebase/firebaseClient.js";
 import useUserStore from "../../stores/userStore.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
 

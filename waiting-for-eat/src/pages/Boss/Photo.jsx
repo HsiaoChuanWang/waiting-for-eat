@@ -3,7 +3,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import noMenu from "../Restaurant/restaurantPictures/noMenu.png";
 import boss from "../SignUp/signUpPictures/boss.png";
 

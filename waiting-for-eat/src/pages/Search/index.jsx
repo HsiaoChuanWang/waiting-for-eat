@@ -25,7 +25,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading";
 import NoItem from "../../components/NoItem";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import useSearchStore from "../../stores/searchStore.js";
 import useUserStore from "../../stores/userStore.js";
 import MyGoogleMaps from "./MyGoogleMaps";

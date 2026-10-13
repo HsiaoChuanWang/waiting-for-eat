@@ -7,7 +7,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
-import db, { storage } from "../../firebase";
+import { db, storage } from "../../services/firebase/firebaseClient.js";
 import useUserStore from "../../stores/userStore.js";
 
 function BossInfoEdit() {

@@ -19,7 +19,7 @@ import {
 import { default as React, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import noSchedule from "./noSchedule.png";
 import "./schedule.css";
 

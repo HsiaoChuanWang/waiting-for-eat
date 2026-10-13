@@ -1,7 +1,7 @@
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import db from "../firebase";
+import { db } from "../services/firebase/firebaseClient.js";
 import {
   getCompanyInfoFromFirestore,
   getUserInfoFromFirestore,

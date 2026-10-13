@@ -1,9 +1,9 @@
-import { getAuth, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import db from "../../firebase";
+import { auth, db } from "../../services/firebase/firebaseClient.js";
 import useHeaderStore from "../../stores/headerStore.js";
 import useTestStore from "../../stores/testStore.js";
 import useUserStore from "../../stores/userStore.js";
@@ -21,7 +21,6 @@ function Header() {
   const detailInfo = useUserStore((state) => state.detailInfo);
   const loginStatus = useHeaderStore((state) => state.loginStatus);
   const setHeader = useHeaderStore((state) => state.setHeader);
-  const auth = getAuth();
 
   useEffect(() => {
     if (userId) {

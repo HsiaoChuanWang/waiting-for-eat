@@ -16,7 +16,7 @@ import {
   HiThumbUp,
 } from "react-icons/hi";
 import { useParams } from "react-router-dom";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import useUserStore from "../../stores/userStore.js";
 
 function Like() {

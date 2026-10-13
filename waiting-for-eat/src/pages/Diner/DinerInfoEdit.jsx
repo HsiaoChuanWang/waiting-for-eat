@@ -4,7 +4,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import db, { storage } from "../../firebase";
+import { db, storage } from "../../services/firebase/firebaseClient.js";
 import useUserStore from "../../stores/userStore.js";
 
 function DinerInfoEdit() {

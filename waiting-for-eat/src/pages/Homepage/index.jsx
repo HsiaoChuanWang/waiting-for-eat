@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import useSearchStore from "../../stores/searchStore.js";
 import useUserStore from "../../stores/userStore.js";
 import Carousel from "./Carousel";

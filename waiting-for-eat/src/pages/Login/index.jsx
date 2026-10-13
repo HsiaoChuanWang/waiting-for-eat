@@ -1,6 +1,5 @@
 import { Input } from "@nextui-org/react";
 import {
-  getAuth,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
@@ -9,7 +8,10 @@ import toast from "react-hot-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import Alert from "../../components/Alert";
-import { provider } from "../../firebase";
+import {
+  auth,
+  googleAuthProvider,
+} from "../../services/firebase/firebaseClient.js";
 import useTestStore from "../../stores/testStore.js";
 import useUserStore from "../../stores/userStore.js";
 import googleLogo from "../SignUp/signUpPictures/GoogleLogo.png";
@@ -42,7 +44,6 @@ function Login() {
     }
   }, []);
 
-  const auth = getAuth();
   function nativeLogin() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -68,7 +69,7 @@ function Login() {
   }
 
   function googleLogin() {
-    signInWithPopup(auth, provider)
+    signInWithPopup(auth, googleAuthProvider)
       .then((userCredential) => {
         const user = userCredential.user;
         Promise.all([

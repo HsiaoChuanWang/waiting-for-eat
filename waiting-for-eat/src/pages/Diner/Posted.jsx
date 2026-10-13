@@ -15,7 +15,7 @@ import { FaPenToSquare } from "react-icons/fa6";
 import { IoRestaurant, IoTimeSharp } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import db from "../../firebase";
+import { db } from "../../services/firebase/firebaseClient.js";
 import noData from "./noData.png";
 
 function Posted() {
