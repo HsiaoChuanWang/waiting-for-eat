@@ -384,7 +384,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 - [x] 13. `refactor(signup): centralize signup state and constants`
     - 統一註冊步驟、角色、選項與表單資料。
-- [ ] 14. `refactor(signup): extract diner registration flow`
+- [x] 14. `refactor(signup): extract diner registration flow`
     - 整理食客註冊、驗證與頭像上傳流程。
 - [ ] 15. `refactor(signup): extract boss registration flow`
     - 整理老闆、餐廳、地址與地圖資料流程。

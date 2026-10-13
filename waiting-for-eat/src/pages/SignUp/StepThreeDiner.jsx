@@ -1,59 +1,16 @@
 import { Form, Input, Radio } from "antd";
-import { useRef } from "react";
-import toast from "react-hot-toast";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
-import { saveUser } from "../../services/repositories/userRepository.js";
-import { uploadImage } from "../../services/storage/imageStorage.js";
-import useSignupStore from "../../stores/signupStore.js";
-import useUserStore from "../../stores/userStore.js";
-import { SIGNUP_STEPS } from "./signupConstants.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
+import useDinerRegistration from "./useDinerRegistration.js";
 
 function StepThreeDiner() {
-  const userId = useUserStore((state) => state.userId);
-  const setDetailInfo = useUserStore((state) => state.setDetailInfo);
-  const detail = useSignupStore((state) => state.userForm);
-  const updateUserForm = useSignupStore((state) => state.updateUserForm);
-  const setActiveStep = useSignupStore((state) => state.setActiveStep);
-
-  const checkRef = useRef(false);
-
-  async function handlePicture(picture) {
-    const downloadURL = await uploadImage(userId, picture);
-    updateUserForm("picture", downloadURL);
-  }
-
-  const handleData = (e) => {
-    let target = e.target.name;
-    let value = e.target.value;
-
-    switch (target) {
-      case "userName":
-        updateUserForm("userName", value);
-        break;
-      case "gender":
-        updateUserForm("gender", value);
-        break;
-      case "phone":
-        updateUserForm("phone", value);
-        break;
-      case "picture":
-        handlePicture(e.target.files[0]);
-        break;
-    }
-  };
-
-  async function nextStep() {
-    if (detail.userName != "" && detail.gender != "" && detail.phone != "") {
-      checkRef.current = false;
-      setDetailInfo(detail);
-      await saveUser(userId, detail);
-      setActiveStep(SIGNUP_STEPS.DINER_COMPLETE);
-    } else {
-      toast.error("請填寫完整資訊");
-    }
-  }
+  const {
+    submitDinerRegistration,
+    updateField,
+    uploadProfilePicture,
+    userForm,
+  } = useDinerRegistration();
 
   return (
     <div className="relative flex h-[calc(100vh-96px)] w-screen justify-center">
@@ -80,8 +37,8 @@ function StepThreeDiner() {
               <Input
                 className="h-8 w-28"
                 name="userName"
-                onChange={(e) => handleData(e)}
-                value={detail.userName}
+                onChange={updateField}
+                value={userForm.userName}
               />
             </div>
 
@@ -92,8 +49,8 @@ function StepThreeDiner() {
 
               <Radio.Group
                 name="gender"
-                onChange={(e) => handleData(e)}
-                value={detail.gender}
+                onChange={updateField}
+                value={userForm.gender}
               >
                 <Radio value="小姐">女</Radio>
                 <Radio value="先生">男</Radio>
@@ -107,8 +64,8 @@ function StepThreeDiner() {
               <Input
                 className="h-8 w-64"
                 name="phone"
-                onChange={(e) => handleData(e)}
-                value={detail.phone}
+                onChange={updateField}
+                value={userForm.phone}
                 placeholder="0911-654-987"
               />
             </div>
@@ -122,14 +79,16 @@ function StepThreeDiner() {
                 type="file"
                 accept="image/*"
                 name="picture"
-                onChange={(e) => handleData(e)}
+                onChange={(event) =>
+                  uploadProfilePicture(event.target.files[0])
+                }
               />
             </div>
           </Form>
 
           <button
             className="mr-8 h-10 w-20 self-end rounded-lg bg-[#ff850e] font-bold text-white hover:bg-[#ff850e]/80"
-            onClick={nextStep}
+            onClick={submitDinerRegistration}
           >
             下一步
           </button>
