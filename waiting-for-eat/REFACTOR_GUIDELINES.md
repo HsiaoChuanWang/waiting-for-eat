@@ -335,7 +335,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ## 本專案 Commit 執行計畫
 
-本專案預計以 36 個小型 commit 完成重構。這是依目前已知程式碼與依賴制定的基準計畫；若執行時發現隱藏依賴、必要修復或原計畫範圍不合理，必須先說明原因與影響，經確認後才能調整 commit 數量或順序。
+本專案預計以 42 個小型 commit 完成重構。前 36 個 commit 完成後重新執行全專案架構稽核，確認仍有資料層洩漏、依賴方向反轉、重複導覽狀態與大型 UI 元件等問題，因此追加 6 個收斂 commit。若後續執行時再發現隱藏依賴、必要修復或原計畫範圍不合理，必須先說明原因與影響，經確認後才能調整 commit 數量或順序。
 
 每個 commit 採用以下人工確認流程：
 
@@ -455,6 +455,27 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 - [x] 36. `chore: complete accessibility and project verification`
     - 補齊圖片 `alt`、必要的 Loading／Empty／Error 狀態，執行 lint、test、build 與主要流程驗證。
     - 驗證結果：lint 與 production build 通過，搜尋／排程／訂位 model smoke checks 通過；目前專案尚未配置自動化 test script。
+
+### 第十三階段：架構收斂
+
+- [ ] 37. `refactor(data): remove direct Firebase access from UI`
+    - 移除註冊、食客紀錄、食記編輯與 Header 對 Firebase client 的直接操作。
+    - 統一資料流為 UI → feature hook/service → repository/auth service → Firebase。
+- [ ] 38. `refactor(architecture): enforce feature and service boundaries`
+    - 修正 service 依賴 feature、store 依賴 page，以及 feature 引用 page asset 的反向依賴。
+    - 將跨 Feature 使用的 constants、model 與 assets 移到穩定且語意一致的位置。
+- [ ] 39. `refactor(navigation): derive sidebar state from routes`
+    - 由目前 route 推導 Boss 與 Diner sidebar 的選取狀態。
+    - 移除與 URL 重複、可能不同步的 `bossStore` 與 `dinerStore` 導覽狀態。
+- [ ] 40. `refactor(ui): split remaining large page components`
+    - 依職責拆分仍混合表單狀態、業務規則與多區塊 UI 的大型頁面。
+    - 優先處理 OpenTime、BossInfoEdit、Homepage、Reserve、Schedule、Post 與 EatenShop，避免僅為縮短行數而過度拆分。
+- [ ] 41. `refactor(ui): unify dashboard navigation and record cards`
+    - 以設定資料與共用元件統一 Boss／Diner 後台導覽。
+    - 整理食客收藏、用餐、訂位、評論與食記清單中重複的 card、list 與 empty layout。
+- [ ] 42. `test: add model and flow regression coverage`
+    - 建立 test script 與測試環境。
+    - 覆蓋搜尋、訂位桌位分配、排程移動、路由權限、repository mapper、登入註冊，以及 favorite／review 狀態操作。
 
 ## 完成檢查清單
 
