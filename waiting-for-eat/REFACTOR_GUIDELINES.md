@@ -360,7 +360,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 - [x] 4. `refactor(firebase): centralize Firebase client initialization`
    - 整理 Firebase Auth、Firestore 與 Storage 的初始化及 exports。
-- [ ] 5. `refactor(data): add Firestore document mappers`
+- [x] 5. `refactor(data): add Firestore document mappers`
    - 統一 Firestore document ID 與資料轉換方式。
 - [ ] 6. `refactor(data): extract user and company repositories`
    - 抽離 user 與 company collections 的讀寫操作。
