@@ -44,14 +44,14 @@ Feature 邊界可在盤點後調整，但必須記錄原因。每次只處理一
 
 各類模組的建議職責：
 
-| 類型 | 職責 |
-| --- | --- |
-| UI Component | 呈現畫面與接收使用者操作 |
-| Feature Component | 組合 UI 並處理特定功能流程 |
-| Custom Hook | 管理 React 狀態、副作用及可重用互動邏輯 |
-| API / Service | 處理後端請求、認證、錯誤與回傳資料 |
-| Utility | 執行無副作用的資料處理或格式轉換 |
-| Store | 管理確實需要跨模組共享的狀態 |
+| 類型              | 職責                                    |
+| ----------------- | --------------------------------------- |
+| UI Component      | 呈現畫面與接收使用者操作                |
+| Feature Component | 組合 UI 並處理特定功能流程              |
+| Custom Hook       | 管理 React 狀態、副作用及可重用互動邏輯 |
+| API / Service     | 處理後端請求、認證、錯誤與回傳資料      |
+| Utility           | 執行無副作用的資料處理或格式轉換        |
+| Store             | 管理確實需要跨模組共享的狀態            |
 
 小型且容易理解的 Component 不需要為了符合形式而強制拆分。
 
@@ -148,14 +148,14 @@ API 資料結構與 UI 使用的資料結構不必完全相同。必要時使用
 
 不要將所有邏輯都放進名稱模糊的 `helpers.js`。應依性質使用具體名稱與位置：
 
-| 邏輯 | 建議位置或命名 |
-| --- | --- |
-| 純函式、格式轉換 | `utils/formatPrice.js` |
-| React 狀態或副作用 | `hooks/useOrderForm.js` |
-| 商業規則 | `features/orders/utils/calculateOrderTotal.js` |
-| 後端請求 | `features/orders/api/getOrders.js` |
-| API 資料轉換 | `features/orders/api/mapOrderResponse.js` |
-| 固定設定值 | `constants/` 或 Feature 內的 constants |
+| 邏輯               | 建議位置或命名                                 |
+| ------------------ | ---------------------------------------------- |
+| 純函式、格式轉換   | `utils/formatPrice.js`                         |
+| React 狀態或副作用 | `hooks/useOrderForm.js`                        |
+| 商業規則           | `features/orders/utils/calculateOrderTotal.js` |
+| 後端請求           | `features/orders/api/getOrders.js`             |
+| API 資料轉換       | `features/orders/api/mapOrderResponse.js`      |
+| 固定設定值         | `constants/` 或 Feature 內的 constants         |
 
 純 utility 應盡量保持無副作用，以利測試與重複使用。
 
@@ -224,16 +224,16 @@ assets/
 
 ## 命名規範
 
-| 類型 | 規範 | 範例 |
-| --- | --- | --- |
-| React Component | PascalCase | `UserCard` |
-| Component 檔案 | PascalCase | `UserCard.jsx` |
-| Custom Hook | `use` + PascalCase | `useUserCard.js` |
-| 一般函式與變數 | camelCase | `formatPrice` |
-| Type / Interface | PascalCase | `UserCardProps` |
-| CSS Module | Component 名稱 | `UserCard.module.css` |
-| 測試檔案 | 對應檔名 + `.test` | `UserCard.test.jsx` |
-| Storybook | 對應檔名 + `.stories` | `UserCard.stories.jsx` |
+| 類型             | 規範                  | 範例                   |
+| ---------------- | --------------------- | ---------------------- |
+| React Component  | PascalCase            | `UserCard`             |
+| Component 檔案   | PascalCase            | `UserCard.jsx`         |
+| Custom Hook      | `use` + PascalCase    | `useUserCard.js`       |
+| 一般函式與變數   | camelCase             | `formatPrice`          |
+| Type / Interface | PascalCase            | `UserCardProps`        |
+| CSS Module       | Component 名稱        | `UserCard.module.css`  |
+| 測試檔案         | 對應檔名 + `.test`    | `UserCard.test.jsx`    |
+| Storybook        | 對應檔名 + `.stories` | `UserCard.stories.jsx` |
 
 資料夾與檔案命名應在整個專案中保持一致。
 
@@ -242,7 +242,7 @@ assets/
 可使用 `index.js` 明確控制模組允許外部使用的內容：
 
 ```js
-export { default as UserCard } from './UserCard';
+export { default as UserCard } from "./UserCard";
 ```
 
 其他模組應優先從公開介面引入，避免依賴內部目錄結構。`index.js` 不應無限制匯出所有內部實作，以免產生循環依賴或模糊模組邊界。
@@ -350,132 +350,132 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 ### 第一階段：規範與 Baseline
 
 - [x] 1. `docs: define project refactor strategy`
-   - 更新全專案重構規範、執行階段與 commit 原則。
+  - 更新全專案重構規範、執行階段與 commit 原則。
 - [x] 2. `docs: document current application architecture`
-   - 記錄路由、頁面、Stores、Firebase collections、外部服務與主要資料流。
+  - 記錄路由、頁面、Stores、Firebase collections、外部服務與主要資料流。
 - [x] 3. `docs: record refactor verification baseline`
-   - 記錄重構前的 lint、test、build 結果及主要功能手動驗證清單。
+  - 記錄重構前的 lint、test、build 結果及主要功能手動驗證清單。
 
 ### 第二階段：基礎設施
 
 - [x] 4. `refactor(firebase): centralize Firebase client initialization`
-   - 整理 Firebase Auth、Firestore 與 Storage 的初始化及 exports。
+  - 整理 Firebase Auth、Firestore 與 Storage 的初始化及 exports。
 - [x] 5. `refactor(data): add Firestore document mappers`
-   - 統一 Firestore document ID 與資料轉換方式。
+  - 統一 Firestore document ID 與資料轉換方式。
 - [x] 6. `refactor(data): extract user and company repositories`
-   - 抽離 user 與 company collections 的讀寫操作。
+  - 抽離 user 與 company collections 的讀寫操作。
 - [x] 7. `refactor(storage): centralize image upload operations`
-   - 建立共用圖片上傳介面；此 commit 只集中現有行為，不自行更換儲存供應商。
+  - 建立共用圖片上傳介面；此 commit 只集中現有行為，不自行更換儲存供應商。
 - [x] 8. `refactor(store): remove Firebase operations from user store`
-   - 讓 Zustand Store 專注於狀態管理，不直接存取 Firebase。
+  - 讓 Zustand Store 專注於狀態管理，不直接存取 Firebase。
 
 ### 第三階段：Application 與身份驗證
 
 - [x] 9. `refactor(auth): extract authentication session hook`
-   - 從 `App.jsx` 抽離登入狀態監聽與 session 初始化。
+  - 從 `App.jsx` 抽離登入狀態監聽與 session 初始化。
 - [x] 10. `refactor(router): extract route access guards`
-    - 將食客、老闆與未登入使用者的路由限制移出 `App.jsx`。
+  - 將食客、老闆與未登入使用者的路由限制移出 `App.jsx`。
 - [x] 11. `refactor(header): separate header state and navigation`
-    - 拆分 Header 的登入狀態、導航資料與畫面責任。
+  - 拆分 Header 的登入狀態、導航資料與畫面責任。
 - [x] 12. `refactor(auth): simplify login flow`
-    - 整理一般登入、Google 登入與測試帳號流程。
+  - 整理一般登入、Google 登入與測試帳號流程。
 
 ### 第四階段：註冊流程
 
 - [x] 13. `refactor(signup): centralize signup state and constants`
-    - 統一註冊步驟、角色、選項與表單資料。
+  - 統一註冊步驟、角色、選項與表單資料。
 - [x] 14. `refactor(signup): extract diner registration flow`
-    - 整理食客註冊、驗證與頭像上傳流程。
+  - 整理食客註冊、驗證與頭像上傳流程。
 - [x] 15. `refactor(signup): extract boss registration flow`
-    - 整理老闆、餐廳、地址與地圖資料流程。
+  - 整理老闆、餐廳、地址與地圖資料流程。
 
 ### 第五階段：搜尋
 
 - [x] 16. `refactor(search): define search constants and data model`
-    - 集中分類選項、預設地圖位置與搜尋資料格式。
+  - 集中分類選項、預設地圖位置與搜尋資料格式。
 - [x] 17. `refactor(search): extract Firestore search repository`
-    - 抽離依名稱、地區與類別執行的 Firestore 查詢。
+  - 抽離依名稱、地區與類別執行的 Firestore 查詢。
 - [x] 18. `refactor(search): consolidate result enrichment and sorting`
-    - 統一 favorite 補充、結果排序與非同步處理。
+  - 統一 favorite 補充、結果排序與非同步處理。
 - [x] 19. `refactor(search): extract search controls`
-    - 拆出搜尋條件與操作表單元件。
+  - 拆出搜尋條件與操作表單元件。
 - [x] 20. `refactor(search): extract result list components`
-    - 拆出結果清單、餐廳卡片與 favorite 狀態元件。
+  - 拆出結果清單、餐廳卡片與 favorite 狀態元件。
 - [x] 21. `refactor(search): simplify map integration`
-    - 統一地圖 props、marker 清理與搜尋資料來源。
+  - 統一地圖 props、marker 清理與搜尋資料來源。
 
 ### 第六階段：首頁與搜尋整合
 
 - [x] 22. `refactor(homepage): reuse shared restaurant search flow`
-    - 移除首頁與搜尋頁重複的 Firestore 搜尋及結果處理程式。
+  - 移除首頁與搜尋頁重複的 Firestore 搜尋及結果處理程式。
 
 ### 第七階段：餐廳與 Favorite
 
 - [x] 23. `refactor(restaurant): extract restaurant data repository`
-    - 集中餐廳、菜單、活動與食記資料取得。
+  - 集中餐廳、菜單、活動與食記資料取得。
 - [x] 24. `refactor(restaurant): split restaurant page sections`
-    - 拆分餐廳資訊、菜單、活動與評論區塊。
+  - 拆分餐廳資訊、菜單、活動與評論區塊。
 - [x] 25. `refactor(favorite): centralize favorite operations`
-    - 統一 like、dislike 與 eaten 的查詢及更新。
+  - 統一 like、dislike 與 eaten 的查詢及更新。
 
 ### 第八階段：食記與評論
 
 - [x] 26. `refactor(post): extract post repository and data mapping`
-    - 集中食記查詢、新增、修改、刪除與資料轉換。
+  - 集中食記查詢、新增、修改、刪除與資料轉換。
 - [x] 27. `refactor(editor): share post editor image handling`
-    - 整合新增食記、修改食記與活動編輯器的圖片處理邏輯。
+  - 整合新增食記、修改食記與活動編輯器的圖片處理邏輯。
 - [x] 28. `refactor(review): centralize rating and comment operations`
-    - 整理新增評分、修改評分、刪除評論與餐廳總評分更新。
+  - 整理新增評分、修改評分、刪除評論與餐廳總評分更新。
 
 ### 第九階段：食客後台
 
 - [x] 29. `refactor(diner): simplify diner profile flow`
-    - 整理食客資料顯示與編輯流程。
+  - 整理食客資料顯示與編輯流程。
 - [x] 30. `refactor(diner): consolidate diner record lists`
-    - 整合收藏、不喜歡、吃過、訂位、評論與食記清單的共用流程。
+  - 整合收藏、不喜歡、吃過、訂位、評論與食記清單的共用流程。
 
 ### 第十階段：老闆後台
 
 - [x] 31. `refactor(boss): simplify company profile and media flows`
-    - 整理店家資料、圖片、菜單與活動流程。
+  - 整理店家資料、圖片、菜單與活動流程。
 - [x] 32. `refactor(boss): extract opening time and table operations`
-    - 整理營業時間與桌位管理操作。
+  - 整理營業時間與桌位管理操作。
 - [x] 33. `refactor(boss): split schedule and order management`
-    - 拆分排程、訂單狀態與座位處理邏輯。
+  - 拆分排程、訂單狀態與座位處理邏輯。
 
 ### 第十一階段：訂位
 
 - [x] 34. `refactor(reservation): separate reservation data and UI flow`
-    - 拆分餐廳資料、營業時間、桌位、訂單檢查與送出流程。
+  - 拆分餐廳資料、營業時間、桌位、訂單檢查與送出流程。
 
 ### 第十二階段：全專案整理與驗證
 
 - [x] 35. `refactor(shared): organize shared UI assets and remove dead code`
-    - 整理確實共用的 UI、Assets 與 Stores，並移除確認未使用的程式碼及依賴。
+  - 整理確實共用的 UI、Assets 與 Stores，並移除確認未使用的程式碼及依賴。
 - [x] 36. `chore: complete accessibility and project verification`
-    - 補齊圖片 `alt`、必要的 Loading／Empty／Error 狀態，執行 lint、test、build 與主要流程驗證。
-    - 驗證結果：lint 與 production build 通過，搜尋／排程／訂位 model smoke checks 通過；目前專案尚未配置自動化 test script。
+  - 補齊圖片 `alt`、必要的 Loading／Empty／Error 狀態，執行 lint、test、build 與主要流程驗證。
+  - 驗證結果：lint 與 production build 通過，搜尋／排程／訂位 model smoke checks 通過；目前專案尚未配置自動化 test script。
 
 ### 第十三階段：架構收斂
 
 - [x] 37. `refactor(data): remove direct Firebase access from UI`
-    - 移除註冊、食客紀錄、食記編輯與 Header 對 Firebase client 的直接操作。
-    - 統一資料流為 UI → feature hook/service → repository/auth service → Firebase。
+  - 移除註冊、食客紀錄、食記編輯與 Header 對 Firebase client 的直接操作。
+  - 統一資料流為 UI → feature hook/service → repository/auth service → Firebase。
 - [x] 38. `refactor(architecture): enforce feature and service boundaries`
-    - 修正 service 依賴 feature、store 依賴 page，以及 feature 引用 page asset 的反向依賴。
-    - 將跨 Feature 使用的 constants、model 與 assets 移到穩定且語意一致的位置。
+  - 修正 service 依賴 feature、store 依賴 page，以及 feature 引用 page asset 的反向依賴。
+  - 將跨 Feature 使用的 constants、model 與 assets 移到穩定且語意一致的位置。
 - [x] 39. `refactor(navigation): derive sidebar state from routes`
-    - 由目前 route 推導 Boss 與 Diner sidebar 的選取狀態。
-    - 移除與 URL 重複、可能不同步的 `bossStore` 與 `dinerStore` 導覽狀態。
+  - 由目前 route 推導 Boss 與 Diner sidebar 的選取狀態。
+  - 移除與 URL 重複、可能不同步的 `bossStore` 與 `dinerStore` 導覽狀態。
 - [x] 40. `refactor(ui): split remaining large page components`
-    - 依職責拆分仍混合表單狀態、業務規則與多區塊 UI 的大型頁面。
-    - 優先處理 OpenTime、BossInfoEdit、Homepage、Reserve、Schedule、Post 與 EatenShop，避免僅為縮短行數而過度拆分。
+  - 依職責拆分仍混合表單狀態、業務規則與多區塊 UI 的大型頁面。
+  - 優先處理 OpenTime、BossInfoEdit、Homepage、Reserve、Schedule、Post 與 EatenShop，避免僅為縮短行數而過度拆分。
 - [x] 41. `refactor(ui): unify dashboard navigation and record cards`
-    - 以設定資料與共用元件統一 Boss／Diner 後台導覽。
-    - 整理食客收藏、用餐、訂位、評論與食記清單中重複的 card、list 與 empty layout。
-- [ ] 42. `test: add model and flow regression coverage`
-    - 建立 test script 與測試環境。
-    - 覆蓋搜尋、訂位桌位分配、排程移動、路由權限、repository mapper、登入註冊，以及 favorite／review 狀態操作。
+  - 以設定資料與共用元件統一 Boss／Diner 後台導覽。
+  - 整理食客收藏、用餐、訂位、評論與食記清單中重複的 card、list 與 empty layout。
+- [x] 42. `test: add model and flow regression coverage`
+  - 建立 test script 與測試環境。
+  - 覆蓋搜尋、訂位桌位分配、排程移動、路由權限、repository mapper、登入註冊，以及 favorite／review 狀態操作。
 
 ## 完成檢查清單
 
