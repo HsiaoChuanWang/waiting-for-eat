@@ -436,7 +436,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第十階段：老闆後台
 
-- [ ] 31. `refactor(boss): simplify company profile and media flows`
+- [x] 31. `refactor(boss): simplify company profile and media flows`
     - 整理店家資料、圖片、菜單與活動流程。
 - [ ] 32. `refactor(boss): extract opening time and table operations`
     - 整理營業時間與桌位管理操作。

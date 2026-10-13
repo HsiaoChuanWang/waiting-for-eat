@@ -1,6 +1,5 @@
 import { Button } from "@nextui-org/react";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BsTelephoneFill } from "react-icons/bs";
 import { IoMdPin } from "react-icons/io";
 import { IoRestaurant } from "react-icons/io5";
@@ -9,7 +8,9 @@ import { PiPhoneCallFill } from "react-icons/pi";
 import { TbGenderFemale } from "react-icons/tb";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import useCompanyProfile from "../../features/boss/useCompanyProfile.js";
+import useDinerProfile from "../../features/diner/useDinerProfile.js";
+import { getCompanyCategoryType } from "../../services/repositories/companyRepository.js";
 import useUserStore from "../../stores/userStore.js";
 import boss from "../SignUp/signUpPictures/boss.png";
 
@@ -17,39 +18,26 @@ function BossInfo() {
   const { companyId } = useParams();
   const navigate = useNavigate();
   const [type, setType] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
   const userId = useUserStore((state) => state.userId);
-  const [userData, setUserData] = useState({});
-  const [companyData, setCompanyData] = useState({});
-
-  async function getCategory(category) {
-    const categoryRef = doc(db, "category", category);
-    await getDoc(categoryRef).then((res) => {
-      const category = res.data();
-      setType(category.type);
-    });
-  }
+  const { isLoading: isUserLoading, profile: userData = {} } =
+    useDinerProfile(userId);
+  const { company: companyData = {}, isLoading: isCompanyLoading } =
+    useCompanyProfile(companyId);
 
   useEffect(() => {
-    if (userId) {
-      const userSnap = onSnapshot(doc(db, "user", userId), (doc) => {
-        const data = doc.data();
-        setUserData(data);
-      });
+    if (!companyData.category) return;
 
-      const companySnap = onSnapshot(doc(db, "company", companyId), (doc) => {
-        const data = doc.data();
-        setCompanyData(data);
-        const category = data.category;
-        getCategory(category);
-        setIsLoading(false);
-      });
+    let isActive = true;
+    getCompanyCategoryType(companyData.category).then((categoryType) => {
+      if (isActive) setType(categoryType);
+    });
 
-      return companySnap, userSnap;
-    }
-  }, [userId]);
+    return () => {
+      isActive = false;
+    };
+  }, [companyData.category]);
 
-  if (isLoading) {
+  if (isUserLoading || isCompanyLoading) {
     return <IsLoading />;
   }
 

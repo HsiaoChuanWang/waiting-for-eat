@@ -1,26 +1,13 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
-import { doc, onSnapshot } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import useCompanyProfile from "../../features/boss/useCompanyProfile.js";
 import noActivity from "../Restaurant/restaurantPictures/noActivity.png";
 
 function Activity() {
   const { companyId } = useParams();
   const navigate = useNavigate();
-  const [activity, setActivity] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const activitySnap = onSnapshot(doc(db, "company", companyId), (doc) => {
-      const data = doc.data();
-      setActivity(data);
-      setIsLoading(false);
-    });
-
-    return activitySnap;
-  }, []);
+  const { company: activity = {}, isLoading } = useCompanyProfile(companyId);
 
   if (isLoading) {
     return <IsLoading />;

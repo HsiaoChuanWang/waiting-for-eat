@@ -1,15 +1,15 @@
 import { Button } from "@nextui-org/react";
 import { ContentState, EditorState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import htmlToDraft from "html-to-draftjs";
 import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useNavigate, useParams } from "react-router-dom";
+import useCompanyProfile from "../../features/boss/useCompanyProfile.js";
 import { renderEditorMediaBlock } from "../../features/editor/editorImageRenderer.js";
 import useEditorImageUpload from "../../features/editor/useEditorImageUpload.js";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { updateCompany } from "../../services/repositories/companyRepository.js";
 
 function ActivityEdit() {
   const navigate = useNavigate();
@@ -17,26 +17,23 @@ function ActivityEdit() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [isPhoneSize, setIsPhoneSize] = useState(false);
   const { toolbar } = useEditorImageUpload();
+  const { company } = useCompanyProfile(companyId);
 
   function onEditorStateChange(e) {
     setEditorState(e);
   }
 
   useEffect(() => {
-    const companySnap = onSnapshot(doc(db, "company", companyId), (doc) => {
-      const data = doc.data();
-      const blocksFromHtml = htmlToDraft(data.description);
-      const { contentBlocks, entityMap } = blocksFromHtml;
-      const contentState = ContentState.createFromBlockArray(
-        contentBlocks,
-        entityMap,
-      );
-      const editorState = EditorState.createWithContent(contentState);
-      setEditorState(editorState);
-    });
+    if (!company) return;
 
-    return companySnap;
-  }, [companyId]);
+    const blocksFromHtml = htmlToDraft(company.description ?? "");
+    const { contentBlocks, entityMap } = blocksFromHtml;
+    const contentState = ContentState.createFromBlockArray(
+      contentBlocks,
+      entityMap,
+    );
+    setEditorState(EditorState.createWithContent(contentState));
+  }, [company]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -59,8 +56,7 @@ function ActivityEdit() {
       convertToRaw(editorState.getCurrentContent()),
     );
 
-    const companyRef = doc(db, "company", companyId);
-    await updateDoc(companyRef, {
+    await updateCompany(companyId, {
       description: uploadHtml,
     });
   }

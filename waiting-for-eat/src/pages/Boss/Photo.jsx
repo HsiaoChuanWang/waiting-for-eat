@@ -1,27 +1,14 @@
 import { Button, ScrollShadow } from "@nextui-org/react";
-import { doc, onSnapshot } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import useCompanyProfile from "../../features/boss/useCompanyProfile.js";
 import noMenu from "../Restaurant/restaurantPictures/noMenu.png";
 import boss from "../SignUp/signUpPictures/boss.png";
 
 function Photo() {
   const { companyId } = useParams();
   const navigate = useNavigate();
-  const [companyData, setCompanyData] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const companySnap = onSnapshot(doc(db, "company", companyId), (result) => {
-      const data = result.data();
-      setCompanyData(data);
-      setIsLoading(false);
-    });
-
-    return companySnap;
-  }, []);
+  const { company: companyData = {}, isLoading } = useCompanyProfile(companyId);
 
   const mainPicture = companyData.picture ? (
     <img className="ml-6 w-80 phone:ml-0" src={companyData.picture} />
@@ -63,14 +50,7 @@ function Photo() {
                         className="w-[180px] min-w-[180px] phone:w-64"
                         key={index}
                       >
-                        <img
-                          className="cursor-pointer px-2"
-                          src={picture}
-                          onClick={() => {
-                            setPosition(index);
-                            setDisplay(true);
-                          }}
-                        />
+                        <img className="px-2" src={picture} />
                       </div>
                     ))
                   ) : (

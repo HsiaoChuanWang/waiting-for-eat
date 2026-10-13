@@ -1,12 +1,15 @@
 import { Card, ScrollShadow } from "@nextui-org/react";
 import { useLoadScript } from "@react-google-maps/api";
 import { Button, Form, Input, Radio, Select } from "antd";
-import { doc, updateDoc } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import IsLoading from "../../components/IsLoading/index.jsx";
+import useCompanyProfile from "../../features/boss/useCompanyProfile.js";
+import useDinerProfile from "../../features/diner/useDinerProfile.js";
+import { updateCompany as saveCompany } from "../../services/repositories/companyRepository.js";
+import { updateUser as saveUser } from "../../services/repositories/userRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
 import useUserStore from "../../stores/userStore.js";
 
@@ -17,31 +20,39 @@ function BossInfoEdit() {
   const { companyId } = useParams();
   const navigate = useNavigate();
   const userId = useUserStore((state) => state.userId);
-  const detailInfo = useUserStore((state) => state.detailInfo);
-  const [updateUser, setUpdateUser] = useState({
-    userName: detailInfo.userName,
-    gender: detailInfo.gender,
-    phone: detailInfo.phone,
-  });
+  const { isLoading: isUserLoading, profile } = useDinerProfile(userId);
+  const { company, isLoading: isCompanyLoading } = useCompanyProfile(companyId);
+  const [updateUser, setUpdateUser] = useState({});
+  const [updateCompany, setUpdateCompany] = useState({});
 
-  const companyInfo = useUserStore((state) => state.companyInfo);
-  const [updateCompany, setUpdateCompany] = useState({
-    name: companyInfo.name,
-    city: companyInfo.city,
-    district: companyInfo.district,
-    address: companyInfo.address,
-    phone: companyInfo.phone,
-    category: companyInfo.category,
-  });
+  useEffect(() => {
+    if (!profile) return;
+    setUpdateUser({
+      gender: profile.gender,
+      phone: profile.phone,
+      userName: profile.userName,
+    });
+  }, [profile]);
+
+  useEffect(() => {
+    if (!company) return;
+    setUpdateCompany({
+      address: company.address,
+      category: company.category,
+      city: company.city,
+      district: company.district,
+      name: company.name,
+      phone: company.phone,
+    });
+  }, [company]);
 
   async function handlePicture(picture) {
     const downloadURL = await uploadImage(userId, picture);
-    setUpdateUser({ ...updateUser, picture: downloadURL });
+    setUpdateUser((current) => ({ ...current, picture: downloadURL }));
   }
 
   async function handleUserUpdate() {
-    const userRef = doc(db, "user", userId);
-    await updateDoc(userRef, updateUser);
+    await saveUser(userId, updateUser);
     navigate(`/boss/bossInfo/${companyId}`);
   }
 
@@ -55,15 +66,11 @@ function BossInfoEdit() {
     };
     let lat;
     let lng;
-    Geocoder.geocode(GeocoderRequest, (results, status) => {
+    Geocoder.geocode(GeocoderRequest, async (results, status) => {
       if (status === "OK" && results.length > 0) {
         lat = results[0].geometry.location.lat();
         lng = results[0].geometry.location.lng();
-        let obj = updateCompany;
-        obj.lat = lat;
-        obj.lng = lng;
-        const companyRef = doc(db, "company", companyId);
-        updateDoc(companyRef, updateCompany);
+        await saveCompany(companyId, { ...updateCompany, lat, lng });
         navigate(`/boss/bossInfo/${companyId}`);
       } else {
         toast.error("請確認地址已填寫且地址正確");
@@ -73,6 +80,10 @@ function BossInfoEdit() {
 
   async function handleCompanyUpdate() {
     await getLocation();
+  }
+
+  if (isUserLoading || isCompanyLoading) {
+    return <IsLoading />;
   }
 
   return (

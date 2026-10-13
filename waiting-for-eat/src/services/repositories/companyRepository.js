@@ -1,4 +1,11 @@
-import { addDoc, collection, doc, getDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase/firebaseClient.js";
 import { mapDocumentSnapshot } from "../firebase/firestoreMappers.js";
 
@@ -19,4 +26,25 @@ async function createCompany(companyData) {
   return documentReference.id;
 }
 
-export { createCompany, getCompanyById };
+function subscribeCompanyById(companyId, onChange) {
+  return onSnapshot(doc(db, COMPANY_COLLECTION, companyId), (snapshot) => {
+    onChange(mapDocumentSnapshot(snapshot));
+  });
+}
+
+function updateCompany(companyId, companyData) {
+  return updateDoc(doc(db, COMPANY_COLLECTION, companyId), companyData);
+}
+
+async function getCompanyCategoryType(categoryId) {
+  const snapshot = await getDoc(doc(db, "category", categoryId));
+  return mapDocumentSnapshot(snapshot)?.type ?? "";
+}
+
+export {
+  createCompany,
+  getCompanyById,
+  getCompanyCategoryType,
+  subscribeCompanyById,
+  updateCompany,
+};

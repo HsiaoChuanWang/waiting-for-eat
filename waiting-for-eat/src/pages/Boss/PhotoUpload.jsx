@@ -1,19 +1,16 @@
 import { UploadOutlined } from "@ant-design/icons";
 import { Card, ScrollShadow } from "@nextui-org/react";
 import { Button, Upload } from "antd";
-import { doc, updateDoc } from "firebase/firestore";
-import { default as React, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { updateCompany } from "../../services/repositories/companyRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
-import useUserStore from "../../stores/userStore.js";
 
 function PhotoUpload() {
   const { companyId } = useParams();
   const navigate = useNavigate();
   const [mainPictures, setMainpictures] = useState([]);
-  const detailInfo = useUserStore((state) => state.detailInfo);
   const [menuPictures, setMenuPictures] = useState([]);
 
   const mainProps = {
@@ -27,7 +24,7 @@ function PhotoUpload() {
       setMainpictures([file]);
       return false;
     },
-    mainPictures,
+    fileList: mainPictures,
     maxCount: 1,
   };
 
@@ -36,19 +33,9 @@ function PhotoUpload() {
     return uploadImage(uuid, picture);
   }
 
-  async function uploadMain(url) {
-    const docId = detailInfo.companyId;
-    const companyRef = doc(db, "company", docId);
-    await updateDoc(companyRef, {
-      picture: url,
-    });
-  }
-
-  const handleMain = () => {
-    const main = mainPictures[0];
-    getUrl(main).then((url) => {
-      uploadMain(url);
-    });
+  const handleMain = async () => {
+    const picture = await getUrl(mainPictures[0]);
+    await updateCompany(companyId, { picture });
     navigate(`/boss/photo/${companyId}`);
   };
 
@@ -66,27 +53,10 @@ function PhotoUpload() {
     fileList: menuPictures,
   };
 
-  async function uploadMenu(urls) {
-    const docId = detailInfo.companyId;
-    const companyRef = doc(db, "company", docId);
-    await updateDoc(companyRef, {
-      menu: urls,
-    });
+  const handleMenu = async () => {
+    const menu = await Promise.all(menuPictures.map(getUrl));
+    await updateCompany(companyId, { menu });
     navigate(`/boss/photo/${companyId}`);
-  }
-
-  const handleMenu = () => {
-    let menuUrls = [];
-    menuPictures.forEach((file) => {
-      getUrl(file)
-        .then((url) => {
-          menuUrls.push(url);
-        })
-        .then(() => {
-          uploadMenu(menuUrls);
-        });
-      navigate(`/boss/photoUpload/${companyId}`);
-    });
   };
 
   return (
