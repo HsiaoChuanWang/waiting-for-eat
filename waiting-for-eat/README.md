@@ -1,160 +1,126 @@
+<div align="center">
+<img src="https://github.com/HsiaoChuanWang/Eat-Project/assets/140884229/ba2a5a80-b72b-49ae-82e9-2cdb38c96cd6" style="width:600px">
+</div>
+<p align="center">
+ <a href="https://waiting-for-eat.web.app/">Website</a> | <a href=#about-waiting-for-eat>About</a> | <a href="#demo">Demo</a> | <a href="#contact">Contact</a>
+</p>
+
 # Waiting for Eat
 
-Waiting for Eat 是一個以 React 與 Firebase 打造的餐廳探索及線上訂位平台。使用者可以搜尋餐廳、查看菜單與評論、收藏店家並進行訂位；餐廳業者則可以管理店家資料、照片、營業時間、活動、桌位與訂位行程。
+Waiting for Eat is a restaurant reservation website for both "bosses" and "diners".</br>
 
-## 主要功能
+- Bosses
 
-### 食客
+  - Upload restaurant details, menus, and events.
+  - Manage time slots, seating capacity, and reservations.
 
-- 使用 Email 或 Google 帳號註冊、登入
-- 依餐廳名稱、地區及餐廳類別搜尋店家
-- 透過 Google Maps 查看餐廳位置
-- 瀏覽餐廳資料、菜單、活動與其他使用者的評論
-- 收藏喜歡或不喜歡的餐廳，並管理已用餐清單
-- 選擇日期、時段與人數進行線上訂位
-- 撰寫、編輯食記及星級評論
-- 在個人中心管理個人資料、訂位及貼文
+- Diners
+  - Search for restaurants of interest.
+  - Make reservations.
+  - Review the restaurants they’ve been to.
+  - Create their list of personal preferences.
+  - Compose reviews and food diaries.
 
-### 餐廳業者
+## About Waiting for Eat
 
-- 建立及編輯餐廳基本資料
-- 上傳店家照片與菜單
-- 設定營業時間與可預約桌位
-- 建立及編輯店家活動
-- 使用行事曆查看訂位排程
+- Applied `React Router` for SPA and fulfilled protected root to restrict actions based on user roles.
+- Implemented global state management with `Zustand`.
+- Used `Firebase Cloud Firestore` to manage the database.
+- Managed native and Google user registration via `Firebase Authentication`.
+- Utilized `Tailwind CSS`, `NextUI`, and `Ant Design` for UI.
+- Applied `Framer Motion` for the animation to provide users with a smoother experience.
+- Fulfilled real-time reservation information update with `Firestore onSnapshot`.
+- Realized restaurants searching function through `Google Maps JavaScript API`, `Places API`, and `Geocoding API`.
+- Implemented editor `React Draft Wysiwyg` for composing food reviews.
+- Utilized `FullCalendar` to display current customer information and apply Drag&Drop to manage reservations status.
+- Deployed website through `Firebase Hosting`.
 
-## 使用技術
+## Built with
 
-- React 18、React Router 6
-- Vite 5
-- Firebase Authentication、Cloud Firestore、Cloud Storage、Hosting
-- Zustand、Immer
-- Tailwind CSS、DaisyUI
-- NextUI、Ant Design
-- Google Maps JavaScript API
+![](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black)
+![](https://img.shields.io/badge/React%20Router-CA4245.svg?style=for-the-badge&logo=React-Router&logoColor=white)
+![](https://img.shields.io/badge/Vite-646CFF.svg?style=for-the-badge&logo=Vite&logoColor=white)
+![](https://img.shields.io/badge/npm-CB3837.svg?style=for-the-badge&logo=npm&logoColor=white)
+![](https://img.shields.io/badge/Firebase-FFCA28.svg?style=for-the-badge&logo=Firebase&logoColor=black)
+![](https://img.shields.io/badge/🐻 zustand-black.svg?style=for-the-badge =black)
+![](https://img.shields.io/badge/Git-F05032.svg?style=for-the-badge&logo=Git&logoColor=white)
+![](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)
+![](https://img.shields.io/badge/Tailwind%20CSS-06B6D4.svg?style=for-the-badge&logo=Tailwind-CSS&logoColor=white)
+![](https://img.shields.io/badge/Google%20Maps-4285F4.svg?style=for-the-badge&logo=Google-Maps&logoColor=white)
+
+### Base
+
+- React
+- Vite
+- Firebase
+- JavaScript
+- Tailwind CSS
+
+### Libraries
+
+- React Draft Wysiwyg
+- Zustand
+- NextUI
+- Ant Design
+- Framer Motion
 - FullCalendar
-- React Draft WYSIWYG
-- Framer Motion、React Hot Toast
-- ESLint、Prettier
 
-## 開始使用
+## Flow Chart
 
-### 環境需求
+![chart flow](https://github.com/HsiaoChuanWang/Eat-Project/assets/140884229/5a04564b-0a22-46de-a37b-f094aba6a10d)
 
-- Node.js 18 以上版本
-- npm
-- Firebase 專案
-- 已啟用 Maps JavaScript API 與 Places API 的 Google Maps API Key
+## Demo
 
-### 安裝套件
+<a href="https://waiting-for-eat.web.app/">
+ 
+![https://waiting-for-eat.web.app/](https://img.shields.io/badge/🍕&nbsp;Website-orange.svg?style=for-the-badge&logoColor=black)
 
-```bash
-npm install
-```
+</a>
 
-### 設定環境變數
+### Test Account
 
-在專案根目錄建立 `.env`，並加入以下內容：
+- Boss:
+  - Email: boss888@mail.com
+  - Password: 888888
+- Diner:
+  - Email: diner168@mail.com
+  - Password: 168168
 
-```env
-VITE_FIREBASE_API_KEY=your_firebase_api_key
-VITE_GOOGLE_API_KEY=your_google_maps_api_key
-```
+### **Diner**
 
-Firebase 的其餘專案設定目前位於 `src/firebase.js`。若要使用自己的 Firebase 專案，請一併更新該檔案中的 `authDomain`、`projectId`、`storageBucket`、`messagingSenderId`、`appId` 與 `measurementId`。
+1. **【Homepage】**
 
-> `.env` 已列入 `.gitignore`，請勿將 API Key 或其他敏感資訊提交至版本控制。
+   - Search for restaurants by name, city / county, or food categorization.
+     ![diner-01](https://github.com/HsiaoChuanWang/Eat-Project/assets/140884229/e960a7ef-ebed-4007-9825-0abf4afaa227)
 
-### 啟動開發伺服器
+2. **【Map page】**
 
-```bash
-npm run dev
-```
+   - Show related restaurant list with location.
+   - If the diner is logged in, there will be thumbs icons on the list to indicate personal preferences.
+   - Click on the image of the restaurant to obtain more related information about it.
+     ![diner-02](https://github.com/HsiaoChuanWang/Eat-Project/assets/140884229/7728b0c2-5604-4831-aff3-8ceab552b783)
 
-啟動後，依終端機顯示的網址開啟應用程式；Vite 預設為 `http://localhost:5173`。
+3. **【Food diary page】** - Scroll to the bottom, where you can click on the restaurant photo to return to the restaurant page, or click on the button on the right to make a reservation.
+   ![diner-04](https://github.com/HsiaoChuanWang/Eat-Project/assets/140884229/a0a4058e-097c-4fd6-8c7b-20d10dc52bcf)
 
-## 常用指令
+4. **【Diner page】**
+   - Check the list of booked restaurants.
+   - For visited restaurants, mark preferences or write reviews and food diaries.
+     ![diner-05](https://github.com/HsiaoChuanWang/Eat-Project/assets/140884229/c57970ed-5dba-4900-881d-84a5644e0571)
 
-```bash
-# 啟動開發環境
-npm run dev
+### **Boss**
 
-# 執行 ESLint 檢查
-npm run lint
+1. **【Boss page】**
+   - Upload restaurant information, menus, or events.
+   - Update time slots and seating capacity.
+   - Drag the reservation to change the dining time or seat, or click the buttons on it to confirm attendance or cancel.
+     ![boss-01](https://github.com/HsiaoChuanWang/Eat-Project/assets/140884229/da77b5da-7a0d-44b2-94ea-bec97b4bcc5f)
 
-# 建立正式環境檔案
-npm run build
+## Contact
 
-# 在本機預覽正式版本
-npm run preview
-```
+ <a href="mailto:j2130970@gmail.com">
+    <img src="https://img.shields.io/badge/Gmail-EA4335.svg?style=for-the-badge&logo=Gmail&logoColor=white" /></a>
 
-## 部署至 Firebase Hosting
-
-專案已將 Firebase Hosting 輸出目錄設定為 `dist`，並設定 SPA 路由重新導向至 `index.html`。
-
-1. 安裝並登入 Firebase CLI：
-
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   ```
-
-2. 建置並部署：
-
-   ```bash
-   npm run build
-   firebase deploy --only hosting
-   ```
-
-若要部署至其他 Firebase 專案，請先更新 `.firebaserc` 與 `firebase.json` 中的專案及 Hosting site 設定。
-
-## 專案結構
-
-```text
-waiting-for-eat/
-├── public/                  # 公開靜態資源
-├── src/
-│   ├── components/         # 共用元件（Header、Loading、提示訊息等）
-│   ├── pages/
-│   │   ├── Homepage/       # 首頁
-│   │   ├── Login/          # 登入
-│   │   ├── SignUp/         # 多步驟註冊流程
-│   │   ├── Search/         # 餐廳搜尋與 Google Maps
-│   │   ├── Restaurant/     # 餐廳詳細資料
-│   │   ├── Reserve/        # 線上訂位
-│   │   ├── Post/           # 食記內容
-│   │   ├── Diner/          # 食客個人中心
-│   │   └── Boss/           # 店家管理後台
-│   ├── stores/             # Zustand 全域狀態
-│   ├── utils/              # Firestore 共用工具
-│   ├── App.jsx             # 共用版面及登入權限處理
-│   ├── firebase.js         # Firebase 初始化設定
-│   ├── index.css           # 全域樣式與 Tailwind
-│   └── main.jsx            # 應用程式入口及路由
-├── firebase.json           # Firebase Hosting 設定
-├── tailwind.config.js      # Tailwind CSS 設定
-├── vite.config.js          # Vite 設定
-└── package.json            # 套件與 npm scripts
-```
-
-## 主要路由
-
-| 路由 | 說明 |
-| --- | --- |
-| `/` | 首頁 |
-| `/signup` | 註冊流程 |
-| `/login` | 登入頁面 |
-| `/search` | 餐廳搜尋與地圖 |
-| `/restaurant/:companyId` | 餐廳詳細資料 |
-| `/reserve/:companyId` | 餐廳訂位 |
-| `/post/:postId` | 食記內容 |
-| `/diner/*` | 食客個人中心（需登入） |
-| `/boss/*` | 餐廳業者後台（需登入且具店家身分） |
-
-## 注意事項
-
-- 本專案依賴 Firebase Authentication、Firestore 與 Storage，需在 Firebase Console 啟用對應服務並設定安全規則。
-- Google 登入需在 Firebase Authentication 啟用 Google 登入供應商，並設定授權網域。
-- Google Maps 功能需使用有效的 API Key，並啟用 Maps JavaScript API 與 Places API。
-- 部署正式環境時，請在 Hosting 平台設定相同的環境變數後重新建置。
+  <a href="https://www.linkedin.com/in/hsiao-chuan-wang/">
+    <img src="https://img.shields.io/badge/LinkedIn-0A66C2.svg?style=for-the-badge&logo=LinkedIn&logoColor=white" />
+  </a>
