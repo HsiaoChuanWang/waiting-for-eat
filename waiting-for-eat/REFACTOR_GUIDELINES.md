@@ -467,7 +467,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 - [x] 39. `refactor(navigation): derive sidebar state from routes`
     - 由目前 route 推導 Boss 與 Diner sidebar 的選取狀態。
     - 移除與 URL 重複、可能不同步的 `bossStore` 與 `dinerStore` 導覽狀態。
-- [ ] 40. `refactor(ui): split remaining large page components`
+- [x] 40. `refactor(ui): split remaining large page components`
     - 依職責拆分仍混合表單狀態、業務規則與多區塊 UI 的大型頁面。
     - 優先處理 OpenTime、BossInfoEdit、Homepage、Reserve、Schedule、Post 與 EatenShop，避免僅為縮短行數而過度拆分。
 - [ ] 41. `refactor(ui): unify dashboard navigation and record cards`

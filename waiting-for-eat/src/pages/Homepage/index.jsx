@@ -5,17 +5,11 @@ import { useRef, useState } from "react";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { RESTAURANT_CATEGORIES } from "../../constants/restaurant.js";
 import useRestaurantSearch from "../../features/search/useRestaurantSearch.js";
+import CategoryGrid from "./CategoryGrid.jsx";
 import Carousel from "./Carousel";
-import bbq from "./homepagePictures/bbq.jpg";
 import boss from "./homepagePictures/boss.png";
-import breakfast from "./homepagePictures/breakfast.jpg";
 import diner from "./homepagePictures/diner.png";
-import hotpot from "./homepagePictures/hotpot.jpg";
-import steak from "./homepagePictures/steak.jpg";
-import streetFood from "./homepagePictures/streetFood.jpg";
-import sweet from "./homepagePictures/sweet.jpg";
 
 function HomePage() {
   const [searchName, setSearchName] = useState("");
@@ -225,105 +219,7 @@ function HomePage() {
         </div>
       </div>
 
-      <div className="flex justify-center">
-        <div className="mb-8 flex w-[1440px] max-w-[1440px] flex-wrap justify-center tablet:w-[768px] laptop:w-[1024px]">
-          <div
-            onClick={() => handleCategory(RESTAURANT_CATEGORIES.HOT_POT)}
-            className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
-          >
-            <img
-              className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
-              src={hotpot}
-              alt="火鍋"
-            />
-            <div className="absolute h-full w-full bg-black/30"></div>
-            <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
-              <h1 className="text-4xl font-black">火鍋</h1>
-              <h2 className="text-lg font-black">HOTPOT</h2>
-            </div>
-          </div>
-
-          <div
-            onClick={() => handleCategory(RESTAURANT_CATEGORIES.BARBECUE)}
-            className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
-          >
-            <img
-              className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
-              src={bbq}
-              alt="燒烤"
-            />
-            <div className="absolute h-full w-full bg-black/30"></div>
-            <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
-              <h1 className="text-4xl font-black">燒烤</h1>
-              <h2 className="text-lg font-black">BARBECUE</h2>
-            </div>
-          </div>
-
-          <div
-            onClick={() => handleCategory(RESTAURANT_CATEGORIES.STEAK)}
-            className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
-          >
-            <img
-              className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
-              src={steak}
-              alt="牛排"
-            />
-            <div className="absolute h-full w-full bg-black/40"></div>
-            <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
-              <h1 className="text-4xl font-black">牛排</h1>
-              <h2 className="text-lg font-black">STEAKHOUSE</h2>
-            </div>
-          </div>
-
-          <div
-            onClick={() => handleCategory(RESTAURANT_CATEGORIES.DESSERT)}
-            className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
-          >
-            <img
-              className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
-              src={sweet}
-              alt="甜點"
-            />
-            <div className="absolute h-full w-full bg-black/40"></div>
-            <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
-              <h1 className="text-4xl font-black">甜點</h1>
-              <h2 className="text-lg font-black">DESSERT</h2>
-            </div>
-          </div>
-
-          <div
-            onClick={() => handleCategory(RESTAURANT_CATEGORIES.STREET_FOOD)}
-            className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
-          >
-            <img
-              className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
-              src={streetFood}
-              alt="小吃"
-            />
-            <div className="absolute h-full w-full bg-black/40"></div>
-            <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
-              <h1 className="text-4xl font-black">小吃</h1>
-              <h2 className="text-lg font-black">STREET FOOD</h2>
-            </div>
-          </div>
-
-          <div
-            onClick={() => handleCategory(RESTAURANT_CATEGORIES.BREAKFAST)}
-            className="card-zoom relative mx-8 my-8 flex h-72 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-2xl shadow-xl phone:h-36 phone:w-3/4 tablet:h-48 tablet:w-64 laptop:mx-4 laptop:h-48 laptop:w-64"
-          >
-            <img
-              className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
-              src={breakfast}
-              alt="早餐"
-            />
-            <div className="absolute h-full w-full bg-black/40"></div>
-            <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
-              <h1 className="text-4xl font-black">早餐</h1>
-              <h2 className="text-lg font-black">BREAKFAST</h2>
-            </div>
-          </div>
-        </div>
-      </div>
+      <CategoryGrid onSelect={handleCategory} />
     </div>
   );
 }
