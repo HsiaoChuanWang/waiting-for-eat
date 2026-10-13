@@ -5,7 +5,7 @@ const useHeaderStore = create(
   immer((set) => ({
     loginStatus: "LogOut",
 
-    setHeader: (status) => {
+    setLoginStatus: (status) => {
       set((state) => {
         state.loginStatus = status;
       });
