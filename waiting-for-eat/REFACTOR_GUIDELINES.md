@@ -440,7 +440,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
     - 整理店家資料、圖片、菜單與活動流程。
 - [x] 32. `refactor(boss): extract opening time and table operations`
     - 整理營業時間與桌位管理操作。
-- [ ] 33. `refactor(boss): split schedule and order management`
+- [x] 33. `refactor(boss): split schedule and order management`
     - 拆分排程、訂單狀態與座位處理邏輯。
 
 ### 第十一階段：訂位

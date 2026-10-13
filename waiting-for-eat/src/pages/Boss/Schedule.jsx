@@ -4,22 +4,22 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import { ScrollShadow } from "@nextui-org/react";
 import { DatePicker } from "antd";
 import dateFormat from "dateformat";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import {
+  applyScheduleMoves,
+  createScheduleEvents,
+  createScheduleResources,
+  recordScheduleMove,
+} from "../../features/boss/scheduleModel.js";
+import useScheduleData from "../../features/boss/useScheduleData.js";
 import { saveEatenFavorite } from "../../services/repositories/favoriteRepository.js";
+import {
+  deleteOrder,
+  markOrderAttended,
+  updateOrderSchedule,
+} from "../../services/repositories/orderRepository.js";
 import noSchedule from "./noSchedule.png";
 import "./schedule.css";
 
@@ -28,192 +28,16 @@ function Schedule() {
   const [isSelected, setIsSelected] = useState(false);
   const myRef = useRef();
   const { companyId } = useParams();
-  const [tables, setTables] = useState([]);
-  const [orders, setOrders] = useState([]);
+  const { isLoading, orders, tables } = useScheduleData(companyId);
   const [updateOrders, setUpdateOrders] = useState([]);
-  const [finalUpdateOrders, setFinalUpdateOrders] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const companyRef = collection(db, "company");
-  const tableRef = query(collection(companyRef, companyId, "table"));
-  const orderRef = query(collection(db, "order"));
-  const orderq = query(orderRef, where("companyId", "==", companyId));
-
-  async function setUserInfo(userId) {
-    const docRef = doc(db, "user", userId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
-  useEffect(() => {
-    getDocs(tableRef).then((result) => {
-      let seats = [];
-      result.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, tableId: dataId };
-        seats.push(combine);
-      });
-      setTables(seats);
-    });
-
-    getDocs(orderq)
-      .then((result) => {
-        let orderList = [];
-        result.forEach((doc) => {
-          const data = doc.data();
-          const dataId = doc.id;
-          const combine = { ...data, orderId: dataId };
-          orderList.push(combine);
-        });
-        return orderList;
-      })
-      .then((orderList) => {
-        let combineOrder = [];
-        orderList.forEach((order) => {
-          setUserInfo(order.userId)
-            .then((data) => {
-              const newData = {
-                ...order,
-                userName: data.userName,
-                phone: data.phone,
-              };
-              combineOrder.push(newData);
-            })
-            .then(() => {
-              setOrders([...combineOrder]);
-            });
-        });
-      });
-
-    const tableSnap = onSnapshot(tableRef, (querySnapshot) => {
-      let seats = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, tableId: dataId };
-        seats.push(combine);
-      });
-      setTables(seats);
-      setIsLoading(false);
-    });
-
-    const orderSnap = onSnapshot(orderq, (querySnapshot) => {
-      let orderList = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, orderId: dataId };
-        orderList.push(combine);
-      });
-
-      Promise.all(
-        orderList.map((item) => {
-          return Promise.all([setUserInfo(item.userId)]).then(([userInfo]) => {
-            const newItem = {
-              ...item,
-              userName: userInfo.userName,
-              phone: userInfo.phone,
-            };
-            return newItem;
-          });
-        }),
-      ).then((value) => {
-        setOrders(value);
-      });
-    });
-
-    return tableSnap, orderSnap;
-  }, []);
-
-  let resources = [];
-  tables.map((table) => {
-    resources.push({
-      id: table.number,
-      title: table.number + " (" + table.people + "人桌)",
-    });
-  });
-  resources = resources.sort((firstItem, secondItem) =>
-    firstItem.id > secondItem.id ? 1 : -1,
-  );
-
-  let events = [];
-  orders.map((order) => {
-    order.tableNumber.map((orderTableNumber) => {
-      events.push({
-        title:
-          order.userName +
-          "\n" +
-          order.phone +
-          "$" +
-          order.people +
-          "$" +
-          order.orderId +
-          "$" +
-          order.userId +
-          "$" +
-          order.attend,
-        start: new Date(order.date + " " + order.start),
-        end: new Date(order.date + " " + order.end),
-        id: order.orderId + "$" + orderTableNumber,
-        resourceId: orderTableNumber,
-        display: "auto",
-        color: "#e0effc",
-      });
-    });
-  });
-
-  async function updateOrder(orderId, tableNumber, startTime, endTime) {
-    const OrderRef = doc(db, "order", orderId);
-    await updateDoc(OrderRef, {
-      tableNumber: tableNumber,
-      start: startTime,
-      end: endTime,
-    });
-  }
-
-  async function getOrder(orderId) {
-    const docRef = doc(db, "order", orderId);
-    const docSnap = await getDoc(docRef);
-    const data = docSnap.data();
-    const oldTableNumber = data.tableNumber;
-  }
+  const resources = createScheduleResources(tables);
+  const events = createScheduleEvents(orders);
 
   function MyDropEvent(info) {
-    const startDay = dateFormat(info.event.start, "yyyy/mm/dd");
-    const startTime = dateFormat(info.event.start, "HH:MM");
-    const endDay = dateFormat(info.event.end, "yyyy/mm/dd");
-    const endTime = dateFormat(info.event.end, "HH:MM");
-    const eventID = info.event.id;
-    const idSplit = info.event.id.split("$");
-    const orderId = idSplit[0];
-    const oldTableNumber = idSplit[1];
-    const newtableNumber = info.event._def.resourceIds[0];
-
-    let updateOrder = updateOrders.find((p) => p.eventID == eventID);
-
-    if (updateOrder == undefined) {
-      let order = orders.find((p) => p.orderId == orderId);
-      let orderTableNumber = order.tableNumber;
-      const tableNumberIndex = orderTableNumber.indexOf(oldTableNumber);
-      if (tableNumberIndex != -1) {
-        updateOrder = {
-          eventID: eventID,
-          start: startTime,
-          end: endTime,
-          orderId: orderId,
-          newtableNumber: newtableNumber,
-          tableNumberIndex: tableNumberIndex,
-        };
-        updateOrders.push(updateOrder);
-      }
-    } else {
-      updateOrder.start = startTime;
-      updateOrder.end = endTime;
-      updateOrder.newtableNumber = newtableNumber;
-    }
+    setUpdateOrders((current) =>
+      recordScheduleMove(current, orders, info.event),
+    );
   }
 
   function changeStartDate(date, dateString) {
@@ -221,58 +45,22 @@ function Schedule() {
     setSelectedDate(dateFormat(dateString, "yyyy/mm/dd"));
   }
 
-  async function updateFirestore(finalUpdateOrders) {
-    const orderRef = doc(db, "order", finalUpdateOrders.orderId);
-
-    await updateDoc(orderRef, {
-      start: finalUpdateOrders.start,
-      end: finalUpdateOrders.end,
-      tableNumber: finalUpdateOrders.tableNumber,
-    });
-  }
-
-  function save(e) {
-    setFinalUpdateOrders([]);
-    updateOrders.forEach((updateOrder) => {
-      let order = orders.find((p) => p.orderId == updateOrder.orderId);
-      order.start = updateOrder.start;
-      order.end = updateOrder.end;
-      let orderTableNumber = order.tableNumber;
-      orderTableNumber[updateOrder.tableNumberIndex] =
-        updateOrder.newtableNumber;
-
-      let finalUpdateOrder = finalUpdateOrders.find(
-        (p) => p.orderId == updateOrder.orderId,
-      );
-      if (finalUpdateOrder == undefined) {
-        finalUpdateOrders.push(order);
-      } else {
-        finalUpdateOrder = order;
-      }
-    });
-
-    finalUpdateOrders.forEach((item) => {
-      updateFirestore(item);
-    });
+  async function save() {
+    const updatedOrders = applyScheduleMoves(orders, updateOrders);
+    await Promise.all(
+      updatedOrders.map((order) => updateOrderSchedule(order.orderId, order)),
+    );
 
     setUpdateOrders([]);
     setEditable(false);
     setIsSelected(false);
   }
 
-  async function AddFavorite(orderId, userId) {
-    await saveEatenFavorite({ companyId, orderId, userId });
-  }
-
-  async function DeleteOrder(orderId) {
-    await deleteDoc(doc(db, "order", orderId));
-  }
-
-  async function UpdateAttend(orderId) {
-    const OrderRef = doc(db, "order", orderId);
-    await updateDoc(OrderRef, {
-      attend: "yes",
-    });
+  async function completeOrder(orderId, userId) {
+    await Promise.all([
+      saveEatenFavorite({ companyId, orderId, userId }),
+      markOrderAttended(orderId),
+    ]);
   }
 
   function eventContent(arg) {
@@ -306,8 +94,7 @@ function Schedule() {
                 attend === "no" && "cursor-pointer"
               }`}
               onClick={() => {
-                AddFavorite(orderId, userId);
-                UpdateAttend(orderId);
+                completeOrder(orderId, userId);
               }}
               disabled={attend === "yes"}
             >
@@ -321,7 +108,7 @@ function Schedule() {
                 attend === "yes" && "hidden"
               } `}
               onClick={() => {
-                DeleteOrder(orderId);
+                deleteOrder(orderId);
               }}
               disabled={attend === "yes"}
             >
@@ -333,7 +120,7 @@ function Schedule() {
     );
   }
 
-  const phoneArrangedOrders = orders.sort((a, b) => {
+  const phoneArrangedOrders = [...orders].sort((a, b) => {
     const timeA = new Date(a.date + " " + a.start);
     const timeB = new Date(b.date + " " + b.start);
     return timeA - timeB;
@@ -385,7 +172,7 @@ function Schedule() {
                     <div className="flex gap-2">
                       <p>桌號 | </p>
                       {order.tableNumber.map((item) => {
-                        return <p>{item}</p>;
+                        return <p key={item}>{item}</p>;
                       })}
                     </div>
 
@@ -406,8 +193,7 @@ function Schedule() {
                               order.attend === "no" && "cursor-pointer"
                             }`}
                             onClick={() => {
-                              AddFavorite(order.orderId, order.userId);
-                              UpdateAttend(order.orderId);
+                              completeOrder(order.orderId, order.userId);
                             }}
                             disabled={order.attend === "yes"}
                           >
@@ -421,7 +207,7 @@ function Schedule() {
                               order.attend === "yes" && "hidden"
                             } `}
                             onClick={() => {
-                              DeleteOrder(order.orderId);
+                              deleteOrder(order.orderId);
                             }}
                             disabled={order.attend === "yes"}
                           >
