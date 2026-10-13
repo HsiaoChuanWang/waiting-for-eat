@@ -1,0 +1,19 @@
+const RESTAURANT_CATEGORIES = {
+  HOT_POT: "0",
+  BARBECUE: "1",
+  STEAK: "2",
+  DESSERT: "3",
+  STREET_FOOD: "4",
+  BREAKFAST: "5",
+};
+
+const RESTAURANT_CATEGORY_OPTIONS = [
+  { value: RESTAURANT_CATEGORIES.HOT_POT, label: "火鍋" },
+  { value: RESTAURANT_CATEGORIES.BARBECUE, label: "燒烤" },
+  { value: RESTAURANT_CATEGORIES.STEAK, label: "牛排" },
+  { value: RESTAURANT_CATEGORIES.DESSERT, label: "甜點" },
+  { value: RESTAURANT_CATEGORIES.STREET_FOOD, label: "小吃" },
+  { value: RESTAURANT_CATEGORIES.BREAKFAST, label: "早餐" },
+];
+
+export { RESTAURANT_CATEGORIES, RESTAURANT_CATEGORY_OPTIONS };

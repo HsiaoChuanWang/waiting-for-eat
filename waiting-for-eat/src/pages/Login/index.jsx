@@ -1,95 +1,25 @@
 import { Input } from "@nextui-org/react";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
-import { default as React, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
-import Alert from "../../components/Alert";
-import { provider } from "../../firebase";
-import useTestStore from "../../stores/testStore.js";
-import useUserStore from "../../stores/userStore.js";
-import googleLogo from "../SignUp/signUpPictures/GoogleLogo.png";
-import boss from "../SignUp/signUpPictures/boss.png";
-import cook from "../SignUp/signUpPictures/cook.png";
-import diner from "../SignUp/signUpPictures/diner.png";
-import loginBackground from "./loginBackground.jpg";
+import cook from "../../assets/auth/cook.png";
+import googleLogo from "../../assets/auth/google-logo.png";
+import boss from "../../assets/roles/boss.png";
+import diner from "../../assets/roles/diner.png";
+import Alert from "../../components/Alert/index.jsx";
+import useLoginStore from "../../stores/loginStore.js";
+import loginBackground from "./assets/login-background.jpg";
+import useLoginFlow from "./hooks/useLoginFlow.js";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const setLoginIdentity = useLoginStore((state) => state.setLoginIdentity);
+  const loginIdentity = useLoginStore((state) => state.loginIdentity);
+  const presetEmail = useLoginStore((state) => state.presetEmail);
+  const presetPassword = useLoginStore((state) => state.presetPassword);
+  const [email, setEmail] = useState(presetEmail);
+  const [password, setPassword] = useState(presetPassword);
   const [isVisible, setIsVisible] = useState(false);
-  const toggleVisibility = () => setIsVisible(!isVisible);
-  const navigate = useNavigate();
-  const setLoginIdentity = useTestStore((state) => state.setLoginIdentity);
-  const setTestAccount = useTestStore((state) => state.setTestAccount);
-  const setTestPassword = useTestStore((state) => state.setTestPassword);
-  const loginIdentity = useTestStore((state) => state.loginIdentity);
-  const testAccount = useTestStore((state) => state.testAccount);
-  const testPassword = useTestStore((state) => state.testPassword);
-  const setUserId = useUserStore((state) => state.setUserId);
-  const getUserInfoFromFirestoreAndSave = useUserStore(
-    (state) => state.getUserInfoFromFirestoreAndSave,
-  );
-
-  useEffect(() => {
-    if (testAccount !== "") {
-      setEmail(testAccount);
-      setPassword(testPassword);
-    }
-  }, []);
-
-  const auth = getAuth();
-  function nativeLogin() {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        Promise.all([
-          setUserId(user.uid),
-          getUserInfoFromFirestoreAndSave(user.uid),
-        ]).then(([_, userInfo]) => {
-          if (userInfo.companyId === "") {
-            navigate("/");
-          } else {
-            navigate(`/boss/bossInfo/${userInfo.companyId}`);
-          }
-          toast.success("登入成功");
-          setLoginIdentity("");
-          setTestAccount("");
-          setTestPassword("");
-        });
-      })
-      .catch(() => {
-        toast.error("請確認email及密碼是否輸入正確");
-      });
-  }
-
-  function googleLogin() {
-    signInWithPopup(auth, provider)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        Promise.all([
-          setUserId(user.uid),
-          getUserInfoFromFirestoreAndSave(user.uid),
-        ]).then(([_, userInfo]) => {
-          if (userInfo.companyId === "") {
-            navigate("/");
-          } else {
-            navigate(`/boss/bossInfo/${userInfo.companyId}`);
-          }
-          toast.success("登入成功");
-          setLoginIdentity("");
-          setTestAccount("");
-          setTestPassword("");
-        });
-      })
-      .catch(() => {
-        toast.error("請確認email及密碼是否輸入正確");
-      });
-  }
+  const { loginWithEmail, loginWithGoogle } = useLoginFlow();
+  const toggleVisibility = () => setIsVisible((visible) => !visible);
 
   function saveIdentity(identity) {
     setLoginIdentity(identity);
@@ -100,6 +30,7 @@ function Login() {
       <Alert />
       <img
         src={loginBackground}
+        alt=""
         className="h-full w-3/5 object-cover object-center phone:absolute phone:z-0 phone:w-full tablet:w-1/2"
       />
 
@@ -116,7 +47,7 @@ function Login() {
             onClick={() => saveIdentity("diner")}
             className="mb-8 flex cursor-pointer items-center rounded-lg bg-slate-100 hover:bg-slate-200 hover:text-gray-600"
           >
-            <img src={diner} className="h-32" />
+            <img src={diner} alt="食客" className="h-32" />
             <div className="mr-8 w-32 text-center">
               <h2 className="text-2xl font-bold">食客</h2>
               <h3 className=" text-base font-bold">Foodie</h3>
@@ -131,7 +62,7 @@ function Login() {
               <h2 className="text-2xl font-bold">餐廳業者</h2>
               <h3 className=" text-base font-bold">Owner</h3>
             </div>
-            <img src={boss} className="h-32" />
+            <img src={boss} alt="餐廳業者" className="h-32" />
           </div>
         </div>
 
@@ -141,7 +72,7 @@ function Login() {
           } flex h-[520px] w-[450px] flex-col items-center justify-center rounded-2xl bg-white phone:rounded-none `}
         >
           <div className="mt-1 flex w-full items-center">
-            <img src={cook} className="w-56 tablet:w-48" />
+            <img src={cook} alt="" className="w-56 tablet:w-48" />
             <div>
               <h1 className="mb-1 text-2xl font-black tablet:text-xl">
                 Waiting for eat
@@ -152,8 +83,8 @@ function Login() {
           </div>
 
           <div className="flex h-11 w-80 items-center justify-center gap-2 rounded-lg bg-slate-100 shadow-sm hover:cursor-pointer hover:bg-slate-200">
-            <img src={googleLogo} className="h-6 w-6" />
-            <button onClick={googleLogin} className=" font-semibold">
+            <img src={googleLogo} alt="Google" className="h-6 w-6" />
+            <button onClick={loginWithGoogle} className=" font-semibold">
               使用Google登入
             </button>
           </div>
@@ -208,7 +139,7 @@ function Login() {
 
             <button
               className="mb-8 h-10 w-full rounded-lg bg-[#ff850e] font-bold text-white hover:bg-[#ff850e]/80"
-              onClick={nativeLogin}
+              onClick={() => loginWithEmail(email, password)}
             >
               登入
             </button>

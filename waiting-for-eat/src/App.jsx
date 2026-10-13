@@ -1,67 +1,20 @@
 import { ConfigProvider } from "antd";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useEffect } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import useHeaderStore from "../src/stores/headerStore.js";
-import useUserStore from "../src/stores/userStore.js";
-import Header from "./components/Header";
-// import RwdWarning from "./components/RwdWarning";
+import { Outlet, useLocation } from "react-router-dom";
+import Header from "./components/Header/index.jsx";
+import useAuthSession from "./hooks/useAuthSession.js";
+import useHeaderStatus from "./hooks/useHeaderStatus.js";
+import { useRouteAccessGuard } from "./router/useRouteAccessGuard.js";
 
 function App() {
-  const auth = getAuth();
-  const setUserId = useUserStore((state) => state.setUserId);
-  const getUserInfoFromFirestoreAndSave = useUserStore(
-    (state) => state.getUserInfoFromFirestoreAndSave,
-  );
-  const getCompanyInfoFromFirestoreAndSave = useUserStore(
-    (state) => state.getCompanyInfoFromFirestoreAndSave,
-  );
-  const setHeader = useHeaderStore((state) => state.setHeader);
-  const navigate = useNavigate();
   const location = useLocation();
+  const pathParts = location.pathname.split("/");
+  const firstParam = pathParts[1];
+  const session = useAuthSession({
+    loadProfile: firstParam !== "signup",
+  });
 
-  useEffect(() => {
-    const pathParts = location.pathname.split("/");
-    const firstParam = pathParts[1];
-    const thirdParam = pathParts[3];
-
-    onAuthStateChanged(auth, (user) => {
-      if (user === null) {
-        setHeader("LogOut");
-        const logOutCannotEnterPath = ["reserve", "diner", "boss"];
-        if (logOutCannotEnterPath.some((path) => firstParam?.includes(path))) {
-          navigate("/");
-        }
-      }
-
-      if (user) {
-        const user = auth.currentUser;
-        const userId = user.uid;
-
-        firstParam === "signup"
-          ? setHeader("SignUp")
-          : Promise.all([
-              setUserId(userId),
-              getUserInfoFromFirestoreAndSave(userId),
-            ]).then(([_, userInfo]) => {
-              if (userInfo.companyId === "") {
-                setHeader("DinerLogIn");
-                firstParam?.includes("boss") && navigate("/");
-
-                if (thirdParam) {
-                  !thirdParam.includes(userId) && navigate("/");
-                }
-              } else if (userInfo.companyId !== "") {
-                setHeader("BossLogIn");
-                getCompanyInfoFromFirestoreAndSave(userInfo.companyId);
-
-                !thirdParam?.includes(userInfo.companyId) &&
-                  navigate(`/boss/bossInfo/${userInfo.companyId}`);
-              }
-            });
-      }
-    });
-  }, [location.pathname]);
+  useRouteAccessGuard(session);
+  useHeaderStatus({ ...session, isSignupRoute: firstParam === "signup" });
 
   return (
     <ConfigProvider
@@ -81,7 +34,6 @@ function App() {
       }}
     >
       <Header />
-      {/* <RwdWarning /> */}
       <Outlet />
     </ConfigProvider>
   );
