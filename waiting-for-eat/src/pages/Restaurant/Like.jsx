@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
-import { IconContext } from "react-icons";
-import {
-  HiOutlineThumbDown,
-  HiOutlineThumbUp,
-  HiThumbDown,
-  HiThumbUp,
-} from "react-icons/hi";
 import { useParams } from "react-router-dom";
+import FavoriteStatusButtons from "../../features/favorite/components/FavoriteStatusButtons.jsx";
 import {
-  FAVORITE_STATUS,
   subscribeFavoriteByUserAndCompany,
   updateFavoriteStatus,
 } from "../../services/repositories/favoriteRepository.js";
@@ -31,29 +24,7 @@ function Like() {
   };
 
   return (
-    <div className="flex h-10 w-28 items-center justify-center rounded-xl border border-solid bg-gray-200">
-      <div className="mr-1">
-        <IconContext.Provider value={{ size: "30px" }}>
-          {favorite?.status === FAVORITE_STATUS.LIKE ? (
-            <HiThumbUp onClick={() => handleLike(FAVORITE_STATUS.EATEN)} />
-          ) : (
-            <HiOutlineThumbUp
-              onClick={() => handleLike(FAVORITE_STATUS.LIKE)}
-            />
-          )}
-        </IconContext.Provider>
-      </div>
-      <p className="mr-1">|</p>
-      <IconContext.Provider value={{ size: "30px" }}>
-        {favorite?.status === FAVORITE_STATUS.DISLIKE ? (
-          <HiThumbDown onClick={() => handleLike(FAVORITE_STATUS.EATEN)} />
-        ) : (
-          <HiOutlineThumbDown
-            onClick={() => handleLike(FAVORITE_STATUS.DISLIKE)}
-          />
-        )}
-      </IconContext.Provider>
-    </div>
+    <FavoriteStatusButtons status={favorite?.status} onChange={handleLike} />
   );
 }
 
