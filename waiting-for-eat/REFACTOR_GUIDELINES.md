@@ -382,7 +382,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第四階段：註冊流程
 
-- [ ] 13. `refactor(signup): centralize signup state and constants`
+- [x] 13. `refactor(signup): centralize signup state and constants`
     - 統一註冊步驟、角色、選項與表單資料。
 - [ ] 14. `refactor(signup): extract diner registration flow`
     - 整理食客註冊、驗證與頭像上傳流程。

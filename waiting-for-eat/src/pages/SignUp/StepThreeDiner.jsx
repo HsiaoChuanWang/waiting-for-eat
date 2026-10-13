@@ -1,32 +1,27 @@
 import { Form, Input, Radio } from "antd";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
 import { saveUser } from "../../services/repositories/userRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
+import useSignupStore from "../../stores/signupStore.js";
 import useUserStore from "../../stores/userStore.js";
+import { SIGNUP_STEPS } from "./signupConstants.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
 
-function StepThreeDiner({ setActive }) {
+function StepThreeDiner() {
   const userId = useUserStore((state) => state.userId);
   const setDetailInfo = useUserStore((state) => state.setDetailInfo);
+  const detail = useSignupStore((state) => state.userForm);
+  const updateUserForm = useSignupStore((state) => state.updateUserForm);
+  const setActiveStep = useSignupStore((state) => state.setActiveStep);
 
   const checkRef = useRef(false);
 
-  const [detail, setDetail] = useState({
-    userName: "",
-    address: "",
-    companyId: "",
-    gender: "",
-    phone: "",
-    picture: "",
-    status: "active",
-  });
-
   async function handlePicture(picture) {
     const downloadURL = await uploadImage(userId, picture);
-    setDetail({ ...detail, picture: downloadURL });
+    updateUserForm("picture", downloadURL);
   }
 
   const handleData = (e) => {
@@ -35,13 +30,13 @@ function StepThreeDiner({ setActive }) {
 
     switch (target) {
       case "userName":
-        setDetail({ ...detail, userName: value });
+        updateUserForm("userName", value);
         break;
       case "gender":
-        setDetail({ ...detail, gender: value });
+        updateUserForm("gender", value);
         break;
       case "phone":
-        setDetail({ ...detail, phone: value });
+        updateUserForm("phone", value);
         break;
       case "picture":
         handlePicture(e.target.files[0]);
@@ -54,7 +49,7 @@ function StepThreeDiner({ setActive }) {
       checkRef.current = false;
       setDetailInfo(detail);
       await saveUser(userId, detail);
-      setActive("StepFourDiner");
+      setActiveStep(SIGNUP_STEPS.DINER_COMPLETE);
     } else {
       toast.error("請填寫完整資訊");
     }

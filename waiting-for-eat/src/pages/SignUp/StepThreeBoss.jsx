@@ -1,49 +1,36 @@
 import { ScrollShadow } from "@nextui-org/react";
 import { useLoadScript } from "@react-google-maps/api";
 import { Form, Input, Radio, Select } from "antd";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
 import { createCompany } from "../../services/repositories/companyRepository.js";
 import { saveUser } from "../../services/repositories/userRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
+import useSignupStore from "../../stores/signupStore.js";
 import useUserStore from "../../stores/userStore.js";
+import { COMPANY_CATEGORY_OPTIONS, SIGNUP_STEPS } from "./signupConstants.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
 
-function StepThreeBoss({ setActive }) {
+function StepThreeBoss() {
   useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY,
   });
   const userId = useUserStore((state) => state.userId);
   const setDetailInfo = useUserStore((state) => state.setDetailInfo);
   const setCompanyInfo = useUserStore((state) => state.setCompanyInfo);
+  const detail = useSignupStore((state) => state.userForm);
+  const company = useSignupStore((state) => state.companyForm);
+  const updateUserForm = useSignupStore((state) => state.updateUserForm);
+  const updateCompanyForm = useSignupStore((state) => state.updateCompanyForm);
+  const setActiveStep = useSignupStore((state) => state.setActiveStep);
 
   const checkRef = useRef(false);
 
-  const [detail, setDetail] = useState({
-    userName: "",
-    address: "",
-    companyId: "",
-    gender: "",
-    phone: "",
-    picture: "",
-    status: "active",
-  });
-
-  const [company, setCompany] = useState({
-    name: "",
-    city: "",
-    district: "",
-    address: "",
-    phone: "",
-    category: "",
-    totalStar: 0,
-  });
-
   async function handlePicture(picture) {
     const downloadURL = await uploadImage(userId, picture);
-    setDetail({ ...detail, picture: downloadURL });
+    updateUserForm("picture", downloadURL);
   }
 
   async function getLocation() {
@@ -75,13 +62,13 @@ function StepThreeBoss({ setActive }) {
 
     switch (target) {
       case "userName":
-        setDetail({ ...detail, userName: value });
+        updateUserForm("userName", value);
         break;
       case "gender":
-        setDetail({ ...detail, gender: value });
+        updateUserForm("gender", value);
         break;
       case "phone":
-        setDetail({ ...detail, phone: value });
+        updateUserForm("phone", value);
         break;
       case "picture":
         handlePicture(e.target.files[0]);
@@ -94,19 +81,19 @@ function StepThreeBoss({ setActive }) {
     let value = e.target.value;
     switch (target) {
       case "name":
-        setCompany({ ...company, name: value });
+        updateCompanyForm("name", value);
         break;
       case "city":
-        setCompany({ ...company, city: value });
+        updateCompanyForm("city", value);
         break;
       case "district":
-        setCompany({ ...company, district: value });
+        updateCompanyForm("district", value);
         break;
       case "address":
-        setCompany({ ...company, address: value });
+        updateCompanyForm("address", value);
         break;
       case "telephone":
-        setCompany({ ...company, phone: value });
+        updateCompanyForm("phone", value);
         break;
     }
   };
@@ -128,7 +115,7 @@ function StepThreeBoss({ setActive }) {
       setCompanyInfo(companyInfo);
       setDetailInfo(userInfo);
       await saveUser(userId, userInfo);
-      setActive("StepFourBoss");
+      setActiveStep(SIGNUP_STEPS.BOSS_COMPLETE);
     } else {
       toast.error("請填寫完整資訊");
     }
@@ -287,7 +274,9 @@ function StepThreeBoss({ setActive }) {
                 </h1>
                 <Select
                   name="category"
-                  onChange={(e) => setCompany({ ...company, category: e })}
+                  onChange={(category) =>
+                    updateCompanyForm("category", category)
+                  }
                   value={company.category}
                   showSearch
                   style={{
@@ -298,32 +287,7 @@ function StepThreeBoss({ setActive }) {
                   filterOption={(input, option) =>
                     (option?.label ?? "").includes(input)
                   }
-                  options={[
-                    {
-                      value: "0",
-                      label: "火鍋",
-                    },
-                    {
-                      value: "1",
-                      label: "燒烤",
-                    },
-                    {
-                      value: "2",
-                      label: "牛排",
-                    },
-                    {
-                      value: "3",
-                      label: "甜點",
-                    },
-                    {
-                      value: "4",
-                      label: "小吃",
-                    },
-                    {
-                      value: "5",
-                      label: "早餐",
-                    },
-                  ]}
+                  options={COMPANY_CATEGORY_OPTIONS}
                 />
               </div>
             </Form>

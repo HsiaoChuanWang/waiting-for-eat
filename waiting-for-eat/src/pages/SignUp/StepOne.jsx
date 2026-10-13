@@ -1,22 +1,23 @@
-import React from "react";
 import toast from "react-hot-toast";
 import { Bs1CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
 import Test from "../../components/Test";
+import useSignupStore from "../../stores/signupStore.js";
+import { SIGNUP_STEPS, USER_ROLES } from "./signupConstants.js";
 import boss from "./signUpPictures/boss.png";
 import diner from "./signUpPictures/diner.png";
 import stepOne from "./signUpPictures/stepOne.jpg";
 
-function StepOne({ setActive, identity, setIdentity }) {
-  function saveIdentity(identity) {
-    setIdentity(identity);
-  }
+function StepOne() {
+  const role = useSignupStore((state) => state.role);
+  const setRole = useSignupStore((state) => state.setRole);
+  const setActiveStep = useSignupStore((state) => state.setActiveStep);
 
   function nextStep() {
-    if (identity === "") {
+    if (role === "") {
       toast.error("請點選註冊身份");
     } else {
-      setActive("StepTwo");
+      setActiveStep(SIGNUP_STEPS.ACCOUNT);
     }
   }
 
@@ -38,9 +39,9 @@ function StepOne({ setActive, identity, setIdentity }) {
             <h1>請選擇註冊身份</h1>
           </div>
           <div
-            onClick={() => saveIdentity("diner")}
+            onClick={() => setRole(USER_ROLES.DINER)}
             className={`${
-              identity === "diner" && "bg-slate-300"
+              role === USER_ROLES.DINER && "bg-slate-300"
             } mb-8 flex cursor-pointer items-center rounded-lg bg-slate-100 hover:bg-slate-200 hover:text-gray-600`}
           >
             <img src={diner} className="h-32" />
@@ -51,9 +52,9 @@ function StepOne({ setActive, identity, setIdentity }) {
           </div>
 
           <div
-            onClick={() => saveIdentity("boss")}
+            onClick={() => setRole(USER_ROLES.BOSS)}
             className={`${
-              identity === "boss" && "bg-slate-300"
+              role === USER_ROLES.BOSS && "bg-slate-300"
             } flex cursor-pointer items-center rounded-lg bg-slate-100 hover:bg-slate-200 hover:text-gray-600`}
           >
             <div className="ml-8 w-32 text-center">

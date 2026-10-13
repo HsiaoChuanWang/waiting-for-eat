@@ -1,7 +1,7 @@
 import { Input } from "@nextui-org/react";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import React, { useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { Bs2CircleFill } from "react-icons/bs";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -12,14 +12,18 @@ import {
   googleAuthProvider,
 } from "../../services/firebase/firebaseClient.js";
 import useUserStore from "../../stores/userStore.js";
+import useSignupStore from "../../stores/signupStore.js";
+import { SIGNUP_STEPS, USER_ROLES } from "./signupConstants.js";
 import googleLogo from "./signUpPictures/GoogleLogo.png";
 import stepTwo from "./signUpPictures/stepTwo.jpg";
 
-function StepTwo({ setActive, identity }) {
+function StepTwo() {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
   const setUserId = useUserStore((state) => state.setUserId);
   const setIsLogout = useUserStore((state) => state.setIsLogout);
+  const role = useSignupStore((state) => state.role);
+  const setActiveStep = useSignupStore((state) => state.setActiveStep);
 
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -31,9 +35,9 @@ function StepTwo({ setActive, identity }) {
         setUserId(user.uid);
       })
       .then(() => {
-        identity === "diner"
-          ? setActive("StepThreeDiner")
-          : setActive("StepThreeBoss");
+        role === USER_ROLES.DINER
+          ? setActiveStep(SIGNUP_STEPS.DINER_PROFILE)
+          : setActiveStep(SIGNUP_STEPS.BOSS_PROFILE);
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -60,7 +64,7 @@ function StepTwo({ setActive, identity }) {
   }
 
   const googleSignUp = async () => {
-      signInWithPopup(auth, googleAuthProvider)
+    signInWithPopup(auth, googleAuthProvider)
       .then((result) => {
         const user = result.user;
         setUserId(user.uid);
@@ -69,9 +73,9 @@ function StepTwo({ setActive, identity }) {
         const userId = auth.currentUser.uid;
         checkGoogleAccount(userId).then((result) => {
           if (result) {
-            identity === "diner"
-              ? setActive("StepThreeDiner")
-              : setActive("StepThreeBoss");
+            role === USER_ROLES.DINER
+              ? setActiveStep(SIGNUP_STEPS.DINER_PROFILE)
+              : setActiveStep(SIGNUP_STEPS.BOSS_PROFILE);
           } else {
             toast.error("此google帳號已註冊");
             setIsLogout();
