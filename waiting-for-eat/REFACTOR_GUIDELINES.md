@@ -377,7 +377,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
     - 將食客、老闆與未登入使用者的路由限制移出 `App.jsx`。
 - [x] 11. `refactor(header): separate header state and navigation`
     - 拆分 Header 的登入狀態、導航資料與畫面責任。
-- [ ] 12. `refactor(auth): simplify login flow`
+- [x] 12. `refactor(auth): simplify login flow`
     - 整理一般登入、Google 登入與測試帳號流程。
 
 ### 第四階段：註冊流程

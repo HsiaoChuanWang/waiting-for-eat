@@ -1,90 +1,25 @@
 import { Input } from "@nextui-org/react";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { default as React, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
 import Alert from "../../components/Alert";
-import {
-  auth,
-  googleAuthProvider,
-} from "../../services/firebase/firebaseClient.js";
-import { getUserById } from "../../services/repositories/userRepository.js";
 import useTestStore from "../../stores/testStore.js";
-import useUserStore from "../../stores/userStore.js";
 import googleLogo from "../SignUp/signUpPictures/GoogleLogo.png";
 import boss from "../SignUp/signUpPictures/boss.png";
 import cook from "../SignUp/signUpPictures/cook.png";
 import diner from "../SignUp/signUpPictures/diner.png";
 import loginBackground from "./loginBackground.jpg";
+import useLoginFlow from "./useLoginFlow.js";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isVisible, setIsVisible] = useState(false);
-  const toggleVisibility = () => setIsVisible(!isVisible);
-  const navigate = useNavigate();
   const setLoginIdentity = useTestStore((state) => state.setLoginIdentity);
-  const setTestAccount = useTestStore((state) => state.setTestAccount);
-  const setTestPassword = useTestStore((state) => state.setTestPassword);
   const loginIdentity = useTestStore((state) => state.loginIdentity);
   const testAccount = useTestStore((state) => state.testAccount);
   const testPassword = useTestStore((state) => state.testPassword);
-  const setUserId = useUserStore((state) => state.setUserId);
-  const setDetailInfo = useUserStore((state) => state.setDetailInfo);
-
-  useEffect(() => {
-    if (testAccount !== "") {
-      setEmail(testAccount);
-      setPassword(testPassword);
-    }
-  }, []);
-
-  function nativeLogin() {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        setUserId(user.uid);
-        getUserById(user.uid).then((userInfo) => {
-          setDetailInfo(userInfo);
-          if (userInfo.companyId === "") {
-            navigate("/");
-          } else {
-            navigate(`/boss/bossInfo/${userInfo.companyId}`);
-          }
-          toast.success("登入成功");
-          setLoginIdentity("");
-          setTestAccount("");
-          setTestPassword("");
-        });
-      })
-      .catch(() => {
-        toast.error("請確認email及密碼是否輸入正確");
-      });
-  }
-
-  function googleLogin() {
-    signInWithPopup(auth, googleAuthProvider)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        setUserId(user.uid);
-        getUserById(user.uid).then((userInfo) => {
-          setDetailInfo(userInfo);
-          if (userInfo.companyId === "") {
-            navigate("/");
-          } else {
-            navigate(`/boss/bossInfo/${userInfo.companyId}`);
-          }
-          toast.success("登入成功");
-          setLoginIdentity("");
-          setTestAccount("");
-          setTestPassword("");
-        });
-      })
-      .catch(() => {
-        toast.error("請確認email及密碼是否輸入正確");
-      });
-  }
+  const [email, setEmail] = useState(testAccount);
+  const [password, setPassword] = useState(testPassword);
+  const [isVisible, setIsVisible] = useState(false);
+  const { loginWithEmail, loginWithGoogle } = useLoginFlow();
+  const toggleVisibility = () => setIsVisible((visible) => !visible);
 
   function saveIdentity(identity) {
     setLoginIdentity(identity);
@@ -148,7 +83,7 @@ function Login() {
 
           <div className="flex h-11 w-80 items-center justify-center gap-2 rounded-lg bg-slate-100 shadow-sm hover:cursor-pointer hover:bg-slate-200">
             <img src={googleLogo} className="h-6 w-6" />
-            <button onClick={googleLogin} className=" font-semibold">
+            <button onClick={loginWithGoogle} className=" font-semibold">
               使用Google登入
             </button>
           </div>
@@ -203,7 +138,7 @@ function Login() {
 
             <button
               className="mb-8 h-10 w-full rounded-lg bg-[#ff850e] font-bold text-white hover:bg-[#ff850e]/80"
-              onClick={nativeLogin}
+              onClick={() => loginWithEmail(email, password)}
             >
               登入
             </button>
