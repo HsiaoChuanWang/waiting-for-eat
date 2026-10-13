@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebaseClient.js";
 import { mapDocumentSnapshot } from "../firebase/firestoreMappers.js";
 
@@ -14,4 +14,14 @@ function saveUser(userId, userData) {
   return setDoc(doc(db, USER_COLLECTION, userId), userData);
 }
 
-export { getUserById, saveUser };
+function subscribeUserById(userId, onChange) {
+  return onSnapshot(doc(db, USER_COLLECTION, userId), (snapshot) => {
+    onChange(mapDocumentSnapshot(snapshot));
+  });
+}
+
+function updateUser(userId, userData) {
+  return updateDoc(doc(db, USER_COLLECTION, userId), userData);
+}
+
+export { getUserById, saveUser, subscribeUserById, updateUser };

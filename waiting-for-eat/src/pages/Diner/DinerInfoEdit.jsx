@@ -1,31 +1,40 @@
 import { Card } from "@nextui-org/react";
 import { Button, Form, Input, Radio } from "antd";
-import { doc, updateDoc } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { db } from "../../services/firebase/firebaseClient.js";
+import IsLoading from "../../components/IsLoading/index.jsx";
+import useDinerProfile from "../../features/diner/useDinerProfile.js";
+import { updateUser } from "../../services/repositories/userRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
-import useUserStore from "../../stores/userStore.js";
 
 function DinerInfoEdit() {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const detailInfo = useUserStore((state) => state.detailInfo);
-  const [updateData, setUpdateData] = useState({
-    userName: detailInfo.userName,
-    gender: detailInfo.gender,
-    phone: detailInfo.phone,
-  });
+  const { isLoading, profile } = useDinerProfile(userId);
+  const [updateData, setUpdateData] = useState({});
+
+  useEffect(() => {
+    if (!profile) return;
+
+    setUpdateData({
+      gender: profile.gender,
+      phone: profile.phone,
+      userName: profile.userName,
+    });
+  }, [profile]);
 
   async function handlePicture(picture) {
     const downloadURL = await uploadImage(userId, picture);
-    setUpdateData({ ...updateData, picture: downloadURL });
+    setUpdateData((current) => ({ ...current, picture: downloadURL }));
   }
 
   async function handleUpdate() {
-    const userRef = doc(db, "user", userId);
-    await updateDoc(userRef, updateData);
+    await updateUser(userId, updateData);
     navigate(`/diner/dinerInfo/${userId}`);
+  }
+
+  if (isLoading) {
+    return <IsLoading />;
   }
 
   return (

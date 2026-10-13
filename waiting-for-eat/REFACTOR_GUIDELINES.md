@@ -429,7 +429,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第九階段：食客後台
 
-- [ ] 29. `refactor(diner): simplify diner profile flow`
+- [x] 29. `refactor(diner): simplify diner profile flow`
     - 整理食客資料顯示與編輯流程。
 - [ ] 30. `refactor(diner): consolidate diner record lists`
     - 整合收藏、不喜歡、吃過、訂位、評論與食記清單的共用流程。
