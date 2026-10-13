@@ -1,4 +1,4 @@
-import { default as React } from "react";
+/* eslint-disable react/prop-types */
 import noItem from "./noItem.png";
 
 function NoItem({ content, distance, pictureWidth, textSize, optional }) {

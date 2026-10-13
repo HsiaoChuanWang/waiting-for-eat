@@ -1,4 +1,3 @@
-import { default as React } from "react";
 import { Toaster } from "react-hot-toast";
 
 function Alert() {

@@ -2,15 +2,15 @@ import { signOut } from "firebase/auth";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase/firebaseClient.js";
-import useTestStore from "../../stores/testStore.js";
+import useLoginStore from "../../stores/loginStore.js";
 import useUserStore from "../../stores/userStore.js";
 
 function useHeaderNavigation() {
   const navigate = useNavigate();
   const setIsLogout = useUserStore((state) => state.setIsLogout);
-  const setLoginIdentity = useTestStore((state) => state.setLoginIdentity);
-  const setTestAccount = useTestStore((state) => state.setTestAccount);
-  const setTestPassword = useTestStore((state) => state.setTestPassword);
+  const setLoginIdentity = useLoginStore((state) => state.setLoginIdentity);
+  const setPresetEmail = useLoginStore((state) => state.setPresetEmail);
+  const setPresetPassword = useLoginStore((state) => state.setPresetPassword);
 
   async function selectNavigationItem(item) {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -19,8 +19,8 @@ function useHeaderNavigation() {
       await signOut(auth);
       setIsLogout();
       setLoginIdentity("");
-      setTestAccount("");
-      setTestPassword("");
+      setPresetEmail("");
+      setPresetPassword("");
       toast.success("登出成功");
     }
 

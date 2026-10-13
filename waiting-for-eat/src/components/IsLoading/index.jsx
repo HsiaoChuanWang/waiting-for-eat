@@ -1,4 +1,3 @@
-import { default as React } from "react";
 import loading from "./loading.png";
 
 function IsLoading() {

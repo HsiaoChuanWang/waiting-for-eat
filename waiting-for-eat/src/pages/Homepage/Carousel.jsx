@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { wrap } from "popmotion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import banner01 from "./homepagePictures/banner01.jpg";
 import banner02 from "./homepagePictures/banner02.jpg";
 import banner03 from "./homepagePictures/banner03.jpg";
@@ -34,14 +34,14 @@ const Carousel = () => {
   };
 
   useEffect(() => {
-    const apple = window.setInterval(() => {
-      paginate(1);
+    const intervalId = window.setInterval(() => {
+      setPage(([currentPage]) => [currentPage + 1, 1]);
     }, 4000);
 
     return () => {
-      clearInterval(apple);
+      clearInterval(intervalId);
     };
-  }, [page]);
+  }, []);
 
   return (
     <div className="relative flex h-[400px] w-screen items-center justify-center overflow-hidden">

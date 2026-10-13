@@ -1,5 +1,5 @@
 import { Card } from "@nextui-org/react";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import useDinerStore from "../../stores/dinerStore.js";
 import DinerSidebar from "./DinerSidebar";
@@ -14,7 +14,7 @@ function Diner() {
     const pathParts = location.pathname.split("/");
     const secondParam = pathParts[2];
     setSelectedDinerBar(secondParam);
-  }, [location.pathname]);
+  }, [location.pathname, setSelectedDinerBar]);
 
   return (
     <div className="flex justify-center">

@@ -1,11 +1,11 @@
 import toast from "react-hot-toast";
 import { Bs1CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
-import Test from "../../components/Test";
+import boss from "../../assets/roles/boss.png";
+import diner from "../../assets/roles/diner.png";
 import useSignupStore from "../../stores/signupStore.js";
+import QuickLogin from "../../features/auth/components/QuickLogin.jsx";
 import { SIGNUP_STEPS, USER_ROLES } from "./signupConstants.js";
-import boss from "./signUpPictures/boss.png";
-import diner from "./signUpPictures/diner.png";
 import stepOne from "./signUpPictures/stepOne.jpg";
 
 function StepOne() {
@@ -24,7 +24,7 @@ function StepOne() {
   return (
     <div className="relative flex h-[calc(100vh-96px)] w-screen">
       <Alert />
-      <Test />
+      <QuickLogin />
       <img
         src={stepOne}
         className="h-full w-3/5 object-cover object-center phone:absolute phone:z-0 phone:w-full tablet:w-1/2"

@@ -4,7 +4,6 @@ import Header from "./components/Header";
 import useAuthSession from "./hooks/useAuthSession.js";
 import useHeaderStatus from "./hooks/useHeaderStatus.js";
 import { useRouteAccessGuard } from "./router/useRouteAccessGuard.js";
-// import RwdWarning from "./components/RwdWarning";
 
 function App() {
   const location = useLocation();
@@ -35,7 +34,6 @@ function App() {
       }}
     >
       <Header />
-      {/* <RwdWarning /> */}
       <Outlet />
     </ConfigProvider>
   );

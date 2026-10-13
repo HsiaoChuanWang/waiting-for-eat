@@ -1,22 +1,22 @@
 import { Input } from "@nextui-org/react";
 import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import cook from "../../assets/auth/cook.png";
+import googleLogo from "../../assets/auth/google-logo.png";
+import boss from "../../assets/roles/boss.png";
+import diner from "../../assets/roles/diner.png";
 import Alert from "../../components/Alert";
-import useTestStore from "../../stores/testStore.js";
-import googleLogo from "../SignUp/signUpPictures/GoogleLogo.png";
-import boss from "../SignUp/signUpPictures/boss.png";
-import cook from "../SignUp/signUpPictures/cook.png";
-import diner from "../SignUp/signUpPictures/diner.png";
+import useLoginStore from "../../stores/loginStore.js";
 import loginBackground from "./loginBackground.jpg";
 import useLoginFlow from "./useLoginFlow.js";
 
 function Login() {
-  const setLoginIdentity = useTestStore((state) => state.setLoginIdentity);
-  const loginIdentity = useTestStore((state) => state.loginIdentity);
-  const testAccount = useTestStore((state) => state.testAccount);
-  const testPassword = useTestStore((state) => state.testPassword);
-  const [email, setEmail] = useState(testAccount);
-  const [password, setPassword] = useState(testPassword);
+  const setLoginIdentity = useLoginStore((state) => state.setLoginIdentity);
+  const loginIdentity = useLoginStore((state) => state.loginIdentity);
+  const presetEmail = useLoginStore((state) => state.presetEmail);
+  const presetPassword = useLoginStore((state) => state.presetPassword);
+  const [email, setEmail] = useState(presetEmail);
+  const [password, setPassword] = useState(presetPassword);
   const [isVisible, setIsVisible] = useState(false);
   const { loginWithEmail, loginWithGoogle } = useLoginFlow();
   const toggleVisibility = () => setIsVisible((visible) => !visible);

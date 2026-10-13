@@ -5,21 +5,21 @@ import {
   signInWithGoogle,
 } from "../../services/auth/authenticationService.js";
 import { getUserById } from "../../services/repositories/userRepository.js";
-import useTestStore from "../../stores/testStore.js";
+import useLoginStore from "../../stores/loginStore.js";
 import useUserStore from "../../stores/userStore.js";
 
 function useLoginFlow() {
   const navigate = useNavigate();
-  const setLoginIdentity = useTestStore((state) => state.setLoginIdentity);
-  const setTestAccount = useTestStore((state) => state.setTestAccount);
-  const setTestPassword = useTestStore((state) => state.setTestPassword);
+  const setLoginIdentity = useLoginStore((state) => state.setLoginIdentity);
+  const setPresetEmail = useLoginStore((state) => state.setPresetEmail);
+  const setPresetPassword = useLoginStore((state) => state.setPresetPassword);
   const setUserId = useUserStore((state) => state.setUserId);
   const setDetailInfo = useUserStore((state) => state.setDetailInfo);
 
   function clearLoginFormState() {
     setLoginIdentity("");
-    setTestAccount("");
-    setTestPassword("");
+    setPresetEmail("");
+    setPresetPassword("");
   }
 
   async function completeLogin(userCredential) {

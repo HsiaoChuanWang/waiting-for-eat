@@ -12,7 +12,7 @@ import useCompanyProfile from "../../features/boss/useCompanyProfile.js";
 import useDinerProfile from "../../features/diner/useDinerProfile.js";
 import { getCompanyCategoryType } from "../../services/repositories/companyRepository.js";
 import useUserStore from "../../stores/userStore.js";
-import boss from "../SignUp/signUpPictures/boss.png";
+import boss from "../../assets/roles/boss.png";
 
 function BossInfo() {
   const { companyId } = useParams();

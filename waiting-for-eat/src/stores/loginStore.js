@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-const useTestStore = create(
+const useLoginStore = create(
   immer((set) => ({
-    isTestShowed: true,
+    isQuickLoginOpen: true,
 
-    setisTestShowed: (status) => {
+    setIsQuickLoginOpen: (status) => {
       set((state) => {
-        state.isTestShowed = status;
+        state.isQuickLoginOpen = status;
       });
     },
 
@@ -18,20 +18,20 @@ const useTestStore = create(
       });
     },
 
-    testAccount: "",
-    testPassword: "",
-    setTestAccount: (account) => {
+    presetEmail: "",
+    presetPassword: "",
+    setPresetEmail: (email) => {
       set((state) => {
-        state.testAccount = account;
+        state.presetEmail = email;
       });
     },
 
-    setTestPassword: (password) => {
+    setPresetPassword: (password) => {
       set((state) => {
-        state.testPassword = password;
+        state.presetPassword = password;
       });
     },
   })),
 );
 
-export default useTestStore;
+export default useLoginStore;

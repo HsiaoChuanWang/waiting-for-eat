@@ -1,41 +1,38 @@
-import { default as React } from "react";
 import { CgCloseO } from "react-icons/cg";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Link } from "react-router-dom";
-import boss from "../../pages/SignUp/signUpPictures/boss.png";
-import diner from "../../pages/SignUp/signUpPictures/diner.png";
-import useHeaderStore from "../../stores/headerStore";
-import useTestStore from "../../stores/testStore";
-import test from "./test.png";
+import boss from "../../../assets/roles/boss.png";
+import diner from "../../../assets/roles/diner.png";
+import useHeaderStore from "../../../stores/headerStore.js";
+import useLoginStore from "../../../stores/loginStore.js";
+import quickLoginImage from "../assets/quick-login.png";
 
-function Test() {
-  const isTestShowed = useTestStore((state) => state.isTestShowed);
-  const setisTestShowed = useTestStore((state) => state.setisTestShowed);
-  const setLoginIdentity = useTestStore((state) => state.setLoginIdentity);
-  const setTestAccount = useTestStore((state) => state.setTestAccount);
-  const setTestPassword = useTestStore((state) => state.setTestPassword);
+function QuickLogin() {
+  const isQuickLoginOpen = useLoginStore((state) => state.isQuickLoginOpen);
+  const setIsQuickLoginOpen = useLoginStore(
+    (state) => state.setIsQuickLoginOpen,
+  );
+  const setLoginIdentity = useLoginStore((state) => state.setLoginIdentity);
+  const setPresetEmail = useLoginStore((state) => state.setPresetEmail);
+  const setPresetPassword = useLoginStore((state) => state.setPresetPassword);
   const loginStatus = useHeaderStore((state) => state.loginStatus);
 
-  function showTest() {
-    if (isTestShowed === true) {
-      setisTestShowed(false);
-    } else {
-      setisTestShowed(true);
-    }
-    setTestAccount("");
-    setTestPassword("");
+  function toggleQuickLogin() {
+    setIsQuickLoginOpen(!isQuickLoginOpen);
+    setPresetEmail("");
+    setPresetPassword("");
     setLoginIdentity("");
   }
 
   function testDiner() {
-    setTestAccount("diner168@mail.com");
-    setTestPassword("168168");
+    setPresetEmail("diner168@mail.com");
+    setPresetPassword("168168");
     setLoginIdentity("diner");
   }
 
   function testBoss() {
-    setTestAccount("boss888@mail.com");
-    setTestPassword(888888);
+    setPresetEmail("boss888@mail.com");
+    setPresetPassword("888888");
     setLoginIdentity("boss");
   }
 
@@ -43,7 +40,7 @@ function Test() {
     <div className="phone:absolute phone:z-20">
       <div
         className={`${
-          (isTestShowed === false || loginStatus !== "LogOut") && "hidden"
+          (!isQuickLoginOpen || loginStatus !== "LogOut") && "hidden"
         } fixed bottom-0 flex h-[calc(100%-96px)] w-full items-center justify-center bg-black/40`}
       >
         <div className="ml-8 flex h-[430px] w-[600px] flex-col items-center justify-between rounded-2xl bg-white phone:h-[420px] phone:w-72 tablet:w-96 laptop:w-96">
@@ -70,7 +67,7 @@ function Test() {
               src={diner}
             />
             <h3 className="w-36 text-xl font-bold phone:w-full phone:pt-2 phone:text-center phone:text-sm tablet:text-lg laptop:text-lg">
-              體驗"食客"
+              體驗「食客」
             </h3>
           </Link>
 
@@ -84,24 +81,24 @@ function Test() {
               src={boss}
             />
             <h3 className="w-36 text-xl font-bold phone:w-full phone:pt-2  phone:text-center phone:text-sm tablet:text-lg laptop:text-lg">
-              體驗"餐廳業者"
+              體驗「餐廳業者」
             </h3>
           </Link>
         </div>
 
         <CgCloseO
-          onClick={showTest}
+          onClick={toggleQuickLogin}
           className="mb-[500px] cursor-pointer text-3xl text-white phone:mb-[500px] laptop:mb-[500px]"
         />
       </div>
 
       <div
-        onClick={showTest}
+        onClick={toggleQuickLogin}
         className={`${
-          (isTestShowed === true || loginStatus !== "LogOut") && "hidden"
+          (isQuickLoginOpen || loginStatus !== "LogOut") && "hidden"
         } fixed bottom-8 left-8 flex cursor-pointer flex-col items-center rounded-lg bg-white shadow-xl`}
       >
-        <img className="mx-2 w-24 phone:w-14" src={test} />
+        <img className="mx-2 w-24 phone:w-14" src={quickLoginImage} />
         <h1 className="my-2 w-20 rounded bg-[#ff850e] text-center font-bold text-white phone:w-14 phone:text-[12px]">
           快速測試
         </h1>
@@ -110,4 +107,4 @@ function Test() {
   );
 }
 
-export default Test;
+export default QuickLogin;

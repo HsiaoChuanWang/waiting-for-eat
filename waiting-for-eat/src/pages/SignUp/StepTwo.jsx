@@ -14,7 +14,7 @@ import {
 import useUserStore from "../../stores/userStore.js";
 import useSignupStore from "../../stores/signupStore.js";
 import { SIGNUP_STEPS, USER_ROLES } from "./signupConstants.js";
-import googleLogo from "./signUpPictures/GoogleLogo.png";
+import googleLogo from "../../assets/auth/google-logo.png";
 import stepTwo from "./signUpPictures/stepTwo.jpg";
 
 function StepTwo() {

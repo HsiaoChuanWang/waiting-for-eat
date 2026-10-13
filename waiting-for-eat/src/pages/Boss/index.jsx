@@ -12,7 +12,7 @@ function Boss() {
     const pathParts = location.pathname.split("/");
     const secondParam = pathParts[2];
     setSelectedBossBar(secondParam);
-  }, [location.pathname]);
+  }, [location.pathname, setSelectedBossBar]);
 
   return (
     <div className="flex justify-center">

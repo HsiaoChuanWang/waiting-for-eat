@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import useUserStore from "../../stores/userStore.js";
-import cook from "./signUpPictures/cook.png";
+import cook from "../../assets/auth/cook.png";
 import stepFour from "./signUpPictures/stepFour.jpg";
 
 function StepFourDiner() {
@@ -18,7 +18,7 @@ function StepFourDiner() {
           className={`flex h-[520px] w-[480px] flex-col items-center justify-center rounded-2xl bg-white phone:w-full`}
         >
           <h2 className="mb-8 animate-bounce text-4xl font-bold text-[#ff850e] phone:text-2xl">
-            \ 歡迎您加入"痴吃等待"! /
+            \ 歡迎您加入「痴吃等待」! /
           </h2>
           <div className="mb-8 flex items-center">
             <img src={cook} className="w-72 phone:w-52 laptop:w-64" />

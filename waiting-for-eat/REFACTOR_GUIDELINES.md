@@ -450,7 +450,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 
 ### 第十二階段：全專案整理與驗證
 
-- [ ] 35. `refactor(shared): organize shared UI assets and remove dead code`
+- [x] 35. `refactor(shared): organize shared UI assets and remove dead code`
     - 整理確實共用的 UI、Assets 與 Stores，並移除確認未使用的程式碼及依賴。
 - [ ] 36. `chore: complete accessibility and project verification`
     - 補齊圖片 `alt`、必要的 Loading／Empty／Error 狀態，執行 lint、test、build 與主要流程驗證。

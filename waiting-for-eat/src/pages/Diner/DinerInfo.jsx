@@ -4,7 +4,7 @@ import { TbGenderFemale } from "react-icons/tb";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import useDinerProfile from "../../features/diner/useDinerProfile.js";
-import diner from "../SignUp/signUpPictures/diner.png";
+import diner from "../../assets/roles/diner.png";
 
 function DinerInfo() {
   const { userId } = useParams();

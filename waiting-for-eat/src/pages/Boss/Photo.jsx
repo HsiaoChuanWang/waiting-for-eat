@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import useCompanyProfile from "../../features/boss/useCompanyProfile.js";
 import noMenu from "../Restaurant/restaurantPictures/noMenu.png";
-import boss from "../SignUp/signUpPictures/boss.png";
+import boss from "../../assets/roles/boss.png";
 
 function Photo() {
   const { companyId } = useParams();

@@ -1,4 +1,3 @@
-import React from "react";
 import { BsPersonFill } from "react-icons/bs";
 import { FaRegCalendarCheck } from "react-icons/fa6";
 import { GiMeal } from "react-icons/gi";

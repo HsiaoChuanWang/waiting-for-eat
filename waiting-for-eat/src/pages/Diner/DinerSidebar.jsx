@@ -1,4 +1,3 @@
-import React from "react";
 import { BiSolidCommentDetail } from "react-icons/bi";
 import { BsPersonFill } from "react-icons/bs";
 import { CgNotes } from "react-icons/cg";
