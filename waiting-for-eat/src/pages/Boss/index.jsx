@@ -1,6 +1,6 @@
 import { Card } from "@nextui-org/react";
 import { Outlet } from "react-router-dom";
-import BossSidebar from "./BossSidebar";
+import BossSidebar from "./components/BossSidebar.jsx";
 
 function Boss() {
   return (

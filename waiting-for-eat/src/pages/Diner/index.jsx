@@ -1,6 +1,6 @@
 import { Card } from "@nextui-org/react";
 import { Outlet } from "react-router-dom";
-import DinerSidebar from "./DinerSidebar";
+import DinerSidebar from "./components/DinerSidebar.jsx";
 
 function Diner() {
   return (

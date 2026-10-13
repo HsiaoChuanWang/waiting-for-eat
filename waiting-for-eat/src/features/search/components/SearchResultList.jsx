@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { ScrollShadow } from "@nextui-org/react";
-import NoItem from "../../../components/NoItem";
+import NoItem from "../../../components/NoItem/index.jsx";
 import RestaurantResultCard from "./RestaurantResultCard.jsx";
 
 function SearchResultList({ isVisible, onFavoriteChange, results }) {

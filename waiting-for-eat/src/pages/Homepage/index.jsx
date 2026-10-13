@@ -6,10 +6,10 @@ import { IoIosArrowDropdownCircle } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import useRestaurantSearch from "../../features/search/useRestaurantSearch.js";
-import CategoryGrid from "./CategoryGrid.jsx";
-import Carousel from "./Carousel";
-import boss from "./homepagePictures/boss.png";
-import diner from "./homepagePictures/diner.png";
+import CategoryGrid from "./components/CategoryGrid.jsx";
+import Carousel from "./components/Carousel.jsx";
+import boss from "./assets/boss.png";
+import diner from "./assets/diner.png";
 
 function HomePage() {
   const [searchName, setSearchName] = useState("");

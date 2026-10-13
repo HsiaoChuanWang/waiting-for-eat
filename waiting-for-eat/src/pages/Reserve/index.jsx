@@ -19,7 +19,7 @@ import {
 import { submitReservation } from "../../features/reservation/reservationService.js";
 import useReservationData from "../../features/reservation/useReservationData.js";
 import useUserStore from "../../stores/userStore.js";
-import success from "./success.png";
+import success from "./assets/success.png";
 
 function Reserve() {
   const navigate = useNavigate();

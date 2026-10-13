@@ -1,6 +1,6 @@
 import { ConfigProvider } from "antd";
 import { Outlet, useLocation } from "react-router-dom";
-import Header from "./components/Header";
+import Header from "./components/Header/index.jsx";
 import useAuthSession from "./hooks/useAuthSession.js";
 import useHeaderStatus from "./hooks/useHeaderStatus.js";
 import { useRouteAccessGuard } from "./router/useRouteAccessGuard.js";

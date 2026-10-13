@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import noActivity from "../restaurantPictures/noActivity.png";
+import noActivity from "../../../assets/placeholders/no-activity.png";
 
 function RestaurantActivitySection({ activity }) {
   return (

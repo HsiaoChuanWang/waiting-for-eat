@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import useSignupStore from "../../stores/signupStore.js";
 import { SIGNUP_STEPS } from "../../constants/signup.js";
-import StepFourBoss from "./StepFourBoss";
-import StepFourDiner from "./StepFourDiner";
-import StepOne from "./StepOne";
-import StepThreeBoss from "./StepThreeBoss";
-import StepThreeDiner from "./StepThreeDiner";
-import StepTwo from "./StepTwo";
+import StepFourBoss from "./components/StepFourBoss.jsx";
+import StepFourDiner from "./components/StepFourDiner.jsx";
+import StepOne from "./components/StepOne.jsx";
+import StepThreeBoss from "./components/StepThreeBoss.jsx";
+import StepThreeDiner from "./components/StepThreeDiner.jsx";
+import StepTwo from "./components/StepTwo.jsx";
 
 function SignUp() {
   const activeStep = useSignupStore((state) => state.activeStep);

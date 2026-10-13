@@ -6,7 +6,7 @@ import {
   IoIosArrowDropupCircle,
   IoIosList,
 } from "react-icons/io";
-import IsLoading from "../../components/IsLoading";
+import IsLoading from "../../components/IsLoading/index.jsx";
 import {
   DEFAULT_MAP_CENTER,
   GOOGLE_MAP_LIBRARIES,

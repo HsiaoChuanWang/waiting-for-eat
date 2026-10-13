@@ -2,7 +2,7 @@
 import { ScrollShadow } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import Menu from "../Menu.jsx";
+import Menu from "./Menu.jsx";
 import noMenu from "../../../assets/placeholders/no-menu.png";
 
 function RestaurantMenuSection({ images }) {

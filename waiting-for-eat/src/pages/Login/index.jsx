@@ -5,10 +5,10 @@ import cook from "../../assets/auth/cook.png";
 import googleLogo from "../../assets/auth/google-logo.png";
 import boss from "../../assets/roles/boss.png";
 import diner from "../../assets/roles/diner.png";
-import Alert from "../../components/Alert";
+import Alert from "../../components/Alert/index.jsx";
 import useLoginStore from "../../stores/loginStore.js";
-import loginBackground from "./loginBackground.jpg";
-import useLoginFlow from "./useLoginFlow.js";
+import loginBackground from "./assets/login-background.jpg";
+import useLoginFlow from "./hooks/useLoginFlow.js";
 
 function Login() {
   const setLoginIdentity = useLoginStore((state) => state.setLoginIdentity);

@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import Like from "../Like.jsx";
+import Like from "./Like.jsx";
 import tasty from "../../../assets/placeholders/restaurant.jpg";
 
 function RestaurantInfoSection({ restaurant, showFavorite }) {
