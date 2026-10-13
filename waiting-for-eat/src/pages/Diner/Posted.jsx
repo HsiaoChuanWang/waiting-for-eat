@@ -2,11 +2,11 @@ import { Button, Card, ScrollShadow } from "@nextui-org/react";
 import dateFormat from "dateformat";
 import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { FaPenToSquare } from "react-icons/fa6";
 import { IoRestaurant, IoTimeSharp } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
+import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
 import { db } from "../../services/firebase/firebaseClient.js";
 import { getCompanyById } from "../../services/repositories/companyRepository.js";
 import {
@@ -15,33 +15,28 @@ import {
 } from "../../services/repositories/postRepository.js";
 import noData from "./noData.png";
 
+async function getOrderInfo(orderId) {
+  const snapshot = await getDoc(doc(db, "order", orderId));
+  return snapshot.data();
+}
+
+const enrichPosts = (posts) =>
+  Promise.all(
+    posts.map(async (post) => ({
+      ...post,
+      ...(await getCompanyById(post.companyId)),
+      ...(await getOrderInfo(post.orderId)),
+    })),
+  );
+
 function Posted() {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const [combineData, setCombineData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  async function getOrderInfo(orderId) {
-    const docRef = doc(db, "order", orderId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
-  useEffect(() => {
-    return subscribePostsByUserId(userId, (posts) => {
-      Promise.all(
-        posts.map(async (post) => ({
-          ...post,
-          ...(await getCompanyById(post.companyId)),
-          ...(await getOrderInfo(post.orderId)),
-        })),
-      ).then((items) => {
-        setCombineData(items);
-        setIsLoading(false);
-      });
-    });
-  }, [userId]);
+  const { isLoading, records: combineData } = useDinerRecordList(
+    userId,
+    subscribePostsByUserId,
+    enrichPosts,
+  );
 
   const handleDelete = (postId) => deletePost(postId);
 

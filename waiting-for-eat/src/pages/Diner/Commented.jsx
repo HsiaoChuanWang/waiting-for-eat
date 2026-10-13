@@ -3,11 +3,11 @@ import { Rate } from "antd";
 import dateFormat from "dateformat";
 import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { FaPenToSquare } from "react-icons/fa6";
 import { IoRestaurant, IoTimeSharp } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
+import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
 import { db } from "../../services/firebase/firebaseClient.js";
 import { getCompanyById } from "../../services/repositories/companyRepository.js";
 import {
@@ -17,37 +17,31 @@ import {
 import useStarStore from "../../stores/starStore.js";
 import noData from "./noData.png";
 
+async function getOrderInfo(orderId) {
+  const snapshot = await getDoc(doc(db, "order", orderId));
+  return snapshot.data();
+}
+
+const enrichReviews = (reviews) =>
+  Promise.all(
+    reviews.map(async (review) => ({
+      ...review,
+      ...(await getCompanyById(review.companyId)),
+      ...(await getOrderInfo(review.orderId)),
+    })),
+  );
+
 function Commented() {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const [combineData, setCombineData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading, records: combineData } = useDinerRecordList(
+    userId,
+    subscribeReviewsByUserId,
+    enrichReviews,
+  );
   const setStarId = useStarStore((state) => state.setStarId);
   const setCompanyName = useStarStore((state) => state.setCompanyName);
   const setCompanyId = useStarStore((state) => state.setCompanyId);
-
-  async function getOrderInfo(orderId) {
-    const docRef = doc(db, "order", orderId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
-  useEffect(() => {
-    return subscribeReviewsByUserId(userId, (reviews) => {
-      Promise.all(
-        reviews.map(async (review) => ({
-          ...review,
-          ...(await getCompanyById(review.companyId)),
-          ...(await getOrderInfo(review.orderId)),
-        })),
-      ).then((items) => {
-        setCombineData(items);
-        setIsLoading(false);
-      });
-    });
-  }, [userId]);
 
   const handleDelete = (starId, companyId) => deleteReview(starId, companyId);
 

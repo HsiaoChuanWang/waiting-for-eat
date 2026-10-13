@@ -3,73 +3,51 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
   onSnapshot,
   query,
   where,
 } from "firebase/firestore";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
 import { BiSolidBookmarkAlt } from "react-icons/bi";
 import { IoMdPin } from "react-icons/io";
 import { IoRestaurant } from "react-icons/io5";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
+import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
 import { db } from "../../services/firebase/firebaseClient.js";
+import { mapQuerySnapshot } from "../../services/firebase/firestoreMappers.js";
+import { getCompanyById } from "../../services/repositories/companyRepository.js";
 import noData from "./noData.png";
 
-function ReservedShop() {
-  const navigate = useNavigate();
-  const { userId } = useParams();
-  const [orders, setOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [combineData, setCombineData] = useState([]);
-  const orderq = query(
+function subscribeReservedOrders(userId, onChange) {
+  const orderQuery = query(
     collection(db, "order"),
     where("userId", "==", userId),
     where("attend", "==", "no"),
   );
 
-  async function getCompanyInfo(companyId) {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
+  return onSnapshot(orderQuery, (snapshot) => {
+    onChange(mapQuerySnapshot(snapshot, "orderId"));
+  });
+}
 
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
+const enrichOrders = (orders) =>
+  Promise.all(
+    orders.map(async (order) => ({
+      ...order,
+      ...(await getCompanyById(order.companyId)),
+    })),
+  );
 
-  useEffect(() => {
-    const orderSnap = onSnapshot(orderq, (result) => {
-      let orderList = [];
-      result.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, orderId: dataId };
-        orderList.push(combine);
-      });
-      setOrders([...orderList]);
-
-      Promise.all(
-        orderList.map((item) => {
-          return Promise.all([getCompanyInfo(item.companyId)]).then(
-            ([companyInfo]) => {
-              const newItem = {
-                ...item,
-                ...companyInfo,
-              };
-              return newItem;
-            },
-          );
-        }),
-      ).then((value) => {
-        setCombineData(value);
-        setIsLoading(false);
-      });
-    });
-
-    return orderSnap;
-  }, []);
+function ReservedShop() {
+  const navigate = useNavigate();
+  const { userId } = useParams();
+  const { isLoading, records: combineData } = useDinerRecordList(
+    userId,
+    subscribeReservedOrders,
+    enrichOrders,
+  );
 
   async function handleDelete(orderId) {
     await deleteDoc(doc(db, "order", orderId));

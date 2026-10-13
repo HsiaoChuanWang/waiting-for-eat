@@ -1,6 +1,5 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import {
   HiOutlineThumbDown,
   HiOutlineThumbUp,
@@ -12,6 +11,7 @@ import { IoRestaurant } from "react-icons/io5";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
+import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
 import { getCompanyById } from "../../services/repositories/companyRepository.js";
 import {
   FAVORITE_STATUS,
@@ -23,39 +23,35 @@ import { hasReviewForOrder } from "../../services/repositories/reviewRepository.
 import useStarStore from "../../stores/starStore.js";
 import noData from "./noData.png";
 
+const enrichEatenRecords = (items) =>
+  Promise.all(
+    items.map(async (item) => {
+      const [companyInfo, hasPost, hasReview] = await Promise.all([
+        getCompanyById(item.companyId),
+        hasPostForOrder(item.orderId),
+        hasReviewForOrder(item.orderId),
+      ]);
+
+      return {
+        ...item,
+        ...companyInfo,
+        canWritePost: !hasPost,
+        canWriteComment: !hasReview,
+      };
+    }),
+  );
+
 function EatenShop() {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const [combineData, setCombineData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading, records: combineData } = useDinerRecordList(
+    userId,
+    subscribeEatenFavorites,
+    enrichEatenRecords,
+  );
   const setCompanyName = useStarStore((state) => state.setCompanyName);
   const setCompanyId = useStarStore((state) => state.setCompanyId);
   const setOrderId = useStarStore((state) => state.setOrderId);
-  useEffect(() => {
-    return subscribeEatenFavorites(userId, (items) => {
-      Promise.all(
-        items.map((item) => {
-          return Promise.all([
-            getCompanyById(item.companyId),
-            hasPostForOrder(item.orderId).then((hasPost) => !hasPost),
-            hasReviewForOrder(item.orderId).then((hasReview) => !hasReview),
-          ]).then(([companyInfo, postInfo, commentInfo]) => {
-            const newItem = {
-              ...item,
-              ...companyInfo,
-              canWritePost: postInfo,
-              canWriteComment: commentInfo,
-            };
-            return newItem;
-          });
-        }),
-      ).then((value) => {
-        setCombineData(value);
-        setIsLoading(false);
-      });
-    });
-  }, [userId]);
-
   const handleLike = (favoriteId, status) =>
     updateFavoriteStatus(favoriteId, status);
 
