@@ -1,6 +1,6 @@
-import { Button, ScrollShadow } from "@nextui-org/react";
+import { ScrollShadow } from "@nextui-org/react";
 import { useLoadScript } from "@react-google-maps/api";
-import { Form, Rate, Select } from "antd";
+import { Rate } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IconContext } from "react-icons";
 import { FaSearch } from "react-icons/fa";
@@ -18,7 +18,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import IsLoading from "../../components/IsLoading";
 import NoItem from "../../components/NoItem";
-import { RESTAURANT_CATEGORY_OPTIONS } from "../../constants/restaurant.js";
 import {
   DEFAULT_MAP_CENTER,
   GOOGLE_MAP_LIBRARIES,
@@ -26,6 +25,7 @@ import {
 } from "../../features/search/searchConstants.js";
 import { createSearchOptions } from "../../features/search/searchModel.js";
 import { prepareSearchResults } from "../../features/search/searchResultService.js";
+import SearchControls from "../../features/search/components/SearchControls.jsx";
 import {
   findCompaniesByCategory,
   findCompaniesByCity,
@@ -106,6 +106,12 @@ function Search() {
   function handleCategory() {
     setSearchArray([]);
     getCategory(searchCategory);
+  }
+
+  function selectSearchCriterion(criterion, value) {
+    setSearchName(criterion === SEARCH_FIELDS.NAME ? value : "");
+    setSearchPlace(criterion === SEARCH_FIELDS.CITY ? value : "");
+    setSearchCategory(criterion === SEARCH_FIELDS.CATEGORY ? value : "");
   }
 
   async function getCategory(item) {
@@ -209,101 +215,28 @@ function Search() {
 
   return (
     <div className="map:relative">
-      <div
-        className={`${
-          isShowSearchbar === false && "hidden"
-        } mb-2 mt-8 flex map:absolute map:z-30 map:flex-col`}
-      >
-        <div>
-          <Form className="ml-10 mr-4 flex map:ml-4">
-            <Form.Item className="w-48 map:w-36">
-              <Select
-                className="h-10 rounded-lg border-2 border-solid border-[#ff6e06] map:h-8"
-                name="category"
-                onChange={(e) => {
-                  setSearchName(e);
-                  setSearchPlace("");
-                  setSearchCategory("");
-                }}
-                value={searchName}
-                showSearch
-                placeholder="搜尋餐廳"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
-                }
-                options={restaurants}
-              />
-            </Form.Item>
-            <Button
-              className="ml-1 h-10 rounded-lg border bg-[#ff6e06] px-4 py-1 text-center text-xl font-semibold text-white map:h-8 map:text-sm"
-              onClick={handleRestaurant}
-            >
-              搜尋餐廳
-            </Button>
-          </Form>
-        </div>
-
-        <div>
-          <Form className="mx-4 flex">
-            <Form.Item className="w-48 map:w-36">
-              <Select
-                className="h-10 rounded-lg border-2 border-solid border-[#ff6e06] map:h-8"
-                name="category"
-                onChange={(e) => {
-                  setSearchPlace(e);
-                  setSearchName("");
-                  setSearchCategory("");
-                }}
-                value={searchPlace}
-                showSearch
-                placeholder="搜尋餐廳"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
-                }
-                options={city}
-              />
-            </Form.Item>
-            <Button
-              className="ml-1 h-10 rounded-lg border bg-[#ff6e06] px-4 py-1 text-center text-xl font-semibold text-white map:h-8 map:text-sm"
-              onClick={handlePlace}
-            >
-              搜尋地區
-            </Button>
-          </Form>
-        </div>
-
-        <div>
-          <Form className="mx-4 flex">
-            <Form.Item className="w-48 map:w-36">
-              <Select
-                className="h-10 rounded-lg border-2 border-solid border-[#ff6e06] map:h-8 map:leading-4"
-                name="category"
-                onChange={(e) => {
-                  setSearchCategory(e);
-                  setSearchName("");
-                  setSearchPlace("");
-                }}
-                value={searchCategory}
-                showSearch
-                placeholder="搜尋餐廳"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
-                }
-                options={RESTAURANT_CATEGORY_OPTIONS}
-              />
-            </Form.Item>
-            <Button
-              className="ml-1 h-10 rounded-lg border bg-[#ff6e06] px-4 py-1 text-center text-xl font-semibold text-white map:h-8 map:text-sm"
-              onClick={handleCategory}
-            >
-              搜尋類別
-            </Button>
-          </Form>
-        </div>
-      </div>
+      <SearchControls
+        cityOptions={city}
+        isVisible={isShowSearchbar}
+        nameOptions={restaurants}
+        onCategoryChange={(value) =>
+          selectSearchCriterion(SEARCH_FIELDS.CATEGORY, value)
+        }
+        onCategorySubmit={handleCategory}
+        onCityChange={(value) =>
+          selectSearchCriterion(SEARCH_FIELDS.CITY, value)
+        }
+        onCitySubmit={handlePlace}
+        onNameChange={(value) =>
+          selectSearchCriterion(SEARCH_FIELDS.NAME, value)
+        }
+        onNameSubmit={handleRestaurant}
+        values={{
+          category: searchCategory,
+          city: searchPlace,
+          name: searchName,
+        }}
+      />
 
       <div className="flex h-[calc(100vh-200px)] justify-center shadow-[0px_0px_0px_1px_rgba(0,0,0,0.16)] map:h-[calc(100vh-104px)]">
         <div className="shadow-4xl w-[28%] map:absolute map:bottom-0 map:z-10 map:w-full">

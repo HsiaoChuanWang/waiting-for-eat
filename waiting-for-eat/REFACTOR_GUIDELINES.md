@@ -397,7 +397,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
     - 抽離依名稱、地區與類別執行的 Firestore 查詢。
 - [x] 18. `refactor(search): consolidate result enrichment and sorting`
     - 統一 favorite 補充、結果排序與非同步處理。
-- [ ] 19. `refactor(search): extract search controls`
+- [x] 19. `refactor(search): extract search controls`
     - 拆出搜尋條件與操作表單元件。
 - [ ] 20. `refactor(search): extract result list components`
     - 拆出結果清單、餐廳卡片與 favorite 狀態元件。
