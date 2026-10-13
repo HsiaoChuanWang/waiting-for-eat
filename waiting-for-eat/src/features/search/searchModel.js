@@ -1,7 +1,3 @@
-function createSearchResult(company, companyId, status = "") {
-  return { ...company, companyId, status };
-}
-
 function withFavoriteStatus(searchResult, status) {
   return { ...searchResult, status };
 }
@@ -38,7 +34,6 @@ function sortSearchResults(searchResults, tieBreakByCompanyId = false) {
 
 export {
   createSearchOptions,
-  createSearchResult,
   enrichSearchResults,
   sortSearchResults,
   withFavoriteStatus,

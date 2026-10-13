@@ -7,7 +7,7 @@ import { uploadImage } from "../../services/storage/imageStorage.js";
 import useSignupStore from "../../stores/signupStore.js";
 import useUserStore from "../../stores/userStore.js";
 import { getCompanyAddress, isBossFormComplete } from "./bossRegistration.js";
-import { SIGNUP_STEPS } from "./signupConstants.js";
+import { SIGNUP_STEPS } from "../../constants/signup.js";
 
 function useBossRegistration() {
   useLoadScript({ googleMapsApiKey: import.meta.env.VITE_GOOGLE_API_KEY });

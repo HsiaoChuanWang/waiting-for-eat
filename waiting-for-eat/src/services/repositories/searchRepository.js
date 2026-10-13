@@ -1,15 +1,19 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { SEARCH_FIELDS } from "../../features/search/searchConstants.js";
-import { createSearchResult } from "../../features/search/searchModel.js";
 import { db } from "../firebase/firebaseClient.js";
 import { mapQuerySnapshot } from "../firebase/firestoreMappers.js";
 
 const COMPANY_COLLECTION = "company";
+const COMPANY_FIELDS = Object.freeze({
+  CATEGORY: "category",
+  CITY: "city",
+  NAME: "name",
+});
 
 function mapCompanyResults(snapshot) {
-  return mapQuerySnapshot(snapshot, "companyId").map((company) =>
-    createSearchResult(company, company.companyId),
-  );
+  return mapQuerySnapshot(snapshot, "companyId").map((company) => ({
+    ...company,
+    status: "",
+  }));
 }
 
 async function getCompanies() {
@@ -26,10 +30,10 @@ async function findCompanies(field, value) {
   return mapCompanyResults(snapshot);
 }
 
-const findCompaniesByName = (name) => findCompanies(SEARCH_FIELDS.NAME, name);
-const findCompaniesByCity = (city) => findCompanies(SEARCH_FIELDS.CITY, city);
+const findCompaniesByName = (name) => findCompanies(COMPANY_FIELDS.NAME, name);
+const findCompaniesByCity = (city) => findCompanies(COMPANY_FIELDS.CITY, city);
 const findCompaniesByCategory = (category) =>
-  findCompanies(SEARCH_FIELDS.CATEGORY, category);
+  findCompanies(COMPANY_FIELDS.CATEGORY, category);
 
 export {
   findCompaniesByCategory,

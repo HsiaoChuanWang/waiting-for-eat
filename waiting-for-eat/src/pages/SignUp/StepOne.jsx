@@ -5,7 +5,7 @@ import boss from "../../assets/roles/boss.png";
 import diner from "../../assets/roles/diner.png";
 import useSignupStore from "../../stores/signupStore.js";
 import QuickLogin from "../../features/auth/components/QuickLogin.jsx";
-import { SIGNUP_STEPS, USER_ROLES } from "./signupConstants.js";
+import { SIGNUP_STEPS, USER_ROLES } from "../../constants/signup.js";
 import stepOne from "./signUpPictures/stepOne.jpg";
 
 function StepOne() {

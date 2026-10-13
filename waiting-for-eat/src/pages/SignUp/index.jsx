@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import useSignupStore from "../../stores/signupStore.js";
-import { SIGNUP_STEPS } from "./signupConstants.js";
+import { SIGNUP_STEPS } from "../../constants/signup.js";
 import StepFourBoss from "./StepFourBoss";
 import StepFourDiner from "./StepFourDiner";
 import StepOne from "./StepOne";

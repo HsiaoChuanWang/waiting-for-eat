@@ -13,7 +13,7 @@ import {
   FAVORITE_STATUS,
   subscribeFavoritesByStatus,
 } from "../../../services/repositories/favoriteRepository.js";
-import noData from "../../../pages/Diner/noData.png";
+import noData from "../../../assets/placeholders/no-data.png";
 import useDinerRecordList from "../useDinerRecordList.js";
 
 const enrichWithCompanies = (favorites) =>

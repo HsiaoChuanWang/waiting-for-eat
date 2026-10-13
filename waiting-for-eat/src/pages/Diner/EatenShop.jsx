@@ -22,7 +22,7 @@ import {
 import { hasPostForOrder } from "../../services/repositories/postRepository.js";
 import { hasReviewForOrder } from "../../services/repositories/reviewRepository.js";
 import useStarStore from "../../stores/starStore.js";
-import noData from "./noData.png";
+import noData from "../../assets/placeholders/no-data.png";
 
 const enrichEatenRecords = (items) =>
   Promise.all(

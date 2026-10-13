@@ -13,7 +13,7 @@ import {
   deleteOrder,
   subscribeReservedOrdersByUserId,
 } from "../../services/repositories/orderRepository.js";
-import noData from "./noData.png";
+import noData from "../../assets/placeholders/no-data.png";
 
 const enrichOrders = (orders) =>
   Promise.all(

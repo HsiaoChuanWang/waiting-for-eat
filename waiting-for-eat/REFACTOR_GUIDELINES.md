@@ -461,7 +461,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 - [x] 37. `refactor(data): remove direct Firebase access from UI`
     - 移除註冊、食客紀錄、食記編輯與 Header 對 Firebase client 的直接操作。
     - 統一資料流為 UI → feature hook/service → repository/auth service → Firebase。
-- [ ] 38. `refactor(architecture): enforce feature and service boundaries`
+- [x] 38. `refactor(architecture): enforce feature and service boundaries`
     - 修正 service 依賴 feature、store 依賴 page，以及 feature 引用 page asset 的反向依賴。
     - 將跨 Feature 使用的 constants、model 與 assets 移到穩定且語意一致的位置。
 - [ ] 39. `refactor(navigation): derive sidebar state from routes`

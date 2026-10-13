@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Rate } from "antd";
 import { useNavigate } from "react-router-dom";
-import fallbackPicture from "../../../pages/Search/tasty.jpg";
+import fallbackPicture from "../../../assets/placeholders/restaurant.jpg";
 import FavoriteStatus from "./FavoriteStatus.jsx";
 
 function RestaurantResultCard({ index, isVisible, restaurant }) {

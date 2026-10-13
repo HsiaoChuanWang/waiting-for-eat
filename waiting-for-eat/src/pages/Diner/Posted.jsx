@@ -13,7 +13,7 @@ import {
   deletePost,
   subscribePostsByUserId,
 } from "../../services/repositories/postRepository.js";
-import noData from "./noData.png";
+import noData from "../../assets/placeholders/no-data.png";
 
 const enrichPosts = (posts) =>
   Promise.all(

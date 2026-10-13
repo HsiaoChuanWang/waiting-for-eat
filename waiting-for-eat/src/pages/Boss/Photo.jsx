@@ -2,7 +2,7 @@ import { Button, ScrollShadow } from "@nextui-org/react";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import useCompanyProfile from "../../features/boss/useCompanyProfile.js";
-import noMenu from "../Restaurant/restaurantPictures/noMenu.png";
+import noMenu from "../../assets/placeholders/no-menu.png";
 import boss from "../../assets/roles/boss.png";
 
 function Photo() {

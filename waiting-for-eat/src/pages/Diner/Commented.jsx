@@ -15,7 +15,7 @@ import {
   subscribeReviewsByUserId,
 } from "../../services/repositories/reviewRepository.js";
 import useStarStore from "../../stores/starStore.js";
-import noData from "./noData.png";
+import noData from "../../assets/placeholders/no-data.png";
 
 const enrichReviews = (reviews) =>
   Promise.all(

@@ -3,7 +3,7 @@ import {
   INITIAL_COMPANY_FORM,
   INITIAL_USER_FORM,
   SIGNUP_STEPS,
-} from "../pages/SignUp/signupConstants.js";
+} from "../constants/signup.js";
 
 const initialSignupState = {
   activeStep: SIGNUP_STEPS.ROLE,

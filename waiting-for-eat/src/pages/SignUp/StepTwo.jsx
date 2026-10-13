@@ -12,7 +12,7 @@ import {
 import { getUserById } from "../../services/repositories/userRepository.js";
 import useUserStore from "../../stores/userStore.js";
 import useSignupStore from "../../stores/signupStore.js";
-import { SIGNUP_STEPS, USER_ROLES } from "./signupConstants.js";
+import { SIGNUP_STEPS, USER_ROLES } from "../../constants/signup.js";
 import googleLogo from "../../assets/auth/google-logo.png";
 import stepTwo from "./signUpPictures/stepTwo.jpg";
 

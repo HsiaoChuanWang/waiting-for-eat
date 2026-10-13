@@ -4,7 +4,7 @@ import { uploadImage } from "../../services/storage/imageStorage.js";
 import useSignupStore from "../../stores/signupStore.js";
 import useUserStore from "../../stores/userStore.js";
 import { isDinerFormComplete } from "./dinerRegistration.js";
-import { SIGNUP_STEPS } from "./signupConstants.js";
+import { SIGNUP_STEPS } from "../../constants/signup.js";
 
 function useDinerRegistration() {
   const userId = useUserStore((state) => state.userId);

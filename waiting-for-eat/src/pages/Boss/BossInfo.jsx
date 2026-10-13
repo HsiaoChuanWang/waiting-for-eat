@@ -52,7 +52,7 @@ function BossInfo() {
             <h1 className="text-base phone:text-xs">點擊名片以查看餐廳資訊</h1>
           </div>
 
-          <div className="relative flex h-[380px] w-[640px] items-center self-center rounded-3xl border-8 border-solid border-black/50 bg-[url('/src/pages/Diner/contentBg.png')] phone:h-[400px] phone:w-5/6 tablet:w-[550px]">
+          <div className="relative flex h-[380px] w-[640px] items-center self-center rounded-3xl border-8 border-solid border-black/50 bg-[url('/src/assets/backgrounds/profile-card.png')] phone:h-[400px] phone:w-5/6 tablet:w-[550px]">
             <h1 className="absolute right-4 top-2 text-4xl font-black text-black/50 phone:text-2xl">
               Owner
             </h1>
@@ -110,7 +110,7 @@ function BossInfo() {
             </h1>
           </div>
 
-          <div className="relative flex h-[380px] w-[640px] items-center rounded-3xl border-8 border-solid border-black/50 bg-[url('/src/pages/Diner/contentBg.png')]  phone:h-[400px] phone:w-5/6 tablet:w-[550px]">
+          <div className="relative flex h-[380px] w-[640px] items-center rounded-3xl border-8 border-solid border-black/50 bg-[url('/src/assets/backgrounds/profile-card.png')]  phone:h-[400px] phone:w-5/6 tablet:w-[550px]">
             <h1 className="absolute right-4 top-2 text-4xl font-black text-black/50 phone:text-2xl">
               Restaurant
             </h1>
