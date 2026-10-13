@@ -7,7 +7,7 @@ function NoItem({ content, distance, pictureWidth, textSize, optional }) {
       className={`m-4 flex ${distance} ${optional} h-32 items-center justify-center rounded-2xl border-2 border-solid border-gray-200 bg-white`}
     >
       <div className={`${pictureWidth}`}>
-        <img src={noItem} />
+        <img src={noItem} alt="" />
       </div>
       <h1 className={`${textSize} font-bold text-gray-600`}>{content}</h1>
     </div>

@@ -41,6 +41,7 @@ const Menu = ({ images, position, setDisplay }) => {
           className="z-30 h-[800px] phone:h-72 tablet:h-[450px] laptop:h-[600px]"
           key={page}
           src={images[imageIndex]}
+          alt={`菜單照片 ${imageIndex + 1}`}
           custom={direction}
           variants={variants}
           initial="enter"

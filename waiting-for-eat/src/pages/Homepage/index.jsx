@@ -97,6 +97,7 @@ function HomePage() {
           <img
             className="h-[240px] phone:mb-8 phone:h-36 tablet:h-36"
             src={diner}
+            alt="食客"
           ></img>
         </div>
 
@@ -140,6 +141,7 @@ function HomePage() {
           <img
             className="h-[240px] phone:mb-8 phone:h-36 tablet:h-36"
             src={boss}
+            alt="餐廳業者"
           ></img>
         </div>
       </motion.div>
@@ -232,6 +234,7 @@ function HomePage() {
             <img
               className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
               src={hotpot}
+              alt="火鍋"
             />
             <div className="absolute h-full w-full bg-black/30"></div>
             <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
@@ -247,6 +250,7 @@ function HomePage() {
             <img
               className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
               src={bbq}
+              alt="燒烤"
             />
             <div className="absolute h-full w-full bg-black/30"></div>
             <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
@@ -262,6 +266,7 @@ function HomePage() {
             <img
               className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
               src={steak}
+              alt="牛排"
             />
             <div className="absolute h-full w-full bg-black/40"></div>
             <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
@@ -277,6 +282,7 @@ function HomePage() {
             <img
               className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
               src={sweet}
+              alt="甜點"
             />
             <div className="absolute h-full w-full bg-black/40"></div>
             <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
@@ -292,6 +298,7 @@ function HomePage() {
             <img
               className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
               src={streetFood}
+              alt="小吃"
             />
             <div className="absolute h-full w-full bg-black/40"></div>
             <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">
@@ -307,6 +314,7 @@ function HomePage() {
             <img
               className="card-zoom-image absolute h-full w-full transform transition-all duration-500 ease-in-out phone:w-full phone:object-cover phone:object-center"
               src={breakfast}
+              alt="早餐"
             />
             <div className="absolute h-full w-full bg-black/40"></div>
             <div className="card-zoom-text absolute scale-150 transform text-center text-white transition-all duration-500 ease-in-out">

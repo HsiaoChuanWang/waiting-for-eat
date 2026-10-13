@@ -98,7 +98,7 @@ function Comment() {
         </ScrollShadow>
       ) : (
         <div className="flex h-52 items-center self-start">
-          <img src={noComment} className="h-32" />
+          <img src={noComment} alt="" className="h-32" />
           <h1 className="text-lg font-bold text-gray-600">暫無相關評論</h1>
         </div>
       )}

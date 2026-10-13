@@ -7,6 +7,7 @@ import { IoRestaurant } from "react-icons/io5";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../../components/IsLoading/index.jsx";
+import ErrorState from "../../../components/ErrorState/index.jsx";
 import { getCompanyById } from "../../../services/repositories/companyRepository.js";
 import {
   FAVORITE_STATUS,
@@ -36,7 +37,7 @@ function FavoriteRestaurantList({ status }) {
   const subscribeToRecords = isLiked
     ? subscribeLikedRestaurants
     : subscribeDislikedRestaurants;
-  const { isLoading, records } = useDinerRecordList(
+  const { error, isLoading, records } = useDinerRecordList(
     userId,
     subscribeToRecords,
     enrichWithCompanies,
@@ -45,6 +46,7 @@ function FavoriteRestaurantList({ status }) {
   const statusLabel = isLiked ? "Like" : "Bad";
 
   if (isLoading) return <IsLoading />;
+  if (error) return <ErrorState message={error} />;
 
   const content =
     records.length > 0 ? (
@@ -61,6 +63,7 @@ function FavoriteRestaurantList({ status }) {
                   <img
                     className="h-full w-full cursor-pointer rounded-lg object-cover object-center"
                     src={restaurant.picture}
+                    alt={`${restaurant.name}餐廳`}
                     onClick={() =>
                       navigate(`/restaurant/${restaurant.companyId}`)
                     }
@@ -106,7 +109,7 @@ function FavoriteRestaurantList({ status }) {
       ))
     ) : (
       <div className="mr-8 flex h-full items-center justify-center">
-        <img className="w-72" src={noData} />
+        <img className="w-72" src={noData} alt="" />
         <h1 className="text-2xl font-bold text-gray-600">尚無相關資訊</h1>
       </div>
     );

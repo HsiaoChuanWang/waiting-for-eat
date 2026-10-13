@@ -177,7 +177,7 @@ function Table() {
               <div className="flex justify-center">
                 {items.length === 0 ? (
                   <div className="mt-4">
-                    <img src={noTable} className="h-36" />
+                    <img src={noTable} alt="" className="h-36" />
                     <h1 className="text-center text-lg font-bold text-gray-600">
                       尚未設定桌位
                     </h1>

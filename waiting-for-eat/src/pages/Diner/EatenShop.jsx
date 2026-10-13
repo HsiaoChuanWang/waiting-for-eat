@@ -11,6 +11,7 @@ import { IoRestaurant } from "react-icons/io5";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
+import ErrorState from "../../components/ErrorState/index.jsx";
 import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
 import { getCompanyById } from "../../services/repositories/companyRepository.js";
 import {
@@ -44,11 +45,11 @@ const enrichEatenRecords = (items) =>
 function EatenShop() {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const { isLoading, records: combineData } = useDinerRecordList(
-    userId,
-    subscribeEatenFavorites,
-    enrichEatenRecords,
-  );
+  const {
+    error,
+    isLoading,
+    records: combineData,
+  } = useDinerRecordList(userId, subscribeEatenFavorites, enrichEatenRecords);
   const setCompanyName = useStarStore((state) => state.setCompanyName);
   const setCompanyId = useStarStore((state) => state.setCompanyId);
   const setOrderId = useStarStore((state) => state.setOrderId);
@@ -142,6 +143,7 @@ function EatenShop() {
                       <img
                         className="h-full w-full cursor-pointer rounded-lg object-cover object-center"
                         src={data.picture}
+                        alt={`${data.name}餐廳`}
                         onClick={() => {
                           navigate(`/restaurant/${data.companyId}`);
                         }}
@@ -221,7 +223,7 @@ function EatenShop() {
         })
     ) : (
       <div key="no" className="mr-8 flex h-full items-center justify-center">
-        <img className="w-72" src={noData} />
+        <img className="w-72" src={noData} alt="" />
         <h1 className="text-2xl font-bold text-gray-600">尚無相關資訊</h1>
       </div>
     );
@@ -229,6 +231,7 @@ function EatenShop() {
   if (isLoading) {
     return <IsLoading />;
   }
+  if (error) return <ErrorState message={error} />;
 
   return (
     <div className="flex h-full items-center justify-center">

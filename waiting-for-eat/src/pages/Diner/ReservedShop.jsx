@@ -14,6 +14,7 @@ import { IoRestaurant } from "react-icons/io5";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
+import ErrorState from "../../components/ErrorState/index.jsx";
 import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
 import { db } from "../../services/firebase/firebaseClient.js";
 import { mapQuerySnapshot } from "../../services/firebase/firestoreMappers.js";
@@ -43,11 +44,11 @@ const enrichOrders = (orders) =>
 function ReservedShop() {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const { isLoading, records: combineData } = useDinerRecordList(
-    userId,
-    subscribeReservedOrders,
-    enrichOrders,
-  );
+  const {
+    error,
+    isLoading,
+    records: combineData,
+  } = useDinerRecordList(userId, subscribeReservedOrders, enrichOrders);
 
   async function handleDelete(orderId) {
     await deleteDoc(doc(db, "order", orderId));
@@ -56,6 +57,7 @@ function ReservedShop() {
   if (isLoading) {
     return <IsLoading />;
   }
+  if (error) return <ErrorState message={error} />;
 
   const companyDatas =
     combineData.length > 0 ? (
@@ -75,6 +77,7 @@ function ReservedShop() {
                       <img
                         className="h-full w-full rounded-lg object-cover object-center"
                         src={data.picture}
+                        alt={`${data.name}餐廳`}
                         onClick={() => {
                           navigate(`/restaurant/${data.companyId}`);
                         }}
@@ -175,7 +178,7 @@ function ReservedShop() {
         })
     ) : (
       <div key="no" className="mr-8 flex h-full items-center justify-center">
-        <img className="w-72" src={noData} />
+        <img className="w-72" src={noData} alt="" />
         <h1 className="text-2xl font-bold text-gray-600">尚無相關資訊</h1>
       </div>
     );

@@ -50,6 +50,7 @@ const Carousel = () => {
           className="h-[400px] w-full object-cover object-center"
           key={page}
           src={banners[imageIndex]}
+          alt={`首頁精選餐廳 ${imageIndex + 1}`}
           custom={direction}
           variants={variants}
           initial="enter"

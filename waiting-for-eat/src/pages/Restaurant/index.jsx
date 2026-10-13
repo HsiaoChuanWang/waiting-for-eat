@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import Alert from "../../components/Alert/index.jsx";
+import ErrorState from "../../components/ErrorState/index.jsx";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import { getRestaurantPageData } from "../../services/repositories/restaurantRepository.js";
 import useUserStore from "../../stores/userStore.js";
@@ -16,18 +17,23 @@ function Restaurant() {
   const navigation = useNavigate();
   const { companyId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [restaurant, setRestaurant] = useState({});
   const [posts, setPosts] = useState([]);
   const userId = useUserStore((state) => state.userId);
 
   useEffect(() => {
     let isActive = true;
+    setError(null);
 
     getRestaurantPageData(companyId)
       .then(({ restaurant: restaurantData, posts: restaurantPosts }) => {
         if (!isActive) return;
         setRestaurant(restaurantData ?? {});
         setPosts(restaurantPosts);
+      })
+      .catch(() => {
+        if (isActive) setError("餐廳資料載入失敗，請稍後再試。");
       })
       .finally(() => {
         if (isActive) setIsLoading(false);
@@ -40,6 +46,10 @@ function Restaurant() {
 
   if (isLoading) {
     return <IsLoading />;
+  }
+
+  if (error) {
+    return <ErrorState message={error} />;
   }
 
   return (

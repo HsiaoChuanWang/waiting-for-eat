@@ -102,6 +102,7 @@ function Reserve() {
         <div className="mt-44 w-4/12 phone:mt-12 phone:flex phone:w-full phone:flex-col phone:items-center tablet:mt-12 tablet:flex tablet:w-full">
           <img
             src={company.picture}
+            alt={`${company.name ?? "餐廳"}店面`}
             className="max-h-[400px] w-full rounded-2xl object-cover object-center phone:w-3/4 tablet:w-80"
           ></img>
 
@@ -235,7 +236,11 @@ function Reserve() {
                           <>
                             <div className="mx-10 my-auto font-bold phone:text-center">
                               <div className="flex items-center justify-center phone:flex-col">
-                                <img className="h-auto w-28" src={success} />
+                                <img
+                                  className="h-auto w-28"
+                                  src={success}
+                                  alt=""
+                                />
                                 <div className="px-4">
                                   <p className="mb-2 text-2xl phone:my-2">
                                     預約成功!

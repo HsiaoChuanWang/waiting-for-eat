@@ -89,6 +89,7 @@ function StepTwo() {
       <Alert />
       <img
         src={stepTwo}
+        alt=""
         className="h-full w-3/5 object-cover object-center phone:absolute phone:z-0 phone:w-full tablet:w-1/2"
       />
 
@@ -102,7 +103,7 @@ function StepTwo() {
           </div>
 
           <div className="flex h-11 w-80 items-center justify-center gap-2 rounded-lg bg-slate-100 shadow-sm hover:cursor-pointer hover:bg-slate-200">
-            <img src={googleLogo} className="h-6 w-6" />
+            <img src={googleLogo} alt="Google" className="h-6 w-6" />
             <button onClick={googleSignUp} className=" font-semibold">
               使用Google註冊
             </button>

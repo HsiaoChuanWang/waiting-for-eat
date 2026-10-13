@@ -27,6 +27,7 @@ function StepOne() {
       <QuickLogin />
       <img
         src={stepOne}
+        alt=""
         className="h-full w-3/5 object-cover object-center phone:absolute phone:z-0 phone:w-full tablet:w-1/2"
       />
 
@@ -44,7 +45,7 @@ function StepOne() {
               role === USER_ROLES.DINER && "bg-slate-300"
             } mb-8 flex cursor-pointer items-center rounded-lg bg-slate-100 hover:bg-slate-200 hover:text-gray-600`}
           >
-            <img src={diner} className="h-32" />
+            <img src={diner} alt="食客" className="h-32" />
             <div className="mr-8 w-32 text-center">
               <h2 className="text-2xl font-bold">食客</h2>
               <h3 className=" text-base font-bold">Foodie</h3>
@@ -61,7 +62,7 @@ function StepOne() {
               <h2 className="text-2xl font-bold">餐廳業者</h2>
               <h3 className=" text-base font-bold">Owner</h3>
             </div>
-            <img src={boss} className="h-32" />
+            <img src={boss} alt="餐廳業者" className="h-32" />
           </div>
 
           <button

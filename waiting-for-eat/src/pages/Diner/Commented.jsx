@@ -7,6 +7,7 @@ import { FaPenToSquare } from "react-icons/fa6";
 import { IoRestaurant, IoTimeSharp } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
+import ErrorState from "../../components/ErrorState/index.jsx";
 import useDinerRecordList from "../../features/diner/useDinerRecordList.js";
 import { db } from "../../services/firebase/firebaseClient.js";
 import { getCompanyById } from "../../services/repositories/companyRepository.js";
@@ -34,11 +35,11 @@ const enrichReviews = (reviews) =>
 function Commented() {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const { isLoading, records: combineData } = useDinerRecordList(
-    userId,
-    subscribeReviewsByUserId,
-    enrichReviews,
-  );
+  const {
+    error,
+    isLoading,
+    records: combineData,
+  } = useDinerRecordList(userId, subscribeReviewsByUserId, enrichReviews);
   const setStarId = useStarStore((state) => state.setStarId);
   const setCompanyName = useStarStore((state) => state.setCompanyName);
   const setCompanyId = useStarStore((state) => state.setCompanyId);
@@ -63,6 +64,7 @@ function Commented() {
                       <img
                         className="h-full w-full cursor-pointer rounded-lg object-cover object-center"
                         src={data.picture}
+                        alt={`${data.name}餐廳`}
                         onClick={() => {
                           navigate(`/restaurant/${data.companyId}`);
                         }}
@@ -140,7 +142,7 @@ function Commented() {
         })
     ) : (
       <div key="no" className="mr-8 flex h-full items-center justify-center">
-        <img className="w-72" src={noData} />
+        <img className="w-72" src={noData} alt="" />
         <h1 className="text-2xl font-bold text-gray-600">尚無相關資訊</h1>
       </div>
     );
@@ -148,6 +150,7 @@ function Commented() {
   if (isLoading) {
     return <IsLoading />;
   }
+  if (error) return <ErrorState message={error} />;
 
   return (
     <div className="justify-cente flex h-full items-center">

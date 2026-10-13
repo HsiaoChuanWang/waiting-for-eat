@@ -10,6 +10,7 @@ function StepFourDiner() {
     <div className="relative flex h-[calc(100vh-96px)] w-screen">
       <img
         src={stepFour}
+        alt=""
         className="h-full w-3/5 object-cover object-center phone:absolute phone:z-0 phone:w-full tablet:w-2/5 laptop:w-1/2"
       />
 
@@ -21,7 +22,7 @@ function StepFourDiner() {
             \ 歡迎您加入「痴吃等待」! /
           </h2>
           <div className="mb-8 flex items-center">
-            <img src={cook} className="w-72 phone:w-52 laptop:w-64" />
+            <img src={cook} alt="" className="w-72 phone:w-52 laptop:w-64" />
             <div className="text-3xl font-black phone:text-xl tablet:text-2xl">
               <h2>We are</h2>
               <h2>waiting for</h2>

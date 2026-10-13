@@ -156,6 +156,7 @@ function Post() {
 
           <img
             src={mainPoster.mainPicture}
+            alt={post.title ?? "文章主圖"}
             className="h-[500px] w-full object-cover object-center"
           />
 
@@ -173,6 +174,7 @@ function Post() {
                   }}
                   className="h-full w-[250px] cursor-pointer rounded-2xl object-cover object-center"
                   src={companyData.picture}
+                  alt={`${companyData.name ?? "餐廳"}店面`}
                 />
 
                 <div className="py-4 pl-6 phone:pl-2">

@@ -55,6 +55,7 @@ function RestaurantResultCard({ index, isVisible, restaurant }) {
           <img
             className="min-h-24 min-w-24 map:min-h-20 map:min-w-20 h-24 w-24 rounded-2xl object-cover object-center map:h-20 map:w-20"
             src={restaurant.picture || fallbackPicture}
+            alt={`${restaurant.name}餐廳`}
           />
         </div>
       </div>

@@ -26,6 +26,7 @@ function RestaurantMenuSection({ images }) {
                     whileTap={{ scale: 0.9 }}
                     className="cursor-pointer px-2"
                     src={picture}
+                    alt={`菜單照片 ${index + 1}`}
                     onClick={() => {
                       setPosition(index);
                       setIsOpen(true);
@@ -35,7 +36,7 @@ function RestaurantMenuSection({ images }) {
               ))
             ) : (
               <div className="flex h-32 items-center">
-                <img src={noMenu} className="h-28" />
+                <img src={noMenu} alt="" className="h-28" />
                 <h4 className="text-lg font-bold text-gray-600">
                   暫無上傳菜單
                 </h4>

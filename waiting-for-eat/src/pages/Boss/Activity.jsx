@@ -29,7 +29,7 @@ function Activity() {
           ) : (
             <div className="flex items-center">
               <div>
-                <img className="w-48" src={noActivity} />
+                <img className="w-48" src={noActivity} alt="" />
                 <h1 className="text-center text-xl font-bold text-gray-600">
                   尚無活動
                 </h1>

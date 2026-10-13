@@ -111,6 +111,7 @@ function PostedEdit() {
               <img
                 className="mb-6 h-[200px] w-[400px] rounded-xl object-cover object-center"
                 src={post.mainPicture}
+                alt="目前的文章主圖"
               ></img>
             </div>
           </Form>

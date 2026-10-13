@@ -12,7 +12,7 @@ function RestaurantActivitySection({ activity }) {
         ></div>
       ) : (
         <div className="mx-4 mb-2 mt-8 flex h-32 items-center">
-          <img src={noActivity} className="h-28" />
+          <img src={noActivity} alt="" className="h-28" />
           <h1 className="text-lg font-bold text-gray-600">暫無活動</h1>
         </div>
       )}

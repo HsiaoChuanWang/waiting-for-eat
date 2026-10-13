@@ -22,6 +22,7 @@ function StepThreeBoss() {
       <Alert />
       <img
         src={stepThree}
+        alt=""
         className="h-full w-3/5 object-cover object-center phone:absolute phone:z-0 phone:w-full tablet:w-2/5  laptop:w-1/2"
       />
 

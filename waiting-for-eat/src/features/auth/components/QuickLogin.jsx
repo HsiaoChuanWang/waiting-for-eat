@@ -65,6 +65,7 @@ function QuickLogin() {
             <img
               className="w-40 phone:w-24 tablet:w-36 laptop:w-36"
               src={diner}
+              alt="食客"
             />
             <h3 className="w-36 text-xl font-bold phone:w-full phone:pt-2 phone:text-center phone:text-sm tablet:text-lg laptop:text-lg">
               體驗「食客」
@@ -79,6 +80,7 @@ function QuickLogin() {
             <img
               className="w-44 phone:w-24 tablet:w-36 laptop:w-36"
               src={boss}
+              alt="餐廳業者"
             />
             <h3 className="w-36 text-xl font-bold phone:w-full phone:pt-2  phone:text-center phone:text-sm tablet:text-lg laptop:text-lg">
               體驗「餐廳業者」
@@ -98,7 +100,7 @@ function QuickLogin() {
           (isQuickLoginOpen || loginStatus !== "LogOut") && "hidden"
         } fixed bottom-8 left-8 flex cursor-pointer flex-col items-center rounded-lg bg-white shadow-xl`}
       >
-        <img className="mx-2 w-24 phone:w-14" src={quickLoginImage} />
+        <img className="mx-2 w-24 phone:w-14" src={quickLoginImage} alt="" />
         <h1 className="my-2 w-20 rounded bg-[#ff850e] text-center font-bold text-white phone:w-14 phone:text-[12px]">
           快速測試
         </h1>

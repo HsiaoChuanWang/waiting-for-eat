@@ -140,7 +140,7 @@ function Schedule() {
       {tables.length === 0 ? (
         <div className="flex h-full items-center justify-center">
           <div>
-            <img src={noSchedule} className="h-52" />
+            <img src={noSchedule} alt="" className="h-52" />
             <h1 className="text-center text-xl font-bold text-gray-600">
               請先設定桌位以顯示預約內容
             </h1>

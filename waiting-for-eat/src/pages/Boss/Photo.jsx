@@ -11,10 +11,14 @@ function Photo() {
   const { company: companyData = {}, isLoading } = useCompanyProfile(companyId);
 
   const mainPicture = companyData.picture ? (
-    <img className="ml-6 w-80 phone:ml-0" src={companyData.picture} />
+    <img
+      className="ml-6 w-80 phone:ml-0"
+      src={companyData.picture}
+      alt={`${companyData.name ?? "餐廳"}封面`}
+    />
   ) : (
     <div className="mb-8 flex items-center">
-      <img className="w-48" src={boss} />
+      <img className="w-48" src={boss} alt="" />
       <h1 className="text-xl font-bold text-gray-600">尚未上傳封面照片</h1>
     </div>
   );
@@ -50,12 +54,16 @@ function Photo() {
                         className="w-[180px] min-w-[180px] phone:w-64"
                         key={index}
                       >
-                        <img className="px-2" src={picture} />
+                        <img
+                          className="px-2"
+                          src={picture}
+                          alt={`菜單照片 ${index + 1}`}
+                        />
                       </div>
                     ))
                   ) : (
                     <div className="flex items-center">
-                      <img className="w-48" src={noMenu} />
+                      <img className="w-48" src={noMenu} alt="" />
                       <h1 className="text-xl font-bold text-gray-600">
                         尚無上傳菜單照片
                       </h1>

@@ -28,11 +28,13 @@ function DinerInfo() {
               <img
                 className="h-full w-full rounded-full object-cover object-left"
                 src={diner}
+                alt="食客"
               />
             ) : (
               <img
                 className="h-full w-full rounded-full object-cover object-right"
                 src={userData.picture}
+                alt={`${userData.userName ?? "食客"}的大頭照`}
               />
             )}
           </div>

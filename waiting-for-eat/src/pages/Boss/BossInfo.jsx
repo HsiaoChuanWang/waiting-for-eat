@@ -62,11 +62,13 @@ function BossInfo() {
                   <img
                     className="h-full w-full rounded-full object-cover object-center"
                     src={boss}
+                    alt="餐廳業者"
                   />
                 ) : (
                   <img
                     className="h-full w-full rounded-full object-cover object-center"
                     src={userData.picture}
+                    alt={`${userData.userName ?? "餐廳業者"}的大頭照`}
                   />
                 )}
               </div>

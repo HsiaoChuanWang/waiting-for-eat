@@ -8,6 +8,7 @@ function RestaurantInfoSection({ restaurant, showFavorite }) {
       <div>
         <img
           src={restaurant.picture !== "" ? restaurant.picture : tasty}
+          alt={`${restaurant.name ?? "餐廳"}店面`}
           className="h-96 w-full object-cover object-center"
         />
       </div>
