@@ -470,7 +470,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
 - [x] 40. `refactor(ui): split remaining large page components`
     - 依職責拆分仍混合表單狀態、業務規則與多區塊 UI 的大型頁面。
     - 優先處理 OpenTime、BossInfoEdit、Homepage、Reserve、Schedule、Post 與 EatenShop，避免僅為縮短行數而過度拆分。
-- [ ] 41. `refactor(ui): unify dashboard navigation and record cards`
+- [x] 41. `refactor(ui): unify dashboard navigation and record cards`
     - 以設定資料與共用元件統一 Boss／Diner 後台導覽。
     - 整理食客收藏、用餐、訂位、評論與食記清單中重複的 card、list 與 empty layout。
 - [ ] 42. `test: add model and flow regression coverage`
