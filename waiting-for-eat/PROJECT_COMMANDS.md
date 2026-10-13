@@ -102,7 +102,7 @@ npm run test:watch
 npx vitest run src/features/search/searchModel.test.js
 ```
 
-更完整的測試範圍與測試案例說明請參考 [`TESTING.md`](./TESTING.md)。
+更完整的測試範圍與測試案例說明請參考 [`PROJECT_TESTS.md`](./PROJECT_TESTS.md)。
 
 ## 程式碼格式與品質檢查
 

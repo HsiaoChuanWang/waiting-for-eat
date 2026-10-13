@@ -134,7 +134,7 @@ waiting-for-eat/
 ├─ package.json
 ├─ PROJECT_STRUCTURE.md                       # 本文件
 ├─ REFACTOR_GUIDELINES.md
-├─ TESTING.md                                 # Unit test 與品質檢查說明
+├─ PROJECT_TESTS.md                           # Unit test 與品質檢查說明
 ├─ tailwind.config.js
 └─ vite.config.js
 ```
@@ -331,7 +331,7 @@ services/repositories/
 └─ favoriteRepository.test.js
 ```
 
-這樣移動或刪除模組時，能一起處理測試，不需要在另一個目錄重建相同結構。完整測試項目與執行方式記錄於 [`TESTING.md`](./TESTING.md)。
+這樣移動或刪除模組時，能一起處理測試，不需要在另一個目錄重建相同結構。完整測試項目與執行方式記錄於 [`PROJECT_TESTS.md`](./PROJECT_TESTS.md)。
 
 ## 一致性規則
 
