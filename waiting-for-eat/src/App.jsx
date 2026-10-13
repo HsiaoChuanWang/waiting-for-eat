@@ -6,16 +6,14 @@ import useHeaderStore from "../src/stores/headerStore.js";
 import useUserStore from "../src/stores/userStore.js";
 import Header from "./components/Header";
 import { auth } from "./services/firebase/firebaseClient.js";
+import { getCompanyById } from "./services/repositories/companyRepository.js";
+import { getUserById } from "./services/repositories/userRepository.js";
 // import RwdWarning from "./components/RwdWarning";
 
 function App() {
   const setUserId = useUserStore((state) => state.setUserId);
-  const getUserInfoFromFirestoreAndSave = useUserStore(
-    (state) => state.getUserInfoFromFirestoreAndSave,
-  );
-  const getCompanyInfoFromFirestoreAndSave = useUserStore(
-    (state) => state.getCompanyInfoFromFirestoreAndSave,
-  );
+  const setDetailInfo = useUserStore((state) => state.setDetailInfo);
+  const setCompanyInfo = useUserStore((state) => state.setCompanyInfo);
   const setHeader = useHeaderStore((state) => state.setHeader);
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,27 +36,28 @@ function App() {
         const user = auth.currentUser;
         const userId = user.uid;
 
-        firstParam === "signup"
-          ? setHeader("SignUp")
-          : Promise.all([
-              setUserId(userId),
-              getUserInfoFromFirestoreAndSave(userId),
-            ]).then(([_, userInfo]) => {
-              if (userInfo.companyId === "") {
-                setHeader("DinerLogIn");
-                firstParam?.includes("boss") && navigate("/");
+        if (firstParam === "signup") {
+          setHeader("SignUp");
+        } else {
+          setUserId(userId);
+          getUserById(userId).then((userInfo) => {
+            setDetailInfo(userInfo);
+            if (userInfo.companyId === "") {
+              setHeader("DinerLogIn");
+              firstParam?.includes("boss") && navigate("/");
 
-                if (thirdParam) {
-                  !thirdParam.includes(userId) && navigate("/");
-                }
-              } else if (userInfo.companyId !== "") {
-                setHeader("BossLogIn");
-                getCompanyInfoFromFirestoreAndSave(userInfo.companyId);
-
-                !thirdParam?.includes(userInfo.companyId) &&
-                  navigate(`/boss/bossInfo/${userInfo.companyId}`);
+              if (thirdParam) {
+                !thirdParam.includes(userId) && navigate("/");
               }
-            });
+            } else if (userInfo.companyId !== "") {
+              setHeader("BossLogIn");
+              getCompanyById(userInfo.companyId).then(setCompanyInfo);
+
+              !thirdParam?.includes(userInfo.companyId) &&
+                navigate(`/boss/bossInfo/${userInfo.companyId}`);
+            }
+          });
+        }
       }
     });
   }, [location.pathname]);

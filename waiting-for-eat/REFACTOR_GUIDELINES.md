@@ -366,7 +366,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
    - 抽離 user 與 company collections 的讀寫操作。
 - [x] 7. `refactor(storage): centralize image upload operations`
    - 建立共用圖片上傳介面；此 commit 只集中現有行為，不自行更換儲存供應商。
-- [ ] 8. `refactor(store): remove Firebase operations from user store`
+- [x] 8. `refactor(store): remove Firebase operations from user store`
    - 讓 Zustand Store 專注於狀態管理，不直接存取 Firebase。
 
 ### 第三階段：Application 與身份驗證

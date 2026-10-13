@@ -5,6 +5,8 @@ import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
+import { createCompany } from "../../services/repositories/companyRepository.js";
+import { saveUser } from "../../services/repositories/userRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
 import useUserStore from "../../stores/userStore.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
@@ -15,13 +17,7 @@ function StepThreeBoss({ setActive }) {
   });
   const userId = useUserStore((state) => state.userId);
   const setDetailInfo = useUserStore((state) => state.setDetailInfo);
-  const sendUserInfoToFirestore = useUserStore(
-    (state) => state.sendUserInfoToFirestore,
-  );
   const setCompanyInfo = useUserStore((state) => state.setCompanyInfo);
-  const sendCompanyInfoToFirestore = useUserStore(
-    (state) => state.sendCompanyInfoToFirestore,
-  );
 
   const checkRef = useRef(false);
 
@@ -57,20 +53,19 @@ function StepThreeBoss({ setActive }) {
       address: location,
       region: "TW",
     };
-    let lat;
-    let lng;
-    Geocoder.geocode(GeocoderRequest, (results, status) => {
-      if (status === "OK" && results.length > 0) {
-        lat = results[0].geometry.location.lat();
-        lng = results[0].geometry.location.lng();
-        let obj = company;
-        obj.lat = lat;
-        obj.lng = lng;
-        setCompanyInfo(company);
-        sendCompanyInfoToFirestore();
-      } else {
-        toast.error("請確認地址已填寫且地址正確");
-      }
+    return new Promise((resolve) => {
+      Geocoder.geocode(GeocoderRequest, (results, status) => {
+        if (status === "OK" && results.length > 0) {
+          resolve({
+            ...company,
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng(),
+          });
+        } else {
+          resolve(null);
+          toast.error("請確認地址已填寫且地址正確");
+        }
+      });
     });
   }
 
@@ -124,12 +119,16 @@ function StepThreeBoss({ setActive }) {
       !Object.values(company).includes("")
     ) {
       checkRef.current = false;
-      await getLocation();
-      if (company.lat !== "") {
-        await setDetailInfo(detail);
-        await sendUserInfoToFirestore();
-        setActive("StepFourBoss");
-      }
+      const companyInfo = await getLocation();
+      if (!companyInfo) return;
+
+      const companyId = await createCompany(companyInfo);
+      const userInfo = { ...detail, companyId };
+
+      setCompanyInfo(companyInfo);
+      setDetailInfo(userInfo);
+      await saveUser(userId, userInfo);
+      setActive("StepFourBoss");
     } else {
       toast.error("請填寫完整資訊");
     }

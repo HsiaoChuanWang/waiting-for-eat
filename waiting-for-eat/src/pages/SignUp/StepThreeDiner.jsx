@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Bs3CircleFill } from "react-icons/bs";
 import Alert from "../../components/Alert/index.jsx";
+import { saveUser } from "../../services/repositories/userRepository.js";
 import { uploadImage } from "../../services/storage/imageStorage.js";
 import useUserStore from "../../stores/userStore.js";
 import stepThree from "./signUpPictures/stepThree.jpg";
@@ -10,9 +11,6 @@ import stepThree from "./signUpPictures/stepThree.jpg";
 function StepThreeDiner({ setActive }) {
   const userId = useUserStore((state) => state.userId);
   const setDetailInfo = useUserStore((state) => state.setDetailInfo);
-  const sendUserInfoToFirestore = useUserStore(
-    (state) => state.sendUserInfoToFirestore,
-  );
 
   const checkRef = useRef(false);
 
@@ -54,8 +52,8 @@ function StepThreeDiner({ setActive }) {
   async function nextStep() {
     if (detail.userName != "" && detail.gender != "" && detail.phone != "") {
       checkRef.current = false;
-      await setDetailInfo(detail);
-      await sendUserInfoToFirestore();
+      setDetailInfo(detail);
+      await saveUser(userId, detail);
       setActive("StepFourDiner");
     } else {
       toast.error("請填寫完整資訊");

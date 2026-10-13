@@ -1,8 +1,5 @@
 import { Input } from "@nextui-org/react";
-import {
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { default as React, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -12,6 +9,7 @@ import {
   auth,
   googleAuthProvider,
 } from "../../services/firebase/firebaseClient.js";
+import { getUserById } from "../../services/repositories/userRepository.js";
 import useTestStore from "../../stores/testStore.js";
 import useUserStore from "../../stores/userStore.js";
 import googleLogo from "../SignUp/signUpPictures/GoogleLogo.png";
@@ -33,9 +31,7 @@ function Login() {
   const testAccount = useTestStore((state) => state.testAccount);
   const testPassword = useTestStore((state) => state.testPassword);
   const setUserId = useUserStore((state) => state.setUserId);
-  const getUserInfoFromFirestoreAndSave = useUserStore(
-    (state) => state.getUserInfoFromFirestoreAndSave,
-  );
+  const setDetailInfo = useUserStore((state) => state.setDetailInfo);
 
   useEffect(() => {
     if (testAccount !== "") {
@@ -48,10 +44,9 @@ function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        Promise.all([
-          setUserId(user.uid),
-          getUserInfoFromFirestoreAndSave(user.uid),
-        ]).then(([_, userInfo]) => {
+        setUserId(user.uid);
+        getUserById(user.uid).then((userInfo) => {
+          setDetailInfo(userInfo);
           if (userInfo.companyId === "") {
             navigate("/");
           } else {
@@ -72,10 +67,9 @@ function Login() {
     signInWithPopup(auth, googleAuthProvider)
       .then((userCredential) => {
         const user = userCredential.user;
-        Promise.all([
-          setUserId(user.uid),
-          getUserInfoFromFirestoreAndSave(user.uid),
-        ]).then(([_, userInfo]) => {
+        setUserId(user.uid);
+        getUserById(user.uid).then((userInfo) => {
+          setDetailInfo(userInfo);
           if (userInfo.companyId === "") {
             navigate("/");
           } else {
