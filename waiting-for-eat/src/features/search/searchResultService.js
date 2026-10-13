@@ -1,4 +1,4 @@
-import { getFavoriteStatus } from "../../services/repositories/searchRepository.js";
+import { getFavoriteStatus } from "../../services/repositories/favoriteRepository.js";
 import { enrichSearchResults, sortSearchResults } from "./searchModel.js";
 
 async function prepareSearchResults(

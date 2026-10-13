@@ -1,74 +1,42 @@
 import { Card, ScrollShadow } from "@nextui-org/react";
-import {
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HiThumbDown } from "react-icons/hi";
 import { IoMdPin } from "react-icons/io";
 import { IoRestaurant } from "react-icons/io5";
 import { PiPhoneCallFill } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
-import { db } from "../../services/firebase/firebaseClient.js";
+import { getCompanyById } from "../../services/repositories/companyRepository.js";
+import {
+  FAVORITE_STATUS,
+  subscribeFavoritesByStatus,
+} from "../../services/repositories/favoriteRepository.js";
 import noData from "./noData.png";
 
 function DislikeShop() {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const [favorites, setFavorites] = useState([]);
   const [combineData, setCombineData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const favoriteq = query(
-    collection(db, "favorite"),
-    where("userId", "==", userId),
-    where("status", "==", "dislike"),
-  );
-
-  async function getCompanyInfo(companyId) {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
 
   useEffect(() => {
-    const favoriteSnap = onSnapshot(favoriteq, (result) => {
-      let favoriteList = [];
-      result.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, favoriteId: dataId };
-        favoriteList.push(combine);
-      });
-      setFavorites(favoriteList);
-
-      Promise.all(
-        favoriteList.map((item) => {
-          return Promise.all([getCompanyInfo(item.companyId)]).then(
-            ([companyInfo]) => {
-              const newItem = {
-                ...item,
-                ...companyInfo,
-              };
-              return newItem;
-            },
-          );
-        }),
-      ).then((value) => {
-        setCombineData(value);
-        setIsLoading(false);
-      });
-    });
-
-    return favoriteSnap;
-  }, []);
+    return subscribeFavoritesByStatus(
+      userId,
+      FAVORITE_STATUS.DISLIKE,
+      (items) => {
+        Promise.all(
+          items.map(async (item) => ({
+            ...item,
+            ...(await getCompanyById(item.companyId)),
+          })),
+        ).then((value) => {
+          setCombineData(value);
+          setIsLoading(false);
+        });
+      },
+    );
+  }, [userId]);
 
   const companyDatas =
     combineData.length > 0 ? (

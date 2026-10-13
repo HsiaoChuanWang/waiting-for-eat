@@ -1,16 +1,7 @@
 import { Button, Card, ScrollShadow } from "@nextui-org/react";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   HiOutlineThumbDown,
   HiOutlineThumbUp,
@@ -23,6 +14,12 @@ import { PiPhoneCallFill } from "react-icons/pi";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import { db } from "../../services/firebase/firebaseClient.js";
+import { getCompanyById } from "../../services/repositories/companyRepository.js";
+import {
+  FAVORITE_STATUS,
+  subscribeEatenFavorites,
+  updateFavoriteStatus,
+} from "../../services/repositories/favoriteRepository.js";
 import useStarStore from "../../stores/starStore.js";
 import noData from "./noData.png";
 
@@ -34,20 +31,6 @@ function EatenShop() {
   const setCompanyName = useStarStore((state) => state.setCompanyName);
   const setCompanyId = useStarStore((state) => state.setCompanyId);
   const setOrderId = useStarStore((state) => state.setOrderId);
-  const favoriteq = query(
-    collection(db, "favorite"),
-    where("userId", "==", userId),
-    where("postId", "==", ""),
-  );
-
-  async function getCompanyInfo(companyId) {
-    const docRef = doc(db, "company", companyId);
-    const docSnap = await getDoc(docRef);
-
-    const resultUser = docSnap.data();
-    return resultUser;
-  }
-
   async function getPostInfo(orderId) {
     const postq = query(
       collection(db, "post"),
@@ -101,19 +84,11 @@ function EatenShop() {
   }
 
   useEffect(() => {
-    const favoriteSnap = onSnapshot(favoriteq, (result) => {
-      let favoriteList = [];
-      result.forEach((doc) => {
-        const data = doc.data();
-        const dataId = doc.id;
-        const combine = { ...data, favoriteId: dataId };
-        favoriteList.push(combine);
-      });
-
+    return subscribeEatenFavorites(userId, (items) => {
       Promise.all(
-        favoriteList.map((item) => {
+        items.map((item) => {
           return Promise.all([
-            getCompanyInfo(item.companyId),
+            getCompanyById(item.companyId),
             getPostInfo(item.orderId),
             getCommentInfo(item.orderId),
           ]).then(([companyInfo, postInfo, commentInfo]) => {
@@ -131,59 +106,53 @@ function EatenShop() {
         setIsLoading(false);
       });
     });
+  }, [userId]);
 
-    return favoriteSnap;
-  }, []);
-
-  const handleLike = async (favoriteId, change) => {
-    const favoriteRef = doc(db, "favorite", favoriteId);
-    await updateDoc(favoriteRef, {
-      status: change,
-    });
-  };
+  const handleLike = (favoriteId, status) =>
+    updateFavoriteStatus(favoriteId, status);
 
   const favoriteState = (favoriteId, status) => {
     switch (status) {
-      case "like":
+      case FAVORITE_STATUS.LIKE:
         return (
           <div className="flex h-10 w-28 items-center justify-center rounded-xl border border-solid bg-gray-200">
             <div className="mr-1 text-[30px] phone:text-xl">
               <HiThumbUp
                 className="cursor-pointer"
-                onClick={() => handleLike(favoriteId, "eaten")}
+                onClick={() => handleLike(favoriteId, FAVORITE_STATUS.EATEN)}
               />
             </div>
             <p className="mr-1">|</p>
             <div>
               <HiOutlineThumbDown
                 className="cursor-pointer text-[30px] phone:text-lg"
-                onClick={(e) => handleLike(favoriteId, "dislike")}
+                onClick={() => handleLike(favoriteId, FAVORITE_STATUS.DISLIKE)}
               />
             </div>
           </div>
         );
 
-      case "dislike":
+      case FAVORITE_STATUS.DISLIKE:
         return (
           <div className="flex h-10 w-28 items-center justify-center rounded-xl border border-solid bg-gray-200">
             <div className="mr-1 text-[30px] phone:text-xl">
               <HiOutlineThumbUp
                 className="cursor-pointer"
                 title="noLike"
-                onClick={(e) => handleLike(favoriteId, "like")}
+                onClick={() => handleLike(favoriteId, FAVORITE_STATUS.LIKE)}
               />
             </div>
             <p className="mr-1">|</p>
             <div className="mr-1 text-[30px] phone:text-xl">
               <HiThumbDown
                 className="cursor-pointer"
-                onClick={(e) => handleLike(favoriteId, "eaten")}
+                onClick={() => handleLike(favoriteId, FAVORITE_STATUS.EATEN)}
               />
             </div>
           </div>
         );
 
-      case "eaten":
+      case FAVORITE_STATUS.EATEN:
         return (
           <>
             <div className="flex h-10 w-28 items-center justify-center rounded-xl border border-solid bg-gray-200">
@@ -192,14 +161,16 @@ function EatenShop() {
                   <HiOutlineThumbUp
                     className="cursor-pointer"
                     title="noLike"
-                    onClick={(e) => handleLike(favoriteId, "like")}
+                    onClick={() => handleLike(favoriteId, FAVORITE_STATUS.LIKE)}
                   />
                 </div>
                 <p className="mr-1">|</p>
                 <div>
                   <HiOutlineThumbDown
                     className="cursor-pointer text-[30px] phone:text-xl"
-                    onClick={(e) => handleLike(favoriteId, "dislike")}
+                    onClick={() =>
+                      handleLike(favoriteId, FAVORITE_STATUS.DISLIKE)
+                    }
                   />
                 </div>
               </div>

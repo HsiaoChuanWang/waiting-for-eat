@@ -415,7 +415,7 @@ Baseline 是後續判斷 regression 的依據，不應在此階段順便修改�
     - 集中餐廳、菜單、活動與食記資料取得。
 - [x] 24. `refactor(restaurant): split restaurant page sections`
     - 拆分餐廳資訊、菜單、活動與評論區塊。
-- [ ] 25. `refactor(favorite): centralize favorite operations`
+- [x] 25. `refactor(favorite): centralize favorite operations`
     - 統一 like、dislike 與 eaten 的查詢及更新。
 
 ### 第八階段：食記與評論

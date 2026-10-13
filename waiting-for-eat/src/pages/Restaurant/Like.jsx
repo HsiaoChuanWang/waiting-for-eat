@@ -1,13 +1,4 @@
-import {
-  collection,
-  doc,
-  getDocs,
-  onSnapshot,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IconContext } from "react-icons";
 import {
   HiOutlineThumbDown,
@@ -16,84 +7,50 @@ import {
   HiThumbUp,
 } from "react-icons/hi";
 import { useParams } from "react-router-dom";
-import { db } from "../../services/firebase/firebaseClient.js";
+import {
+  FAVORITE_STATUS,
+  subscribeFavoriteByUserAndCompany,
+  updateFavoriteStatus,
+} from "../../services/repositories/favoriteRepository.js";
 import useUserStore from "../../stores/userStore.js";
 
 function Like() {
   const { companyId } = useParams();
-  const [like, setLike] = useState("");
-  const [favoriteData, setFavoriteData] = useState({});
+  const [favorite, setFavorite] = useState();
   const userId = useUserStore((state) => state.userId);
-  const favoriteq = query(
-    collection(db, "favorite"),
-    where("userId", "==", userId),
-    where("companyId", "==", companyId),
-  );
-  const companyq = query(
-    collection(db, "favorite"),
-    where("companyId", "==", companyId),
-  );
 
   useEffect(() => {
-    if (userId) {
-      getDocs(favoriteq)
-        .then((quarySnaps) => {
-          let favorites = [];
-          quarySnaps.forEach((doc) => {
-            const result = doc.data();
-            const resultId = doc.id;
-            const combineResult = { ...result, favoriteId: resultId };
-            favorites.push(combineResult);
-          });
+    if (!userId) return undefined;
 
-          const IdSource = favorites[0];
-          return IdSource;
-        })
-        .then((IdSource) => {
-          setFavoriteData(IdSource);
-        });
+    return subscribeFavoriteByUserAndCompany(userId, companyId, setFavorite);
+  }, [companyId, userId]);
 
-      onSnapshot(favoriteq, (querySnapshot) => {
-        let favorites = [];
-        querySnapshot.forEach((doc) => {
-          favorites.push(doc.data().status);
-        });
-        setLike(favorites[0]);
-      });
-
-      onSnapshot(companyq, (querySnapshot) => {
-        let totals = [];
-        querySnapshot.forEach((doc) => {
-          totals.push(doc.data().status);
-        });
-      });
-    }
-  }, [userId]);
-
-  const handleLike = async (change) => {
-    const favoriteRef = doc(db, "favorite", favoriteData.favoriteId);
-    await updateDoc(favoriteRef, {
-      status: change,
-    });
+  const handleLike = (status) => {
+    if (!favorite?.favoriteId) return;
+    return updateFavoriteStatus(favorite.favoriteId, status);
   };
 
   return (
     <div className="flex h-10 w-28 items-center justify-center rounded-xl border border-solid bg-gray-200">
       <div className="mr-1">
         <IconContext.Provider value={{ size: "30px" }}>
-          {like === "like" ? (
-            <HiThumbUp onClick={() => handleLike("eaten")} />
+          {favorite?.status === FAVORITE_STATUS.LIKE ? (
+            <HiThumbUp onClick={() => handleLike(FAVORITE_STATUS.EATEN)} />
           ) : (
-            <HiOutlineThumbUp onClick={(e) => handleLike("like")} />
+            <HiOutlineThumbUp
+              onClick={() => handleLike(FAVORITE_STATUS.LIKE)}
+            />
           )}
         </IconContext.Provider>
       </div>
       <p className="mr-1">|</p>
       <IconContext.Provider value={{ size: "30px" }}>
-        {like === "dislike" ? (
-          <HiThumbDown onClick={(e) => handleLike("eaten")} />
+        {favorite?.status === FAVORITE_STATUS.DISLIKE ? (
+          <HiThumbDown onClick={() => handleLike(FAVORITE_STATUS.EATEN)} />
         ) : (
-          <HiOutlineThumbDown onClick={(e) => handleLike("dislike")} />
+          <HiOutlineThumbDown
+            onClick={() => handleLike(FAVORITE_STATUS.DISLIKE)}
+          />
         )}
       </IconContext.Provider>
     </div>

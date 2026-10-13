@@ -12,14 +12,14 @@ import {
   getDocs,
   onSnapshot,
   query,
-  setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { default as React, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import IsLoading from "../../components/IsLoading/index.jsx";
 import { db } from "../../services/firebase/firebaseClient.js";
+import { saveEatenFavorite } from "../../services/repositories/favoriteRepository.js";
 import noSchedule from "./noSchedule.png";
 import "./schedule.css";
 
@@ -261,13 +261,7 @@ function Schedule() {
   }
 
   async function AddFavorite(orderId, userId) {
-    await setDoc(doc(db, "favorite", orderId), {
-      orderId: orderId,
-      userId: userId,
-      companyId: companyId,
-      status: "eaten",
-      postId: "",
-    });
+    await saveEatenFavorite({ companyId, orderId, userId });
   }
 
   async function DeleteOrder(orderId) {
