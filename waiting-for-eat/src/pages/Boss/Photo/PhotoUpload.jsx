@@ -2,6 +2,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { Card, ScrollShadow } from "@nextui-org/react";
 import { Button, Upload } from "antd";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { updateCompany } from "../../../services/repositories/companyRepository.js";
@@ -12,6 +13,7 @@ function PhotoUpload() {
   const navigate = useNavigate();
   const [mainPictures, setMainpictures] = useState([]);
   const [menuPictures, setMenuPictures] = useState([]);
+  const [isMainUploading, setIsMainUploading] = useState(false);
 
   const mainProps = {
     onRemove: (file) => {
@@ -34,9 +36,17 @@ function PhotoUpload() {
   }
 
   const handleMain = async () => {
-    const picture = await getUrl(mainPictures[0]);
-    await updateCompany(companyId, { picture });
-    navigate(`/boss/photo/${companyId}`);
+    setIsMainUploading(true);
+
+    try {
+      const picture = await getUrl(mainPictures[0]);
+      await updateCompany(companyId, { picture });
+      navigate(`/boss/photo/${companyId}`);
+    } catch (error) {
+      toast.error(error.message || "封面圖片上傳失敗。");
+    } finally {
+      setIsMainUploading(false);
+    }
   };
 
   const menuProps = {
@@ -85,10 +95,11 @@ function PhotoUpload() {
               <Button
                 type="primary"
                 onClick={handleMain}
-                disabled={mainPictures.length === 0}
+                disabled={mainPictures.length === 0 || isMainUploading}
+                loading={isMainUploading}
                 className="absolute bottom-2 right-8 w-24 phone:static"
               >
-                上傳封面
+                {isMainUploading ? "上傳中" : "上傳封面"}
               </Button>
             </div>
           </div>

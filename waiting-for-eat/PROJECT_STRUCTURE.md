@@ -108,7 +108,7 @@ pages/Boss/OpenTime/
 - `services/auth/`：Firebase Authentication 包裝。
 - `services/repositories/`：Firestore collection 的查詢與寫入。
 - `services/maps/`：Google Maps geocoding。
-- `services/storage/`：Firebase Storage 圖片上傳。
+- `services/storage/`：Supabase Storage 圖片上傳與公開 URL 產生。
 
 這一層不應 import `pages/` 或依賴 JSX。
 
@@ -132,7 +132,7 @@ Hook / Feature service ──→ Zustand store
        ↓
 Model / Repository
        ↓
-Firebase client / Google Maps / Firebase Storage
+Firebase client / Google Maps / Supabase Storage
 ```
 
 - UI 可依賴 hook、feature、store 與 service。

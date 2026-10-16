@@ -1,6 +1,7 @@
 import { Card } from "@nextui-org/react";
 import { Button, Form, Input, Radio } from "antd";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import IsLoading from "../../../components/IsLoading/index.jsx";
 import useDinerProfile from "../../../features/diner/useDinerProfile.js";
@@ -12,6 +13,7 @@ function DinerInfoEdit() {
   const navigate = useNavigate();
   const { isLoading, profile } = useDinerProfile(userId);
   const [updateData, setUpdateData] = useState({});
+  const [isPictureUploading, setIsPictureUploading] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -24,8 +26,19 @@ function DinerInfoEdit() {
   }, [profile]);
 
   async function handlePicture(picture) {
-    const downloadURL = await uploadImage(userId, picture);
-    setUpdateData((current) => ({ ...current, picture: downloadURL }));
+    if (!picture) return;
+
+    setIsPictureUploading(true);
+
+    try {
+      const downloadURL = await uploadImage(userId, picture);
+      setUpdateData((current) => ({ ...current, picture: downloadURL }));
+      toast.success("\u5716\u7247\u4e0a\u50b3\u6210\u529f\u3002");
+    } catch (error) {
+      toast.error(error.message || "\u5716\u7247\u4e0a\u50b3\u5931\u6557\u3002");
+    } finally {
+      setIsPictureUploading(false);
+    }
   }
 
   async function handleUpdate() {
@@ -131,8 +144,9 @@ function DinerInfoEdit() {
                 onClick={handleUpdate}
                 type="primary"
                 htmlType="button"
+                disabled={isPictureUploading}
               >
-                更新
+                {isPictureUploading ? "上傳" : "更新"}
               </Button>
             </Form.Item>
           </Form>
