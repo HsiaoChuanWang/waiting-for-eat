@@ -10,6 +10,24 @@ const MAP_OPTIONS = {
   mapTypeControl: false,
 };
 
+function createPreviewContent(restaurant) {
+  const container = document.createElement("div");
+  container.className = "restaurant-map-preview";
+
+  const title = document.createElement("h3");
+  title.className = "restaurant-map-preview__title";
+  title.textContent = restaurant.name ?? "";
+
+  const address = document.createElement("p");
+  address.textContent = `${restaurant.city ?? ""}${restaurant.district ?? ""}${restaurant.address ?? ""}`;
+
+  const phone = document.createElement("p");
+  phone.textContent = restaurant.phone ?? "";
+
+  container.append(title, address, phone);
+  return container;
+}
+
 function SearchMap({ center, results }) {
   const [map, setMap] = useState(null);
   const markersRef = useRef([]);
@@ -23,7 +41,9 @@ function SearchMap({ center, results }) {
     clearMarkers();
     if (!map) return;
 
-    const infoWindow = new window.google.maps.InfoWindow();
+    const infoWindow = new window.google.maps.InfoWindow({
+      headerDisabled: true,
+    });
 
     markersRef.current = results.map((restaurant, index) => {
       const marker = new window.google.maps.Marker({
@@ -33,21 +53,15 @@ function SearchMap({ center, results }) {
         position: { lat: restaurant.lat, lng: restaurant.lng },
       });
 
-      marker.addListener("mouseover", () => {
+      const openPreview = () => {
         infoWindow.close();
-        infoWindow.setContent(`
-          <div class="modal" style="width: 250px">
-            <div class="modal-body">
-              <h3 class="modal-title" style="font-size: 16px; font-weight: 700; margin-top: 8px; margin-bottom: 8px">${restaurant.name}</h3>
-              <p class="total" style="margin-top: 8px; margin-bottom: 8px">${restaurant.city}${restaurant.district}${restaurant.address}</p>
-              <p class="remain" style="margin-top: 10px; margin-bottom: 8px">${restaurant.phone}</p>
-            </div>
-          </div>
-        `);
-        infoWindow.open(map, marker);
-      });
+        infoWindow.setContent(createPreviewContent(restaurant));
+        infoWindow.open({ anchor: marker, map });
+      };
 
+      marker.addListener("mouseover", openPreview);
       marker.addListener("mouseout", () => infoWindow.close());
+      marker.addListener("click", openPreview);
       return marker;
     });
 

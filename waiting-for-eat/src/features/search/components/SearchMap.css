@@ -2,3 +2,18 @@
   width: 100%;
   height: 100%;
 }
+
+.restaurant-map-preview {
+  width: 250px;
+  color: #1f2937;
+}
+
+.restaurant-map-preview__title {
+  margin: 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.restaurant-map-preview p {
+  margin: 8px 0;
+}

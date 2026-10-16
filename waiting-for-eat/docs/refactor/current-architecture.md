@@ -9,7 +9,7 @@
 | Application | React 18、Vite |
 | Routing | React Router 6 |
 | Global state | Zustand、Immer |
-| Backend | Firebase Authentication、Cloud Firestore、Cloud Storage |
+| Backend | Firebase Authentication、Cloud Firestore、Supabase Storage |
 | Maps | Google Maps JavaScript API、`@react-google-maps/api` |
 | UI | NextUI、Ant Design、Tailwind CSS、React Icons |
 | Rich text | Draft.js、React Draft WYSIWYG |
@@ -125,7 +125,7 @@ NextUIProvider
 - default export：Firestore `db`。
 - named export `auth`：Firebase Authentication。
 - named export `provider`：Google Auth provider。
-- named export `storage`：Cloud Storage for Firebase。
+- 圖片儲存不再由 Firebase client 初始化，改由 `services/storage/imageStorage.js` 呼叫 Supabase Storage API。
 
 Firebase project ID 為 `project-fire-6a02f`，Storage bucket 為 `project-fire-6a02f.appspot.com`。
 
@@ -193,7 +193,7 @@ Homepage 搜尋條件
 SignUp 步驟與身份選擇
 → Firebase Auth／Google Auth
 → userStore 暫存 user 與 company 資料
-→ 上傳頭像至 Firebase Storage
+→ 上傳頭像至 Supabase Storage
 → 食客：建立 user document
 → 老闆：建立 company document，再將 companyId 寫入 user document
 ```
@@ -251,7 +251,7 @@ Boss sidebar
 - Reserve、Schedule、EatenShop、AddStar、TextEditor、Posted 與 Commented 透過 `orderId` 形成跨 Feature 流程。
 - `company` document 同時承載餐廳基本資料、圖片、菜單、活動與總評分。
 - Restaurant、Homepage、Search、Diner 與 Boss 都直接依賴 Firestore company 資料。
-- 圖片 URL 儲存在 user、company、post 或富文字 HTML 中；圖片檔案本身由 Firebase Storage 提供。
+- 圖片 URL 儲存在 user、company、post 或富文字 HTML 中；新上傳的圖片檔案由 Supabase Storage 提供。
 
 ## 架構盤點邊界
 
