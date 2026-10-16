@@ -89,7 +89,7 @@ BLOCKED BY EXECUTION ENVIRONMENT / NOT VERIFIED
 - Firebase Authentication、Firestore 及圖片來源可存取。
 - 測試資料至少包含食客帳號、老闆帳號、餐廳、營業時間、桌位及訂單。
 - 瀏覽器允許 Google Maps 載入。
-- 若 Firebase Storage 因方案限制無法使用，應將圖片上傳標記為外部依賴阻擋，不與其他流程混為同一失敗。
+- 圖片上傳依賴 Supabase Storage；驗證時應分開記錄 Storage 設定或網路造成的失敗。
 
 ## 主要手動驗證清單
 

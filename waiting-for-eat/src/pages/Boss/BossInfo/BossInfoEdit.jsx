@@ -24,6 +24,7 @@ function BossInfoEdit() {
   const { company, isLoading: isCompanyLoading } = useCompanyProfile(companyId);
   const [updateUser, setUpdateUser] = useState({});
   const [updateCompany, setUpdateCompany] = useState({});
+  const [isPictureUploading, setIsPictureUploading] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -47,8 +48,19 @@ function BossInfoEdit() {
   }, [company]);
 
   async function handlePicture(picture) {
-    const downloadURL = await uploadImage(userId, picture);
-    setUpdateUser((current) => ({ ...current, picture: downloadURL }));
+    if (!picture) return;
+
+    setIsPictureUploading(true);
+
+    try {
+      const downloadURL = await uploadImage(userId, picture);
+      setUpdateUser((current) => ({ ...current, picture: downloadURL }));
+      toast.success("\u5716\u7247\u4e0a\u50b3\u6210\u529f\u3002");
+    } catch (error) {
+      toast.error(error.message || "\u5716\u7247\u4e0a\u50b3\u5931\u6557\u3002");
+    } finally {
+      setIsPictureUploading(false);
+    }
   }
 
   async function handleUserUpdate() {
@@ -162,7 +174,7 @@ function BossInfoEdit() {
                   className="h-8 w-64 text-xs phone:w-44"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handlePicture(e)}
+                  onChange={(e) => handlePicture(e.target.files?.[0])}
                 />
               </div>
 
@@ -187,8 +199,9 @@ function BossInfoEdit() {
                   onClick={handleUserUpdate}
                   type="primary"
                   htmlType="button"
+                  disabled={isPictureUploading}
                 >
-                  更新
+                  {isPictureUploading ? "上傳" : "更新"}
                 </Button>
               </Form.Item>
             </Form>

@@ -4,7 +4,7 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import { ScrollShadow } from "@nextui-org/react";
 import { DatePicker } from "antd";
 import dateFormat from "dateformat";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import IsLoading from "../../../components/IsLoading/index.jsx";
 import {
@@ -31,8 +31,8 @@ function Schedule() {
   const { isLoading, orders, tables } = useScheduleData(companyId);
   const [updateOrders, setUpdateOrders] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
-  const resources = createScheduleResources(tables);
-  const events = createScheduleEvents(orders);
+  const resources = useMemo(() => createScheduleResources(tables), [tables]);
+  const events = useMemo(() => createScheduleEvents(orders), [orders]);
 
   function MyDropEvent(info) {
     setUpdateOrders((current) =>
