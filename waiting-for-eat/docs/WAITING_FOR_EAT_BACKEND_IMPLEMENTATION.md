@@ -12,12 +12,12 @@
 
 - [ ] 建立獨立的 `waiting-for-eat-backend` 專案與 Git repository，與前端各自管理依賴、測試、CI 與部署。此為待辦，目前尚未建立。
 - [ ] 在兩個專案 README 互相連結，說明如何一起啟動，以及相容的 API 版本。
-- [ ] 選擇 Python + FastAPI 或 Java + Spring Boot；若沿用 Node.js + TypeScript 也可以，但第一版只選一套。
-- [ ] 若主要目標是先完成可運作的 API，可考慮 Python；若希望練習 Java 與 Spring 生態，可選 Java。選擇依學習與求職方向決定，不影響前端 Toggle 設計。
+- [ ] 採用 Java 21 + Spring Boot + Maven 的自建 API 路線，工具與初始化步驟見第 3 節。
+- [ ] 將作品目標設定為 Java 後端／React 全端求職，優先練習 SQL、交易、權限、測試與部署。
 - [ ] 鎖定所選 runtime、框架、資料庫與依賴版本，記錄選擇原因及啟動指令。
-- [ ] Python 路線：建立虛擬環境與依賴鎖定，使用 FastAPI、Pydantic、SQLAlchemy、Alembic、PostgreSQL driver、Firebase Admin、pytest 與 HTTP 測試 client。
-- [ ] Java 路線：用 Spring Initializr 建立 Spring Boot 專案，選定 Maven 或 Gradle 並提交 wrapper；加入 Web、Validation、Security、Data JPA、PostgreSQL driver、Flyway、Firebase Admin、OpenAPI 文件與 JUnit 整合測試工具。
-- [ ] 兩條路線擇一完成即可；未選路線標示「不適用」，不需為完成清單而實作兩套 API。
+- [ ] 依第 3 節準備 Java 開發工具，Python 不列入本次必要實作。
+- [ ] 用 Spring Initializr 建立專案並提交 Maven Wrapper；依第 3 節加入必要 dependencies 與測試工具。
+- [ ] 只實作一套 Java API；Toggle 保留 Firebase／自建 API 兩種模式。
 
 ### B. 建立可啟動的開發環境
 
@@ -110,110 +110,126 @@
 - [ ] 不立即加入 Redis、Kafka 等沒有明確需求的元件。
 - [ ] 不保證大型平台等級的多區域容錯。
 
-## 3. 建議技術決策
+## 3. 建議技術決策：Java 求職路線
 
-| 項目 | 建議 | 原因 |
+第一版固定使用以下組合，集中完成一套可展示、可測試的後端。Python 是未來可選技能，不列入本次必要待辦。
+
+| 項目 | 建議工具 | 用途與取捨 |
 | --- | --- | --- |
-| 架構 | 模組化單體 Modular Monolith | 適合目前規模，交易與除錯較簡單，也能展示清楚邊界 |
-| Runtime | Node.js LTS | 與前端技術一致 |
-| 語言 | TypeScript strict mode | 提前發現型別錯誤，適合作品與團隊協作 |
-| Framework | Fastify 或 NestJS | Fastify 輕量；NestJS 結構明確。擇一，不要並用 |
-| Database | PostgreSQL | 適合訂位、關聯、交易與唯一性限制 |
-| ORM | Prisma 或 Drizzle | 提供 migration 與型別；仍需理解 SQL |
-| Validation | Zod（Fastify）或 DTO/class-validator（NestJS） | 後端執行時驗證 request |
-| API | REST + OpenAPI | 符合目前前端需求，易測試與展示 |
-| Realtime | 第一版 polling，第二版 SSE | 店家排程多為 server-to-client 更新，SSE 足夠且比 WebSocket 簡單 |
-| Auth | Firebase Admin 驗證 ID token | 先降低自建密碼與 token 的安全風險 |
-| Image | S3 presigned URL | 前端不取得 AWS secret，圖片不必經過 API server 轉傳 |
-| Test | Vitest/Jest + HTTP test client + 測試 PostgreSQL | 驗證真實 API、權限與 transaction |
-| API docs | OpenAPI/Swagger | 作為前後端契約及履歷證據 |
+| 專案管理 | 獨立 Git repository：`waiting-for-eat-backend` | 與 React 分開管理依賴、CI、版本及部署 |
+| JDK | Eclipse Temurin Java 21 LTS | 本機、CI 與容器統一版本 |
+| IDE | IntelliJ IDEA，使用免費功能即可 | 撰寫、除錯與執行 Java；不要求付費 Spring 功能 |
+| 初始化 | Spring Initializr | Maven、Java、Jar、Java 21；artifact 為 `waiting-for-eat-backend` |
+| Framework | Spring Boot 穩定版 + Spring Web MVC | 建立 REST API；不使用 snapshot、milestone 或 WebFlux |
+| 建置 | Maven Wrapper | 提交 `mvnw`、`mvnw.cmd` 與 `.mvn/`，避免依賴全域 Maven |
+| Database | PostgreSQL 17 | 學習 SQL、外鍵、索引、交易與併發控制；各環境統一 major |
+| ORM | Spring Data JPA + Hibernate | Repository 存取與 transaction；仍需讀懂產生的 SQL |
+| Migration | Flyway + PostgreSQL 支援模組 | SQL 版本管理；Hibernate 設 `ddl-auto=validate`，不用 `update` 管正式 schema |
+| Validation | Jakarta Bean Validation | 使用 DTO 與 `@Valid`，不直接將 Entity 當公開 API 回應 |
+| Security | Spring Security + Firebase Admin Java SDK | 驗證 Firebase ID token，建立 principal，再檢查角色與 ownership |
+| API 文件 | springdoc-openapi + Swagger UI | 選與 Boot major 相容的版本，文件路徑依第 7 節設定 |
+| 日誌與健康檢查 | SLF4J／Logback + Spring Boot Actuator | request ID、結構化日誌與 readiness；只公開必要健康資訊 |
+| 單元測試 | Spring Boot Test、JUnit Jupiter、Mockito | 版本交由 Boot dependency management 管理 |
+| 整合測試 | MockMvc + Testcontainers PostgreSQL | 使用真實 PostgreSQL，不以 H2 取代交易與 SQL 行為 |
+| 前端 E2E | Playwright | 驗證兩種模式的完整使用流程 |
+| 格式與品質 | Spotless + JaCoCo | 統一 Java 格式並檢視關鍵規則測試覆蓋，不追求無意義的 100% |
+| API 手動測試 | Postman | 保存測試 collection 與無 secrets 的環境範本 |
+| SQL 工具 | DBeaver Community | 查資料、檢視 schema 與練習 SQL |
+| 本機容器 | Docker Desktop + Docker Compose | Windows 使用 WSL 2；確認硬體、授權與 Docker 可正常啟動 |
+| CI | GitHub Actions | 執行 Maven verify、整合測試、容器建置與掃描 |
+| Secrets／映像掃描 | Gitleaks + Trivy | 檢查誤提交 secrets 與映像弱點 |
+| 圖片 | 先沿用 Supabase Storage | S3 是第二階段選配，保留既有上傳功能 |
+| 前端資料來源 | 原生 fetch + AbortController、既有 Zustand | 不為 Toggle 額外引入第二套狀態管理工具 |
+| 部署 | 先本機 Docker Compose，再 AWS ECS Fargate + RDS | 本機完整 demo 為第一里程碑，AWS 成本與架構見第 13 節 |
 
-建議獨立建立 `waiting-for-eat-backend` repository；前端透過 HTTP 呼叫，因此 Python、Java 或 Node.js 都能使用。上表與下方 TypeScript 目錄是 Node.js 路線的參考範例，不是必須採用的技術。Python／Java 路線以第 0 節對應工具替換 runtime、ORM、validation、test 與建置指令，沿用相同 API 與資料模型。
+### 安裝、初始化與版本驗收 checklist
 
-後文 `backend/` 代表獨立後端專案根目錄，不表示必須在本前端 repository 建立子目錄。兩個專案應各自有 `.git`，不要在未確認 Git 根目錄前建立巢狀 repository；前端既有 `src/` 結構保留。
+- [ ] 安裝 Git、Temurin JDK 21、IntelliJ IDEA、Docker Desktop、DBeaver 與 Postman；以 `java -version`、`git --version`、`docker version` 驗證。
+- [ ] 先練習 Java class／interface、collections、exceptions、generics、時間處理與基本測試，再接 Spring 的依賴注入、Controller、Service 與 Repository。
+- [ ] 在目前前端 Git 根目錄之外建立後端 repository；先確認實際 Git 根目錄，避免巢狀 repository。後文 `backend/` 只是獨立專案根目錄的代稱。
+- [ ] 使用 Spring Initializr，設定 group `com.waitingforeat`、package `com.waitingforeat.backend`，選 Spring Web MVC、Validation、Security、Data JPA、PostgreSQL Driver、Flyway 與 Actuator。
+- [ ] 初始化時查看官方 system requirements，選與 Java 21 相容且仍受支援的 Boot 穩定版本，記錄精確版本；不要只因教學版本相同就選過期版本。
+- [ ] 依 springdoc 相容表選 dependency major；JUnit、Hibernate、PostgreSQL driver 等優先沿用 Boot 管理的版本，額外函式庫明確鎖版。
+- [ ] 加入 Firebase Admin SDK、springdoc、Testcontainers PostgreSQL、Spring Security Test、Spotless 與 JaCoCo；依所選版本確認 Testcontainers 與 Flyway 的模組名稱。
+- [ ] 在 `pom.xml` 設 Java release 21、測試及品質 plugin；Surefire 執行 `*Test`，Failsafe 執行 `*IT`，讓 `verify` 包含整合測試。
+- [ ] 執行 `.\mvnw.cmd -v`、`.\mvnw.cmd verify`；其他系統使用 `./mvnw verify`。Testcontainers 測試需先啟動 Docker。
+- [ ] 設定 profile 與環境變數：`SPRING_PROFILES_ACTIVE`、`SPRING_DATASOURCE_URL`、`SPRING_DATASOURCE_USERNAME`、`SPRING_DATASOURCE_PASSWORD`、`FIREBASE_PROJECT_ID`、`GOOGLE_APPLICATION_CREDENTIALS`、`APP_CORS_ALLOWED_ORIGINS`。
+- [ ] 在設定檔明確將自訂環境變數映射到應用程式屬性；Spring Boot 不會自動讀取一般 `.env`，本機使用 IDE 環境變數或 shell，Compose 的 env file 只依其注入規則使用。
+- [ ] 本機 Firebase credentials 放在 Git 外並透過環境變數指定；部署使用 secret／工作負載身分機制，不將 JSON 金鑰寫入 image。
+- [ ] 建立 `compose.yaml`，先啟動 PostgreSQL，再執行 `.\mvnw.cmd spring-boot:run`；完整容器流程再用 `docker compose up --build`。
+- [ ] Flyway 建立第一個 `V1__initial_schema.sql`，由版本化 SQL 管 schema；展示 seed 僅在 local／demo profile 執行，不自動灌入正式資料。
+- [ ] 設定 Actuator probes，再映射 `/health/live`、`/health/ready`；Swagger UI 映射 `/docs`，API 文件與 security allowlist 一起驗證。
+- [ ] 用 Spring Security filter 呼叫 Firebase Admin 驗證 Bearer token，建立 authenticated principal；設定無狀態 API、CORS、401／403 handler，避免預設登入頁與 redirect 干擾前端。
+- [ ] 先完成公開店家查詢與 `/me`，再完成 owner 更新與跨 owner 的 403 測試，最後進入訂位交易。
+
+### 版本與官方參考
+
+版本在真正建立後端時鎖定，不在規劃文件中猜測各套件的最新 patch。Boot、springdoc、Testcontainers 與 Java 需一起驗證相容性。
+
+[Spring Initializr](https://start.spring.io/)、[Boot 系統需求](https://docs.spring.io/spring-boot/system-requirements.html)、[Spring SQL／JPA](https://docs.spring.io/spring-boot/reference/data/sql.html)、[springdoc 相容資訊](https://springdoc.org/)、[Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/)、[Firebase token 驗證](https://firebase.google.com/docs/auth/admin/verify-id-tokens)。
 
 ## 4. 目標架構
 
 ```text
-React / Vite
-    │ HTTPS + JSON + Firebase ID token
-    ▼
-Node.js TypeScript API
-    ├─ Auth middleware（Firebase Admin）
-    ├─ Validation / Authorization
-    ├─ Users module
-    ├─ Restaurants module
-    ├─ Reservations module
-    ├─ Favorites module
-    ├─ Reviews module
-    ├─ Posts module
-    ├─ Uploads module
-    └─ PostgreSQL
-          │
-          └─ Outbox / event（需要即時通知時）
+React / Vite（Header Toggle）
+    ├─ Firebase 模式 → Firestore（保留現有功能）
+    └─ API 模式 → HTTPS + JSON + Firebase ID token
+                    ↓
+                Spring Boot / Java
+                    ├─ Spring Security + Firebase Admin
+                    ├─ Controller + DTO / Validation
+                    ├─ Service：權限、商業規則、交易
+                    ├─ JPA Repository
+                    └─ PostgreSQL（Flyway 管理 schema）
 
-圖片：React ── presigned URL ──> S3
-即時：React <── SSE / polling ── API
+共用登入：Firebase Authentication
+共用圖片：Supabase Storage；S3 為後續選配
+即時更新：Firebase 使用 onSnapshot，API 先 polling，後續選配 SSE
 ```
 
-### 建議目錄
+### 建議獨立後端目錄
 
 ```text
-backend/
-├─ src/
-│  ├─ app.ts
-│  ├─ server.ts
-│  ├─ config/
-│  ├─ common/
-│  │  ├─ errors/
-│  │  ├─ auth/
-│  │  ├─ validation/
-│  │  ├─ logging/
-│  │  └─ pagination/
-│  ├─ modules/
-│  │  ├─ users/
-│  │  ├─ restaurants/
-│  │  ├─ reservations/
-│  │  ├─ favorites/
-│  │  ├─ reviews/
-│  │  ├─ posts/
-│  │  └─ uploads/
-│  └─ infrastructure/
-│     ├─ database/
-│     ├─ firebase/
-│     ├─ storage/
-│     └─ observability/
-├─ migrations/
-├─ test/
-│  ├─ factories/
-│  ├─ integration/
-│  └─ e2e/
+waiting-for-eat-backend/
+├─ pom.xml
+├─ mvnw
+├─ mvnw.cmd
+├─ .mvn/wrapper/
+├─ compose.yaml
 ├─ Dockerfile
-├─ package.json
-├─ tsconfig.json
-└─ .env.example
+├─ .env.example
+├─ .github/workflows/ci.yml
+└─ src/
+   ├─ main/
+   │  ├─ java/com/waitingforeat/backend/
+   │  │  ├─ WaitingForEatApplication.java
+   │  │  ├─ config/
+   │  │  ├─ common/exception/
+   │  │  ├─ security/
+   │  │  └─ modules/
+   │  │     ├─ users/
+   │  │     ├─ restaurants/
+   │  │     ├─ reservations/
+   │  │     ├─ favorites/
+   │  │     ├─ reviews/
+   │  │     └─ posts/
+   │  └─ resources/
+   │     ├─ application.yml
+   │     ├─ application-local.yml
+   │     ├─ application-test.yml
+   │     └─ db/migration/V1__initial_schema.sql
+   └─ test/java/com/waitingforeat/backend/
+      ├─ unit/
+      └─ integration/
 ```
 
-每個業務模組可包含：
+每個模組以訂位為例包含 `ReservationController.java`、request／response DTO、`ReservationService.java`、`ReservationRepository.java`、`Reservation.java` 與 `ReservationStatus.java`；測試放在 `src/test/java` 的對應 package。
 
-```text
-reservations/
-├─ reservation.routes.ts
-├─ reservation.controller.ts
-├─ reservation.schemas.ts
-├─ reservation.service.ts
-├─ reservation.repository.ts
-├─ reservation.types.ts
-└─ reservation.service.test.ts
-```
-
-責任分配：
-
-- [ ] Route/controller：HTTP input/output，不放主要商業規則。
-- [ ] Schema：驗證 path、query、body 與 response。
-- [ ] Service：權限、交易與商業規則。
-- [ ] Repository：SQL/ORM 存取，不處理 HTTP。
-- [ ] Infrastructure：Firebase、S3、log 等外部系統 adapter。
+- [ ] Controller 處理 HTTP 與 DTO，不放主要商業規則。
+- [ ] Service 用 `@Transactional` 保護需要共同提交的商業操作；設計 transaction 邊界與鎖定策略。
+- [ ] Repository 使用 JPA／參數化 SQL，Entity 管資料映射，公開回應使用 DTO。
+- [ ] 以 `@RestControllerAdvice` 集中處理驗證、權限、衝突與其他錯誤。
+- [ ] 模組間以明確的 Service 介面協作，避免到處直接操作別的模組 Repository。
 
 ## 5. 身分與權限模型
 
@@ -523,10 +539,10 @@ Redis、Mailpit 等等只有加入對應功能時才新增。
 ### Dockerfile 要求
 
 - [ ] Multi-stage build。
-- [ ] 固定 Node major/minor 或 digest 策略。
+- [ ] 使用固定版本／digest 的 Maven + Temurin 21 建置 image，以及 Temurin 21 JRE runtime image。
 - [ ] 只複製 production 必要檔案。
 - [ ] 使用 non-root user。
-- [ ] 設定 production `NODE_ENV`。
+- [ ] 以 `SPRING_PROFILES_ACTIVE=production` 啟用正式組態，環境變數注入資料庫與 Firebase 設定。
 - [ ] 提供 health check 或交由平台呼叫 readiness endpoint。
 - [ ] 不將 `.env` 或 secrets COPY 進 image。
 - [ ] 正確處理 `SIGTERM` 與 graceful shutdown。
@@ -545,8 +561,8 @@ Redis、Mailpit 等等只有加入對應功能時才新增。
 
 - [ ] 安裝固定版本 dependencies。
 - [ ] Format check。
-- [ ] ESLint。
-- [ ] TypeScript type check。
+- [ ] 後端執行 Spotless 格式檢查；前端 ESLint 在前端 repository 執行。
+- [ ] Maven compile／testCompile 檢查 Java 原始碼與測試可編譯。
 - [ ] Unit tests。
 - [ ] 啟動測試 PostgreSQL並執行 migrations。
 - [ ] Integration tests。
@@ -718,8 +734,8 @@ Database migration 應盡量向下相容，例如先新增 nullable 欄位、部
 
 ### Phase 0：設計與專案骨架
 
-- [ ] 建立 `backend/` TypeScript 專案。
-- [ ] 選定 Fastify 或 NestJS、Prisma 或 Drizzle。
+- [ ] 建立獨立 Java 21／Spring Boot 後端 repository 與 Maven Wrapper。
+- [ ] 設定 Spring Web MVC、Security、Data JPA、PostgreSQL、Flyway 與第 3 節指定工具。
 - [ ] 建立 Dockerfile、Compose PostgreSQL 與 `.env.example`。
 - [ ] 完成 `/health/live`、`/health/ready`。
 - [ ] 加入 structured logger、request ID、global error handler。
@@ -769,9 +785,10 @@ Database migration 應盡量向下相容，例如先新增 nullable 欄位、部
 
 完成定義：重送不產生重複資料；評分與內容資料保持一致。
 
-### Phase 5：Images 與 Realtime
+### Phase 5：共用圖片與 Realtime（S3 為選配）
 
-- [ ] S3 private bucket 與 presigned upload flow。
+- [ ] 驗證共用 Supabase 上傳與顯示；以下 S3 相關項目僅在啟用選配時執行，否則標示不適用。
+- [ ] （選配）S3 private bucket 與 presigned upload flow。
 - [ ] media metadata、完成確認與孤兒檔案清理。
 - [ ] 先 polling，再視需要實作 SSE。
 - [ ] 驗證檔案型別、大小、用途與 ownership。
